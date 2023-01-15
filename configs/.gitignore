@@ -1,0 +1,11 @@
+prod.yaml
+dev.yaml
+default.yaml
+dev.env
+*.yml 
+vendor 
+.profile 
+go.sum
+keys
+*.pem
+*.key

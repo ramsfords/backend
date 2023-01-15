@@ -1,0 +1,233 @@
+<div class="flex flex-col justify-around bol textPrimary m-auto" id="bol">
+  <div alt="first shipper company logo" class="flex h-30px w-full relative mb-2">
+    <div class="w-1-2 flex justify-start items-center h-full">
+      <logo>
+      </logo>
+    </div>
+    <div class="flex items-center h-full w-full text-center">
+      <div class="flex items-center justify-end text-center w-full">
+        <h3 class="text-lg font-semibold text-center">BILL OF LADING</h3>
+      </div>
+    </div>
+  </div>
+  <div class="flex w-full">
+    <div class="flex flex-col w-1-2 gap-1">
+      <h3>SHIPPER</h3>
+      <div class="flex gap-2 border-b-1px border-gray-500 w-300px"></div>
+      <h4 class="font-bold text-lg text-uppercase mb-1">{data?.pickup?.company_name}</h4>
+      <h4 class="text-md">{data?.pickup?.address?.address_line_1}</h4>
+      <h4 class="text-md">{data?.pickup?.address?.city}, {data?.pickup?.address?.state}, {data?.pickup?.address?.zip_code}</h4>
+      <h4 class="text-md">{data?.pickup?.contact?.first_name || ""} {data?.pickup?.contact?.last_name || ""}, Phone: {data?.pickup?.contact?.phone_number|| ""}</h4>
+      <h4 class="text-md">Email: {data?.pickup.contact.email_address}</h4>
+      <h3 class="mt-2">CONSIGNEE</h3>
+      <div class="flex gap-2 border-b-1px border-gray-500 w-300px"></div>
+      <h4 class="text-lg text-uppercase mb-1">{data?.delivery.company_name}</h4>
+      <h4 class="text-md">{data?.delivery.address.address_line_1}</h4>
+      <h4 class="text-md">{data?.delivery.address.city}, {data?.delivery.address.state}, {data?.delivery.address.zip_code}</h4>
+      <h4 class="text-md">{data?.delivery?.contact?.first_name || ""} {data?.delivery?.contact?.last_name || ""}, Phone: {data?.delivery?.contact?.phone_number|| ""}</h4>
+      <h4 class="text-md">Email: {data?.delivery?.contact.email_address}</h4>
+    </div>
+    <div class="flex flex-col w-1-2 gap-1">
+      <div class="flex w-full h-60px">
+        <div class="flex w-1-2 h-full justify-center items-center">
+          <img src="/images/logo/roadrunner.png" height="90%" width="70%" alt="carrier logo">
+        </div>
+        <div class="flex w-1-2 justify-end items-center h-75px">
+          <img src="{data?.svg_url}" alt="po number" style="height: 100%; width: 100%">
+        </div>
+      </div>
+      <div class="flex w-full mt-3">
+        <div class="flex flex-col w-full">
+          <div class="flex gap-2 border-b-1px border-gray-500">
+            <div class="flex flex-col w-55pc">
+              <h3>Carrier</h3>
+              <h4 class="text-md mt-1">{data?.DispatchResponse.CarrierName}</h4>
+            </div>
+            <div class="flex flex-col w-45pc">
+              <h3>Pickup Date</h3>
+              <h4 class="text-md mt-1">{data?.shipment_details.display_date}</h4>
+            </div>
+          </div>
+          <div class="flex gap-2 border-b-1px border-gray-500">
+            <div class="flex flex-col w-55pc">
+              <h3>Carrier PRO#</h3>
+              <h4 class="text-md mt-1">{data?.DispatchResponse.CarrierPRONumber}</h4>
+            </div>
+            <div class="flex flex-col w-45pc">
+              <h3>Bill of lading NO.</h3>
+              <h4 class="text-md mt-1">{data?.DispatchResponse.CustomerBOLNumber}</h4>
+            </div>
+          </div>
+          <div class="flex gap-2 border-b-1px border-gray-500">
+            <div class="flex flex-col w-55pc">
+              <h3>PO#</h3>
+              <h4 class="text-md mt-1">{data?.booking_info.carrier_reference}</h4>
+            </div>
+            <div class="flex flex-col w-45pc">
+              <h3>Reference#</h3>
+              <h4 class="text-md mt-1">{data?.booking_info.carrier_reference}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3 class="border-b-1px font-bold border-gray-500 w-full mt-1 text-sm">Fright Charge Terms</h3>
+      <div class="flex gap-2 items-center">
+        <label for="prepaid" class="label text-sm">
+          <input type="checkbox" class="h-4 w-4 rounded-full p-1">
+          Prepaid
+        </label>
+        <label for="prepaid" class="label text-sm">
+          <input type="checkbox" checked="{true}" class="h-4 w-4 rounded-full checkbox">
+          Third Party
+        </label>
+        <label for="prepaid" class="label text-sm">
+          <input type="checkbox" class="h-4 w-4 rounded-full ">
+          Inbound Collect
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col border-t-1px border-gray-500 mt-1"></div>
+  <div class="flex justify-between mt-1 h-40px mb-2">
+    <div class="flex flex-col w-1-2">
+      <h3 class="text-sm">PICKUP REMARKS</h3>
+    </div>
+    <div class="flex flex-col w-1-2 border-l-1px border-gray-500">
+      <h3 class="text-sm self-end">DELIVERY REMARKS</h3>
+    </div>
+    <div class="flex flex-col border-t-1px border-gray-500 mt-1"></div>
+  </div>
+  <div class="flex flex-col min-h-40px mb-3">
+    <h3 class="text-sm">SPECIAL INSTRUCTIONS</h3>
+  </div>
+  <div class="mb-2">
+    <table class="bol-table" cellpadding="0" cellspacing="0" role="presentation">
+      <tr class="border-collapse">
+        <th colspan="2" style="vertical-align: middle; text-align: center; width: 10%">Handeling Unit</th>
+        <th colspan="2" style="vertical-align: middle; text-align: center; width: 10%">Package</th>
+        <th rowspan="2" style="vertical-align: middle; text-align: center; width: 5%">HM</th>
+        <th rowspan="2" style="horizontal-align: middle; text-align: center; width: 40%">Commodities Description</th>
+        <th rowspan="2" style="vertical-align: middle; text-align: center; width: 10%">Weight</th>
+        <th rowspan="2" style="vertical-align: middle; text-align: center; width: 5%">Freight Class</th>
+        <th rowspan="2" style="vertical-align: middle; text-align: center; width: 5%">NMFC#</th>
+        <th colspan="3" style="vertical-align: middle; text-align: center; width: 10%">DIMENSION</th>
+        <th rowspan="2" style="vertical-align: middle; text-align: center; width: 5%">Stackable</th>
+      </tr>
+      <tr>
+        <th scope="col">Type</th>
+        <th scope="col">QTY</th>
+        <th scope="col">Type</th>
+        <th scope="col">QTY</th>
+        <th scope="col">L</th>
+        <th scope="col">W</th>
+        <th scope="col">H</th>
+      </tr>
+      {#each data?.commodities as commodity}
+                    <tr>
+                        <td height="35">Pallets</td>
+                        <td>{commodity.quantity}</td>
+                        <td></td>
+                        <td>{commodity.quantity}</td>
+                        <td></td>
+                        <td>{commodity.shipment_description}</td>
+                        <td>{commodity.weight}</td>
+                        <td>{commodity.freight_class}</td>
+                        <td></td>
+                        <td>{commodity.length}</td>
+                        <td>{commodity.width}</td>
+                        <td>{commodity.height}</td>
+                        <td>{commodity.stackable == undefined ? "NO" : "YES"}</td>
+                    </tr>
+                {/each}
+                <tr>
+                    <td class="total" colspan="2" height="35">TOTAL H/U {data?.shipment_details.total_items}</td>
+                    <td class="total" colspan="2">TOTAL  PKG {data?.shipment_details.total_items}</td>
+                    <td class="total" colspan="2">TOTAL  Weight {data?.shipment_details.total_weight}</td>
+                    <td class="total" colspan="2">TOTAL  Density N/A</td>
+                    <td class="total" colspan="5">Cube N/A</td>
+                </tr>
+            </table>
+        </div>
+        <div class="mb-1">
+            <h3 class="text-sm">* Weights includes total number of handeling units stated. Do not multiple weight by number of handeling units</h3>
+        </div>
+        <div class="my-1 text-lg font-bold">
+            <h2>This shipment has preasigned PRO# and barcode  do not apply pro sticker</h2>
+        </div>
+        <div class="flex flex-col border-t-1px border-gray-500 mt-2"></div>
+        <div class="flex mt-3 gap-2 justify-between h-220px mb-3 aggrement">
+            <div class="flex flex-col mt--16px border-r-1px border-gray-500 w-32pc justify-between">
+                <h3 class="mt-2 text-md">Shipper Signature / Date</h3>
+                <div class="mt-2 flex flex-col notice">
+                    <p class="text-xs">
+                        This is to certify that the above-named materials are properly classified, described, packaged, marked and labeled, and are in proper condition for transportation according to the applicable regulations of the Department of Transportation
+                    </p>
+                </div>
+                <div class="flex flex-col">
+                    <p class="mt-3 text-xs flex">Signature: <span class="mt-3 ml-1 block border-t-1px border-gray-500 w-150px"></span></p>
+                    <p class="mt-4 text-xs flex">Date: <span class="mt-3 ml-1 block border-t-1px border-gray-500 w-150px"></span></p>
+                </div>
+            </div>
+            <div class="flex flex-col w-36pc">
+                <div class="flex mt--16px border-gray-500 w-full justify-around">
+                    <div class="flex flex-col w-1-2 ml-2">
+                        <h3 class="mt-1 text-sm font-semibold">Trailer Loaded:</h3>
+                        <div class="flex flex-col">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="checkbox" id="trailer_loaded_by_driver">
+                                <label class="label flex items-center text-sm ml-1" for="trailer_loaded_by_driver">By Driver
+                                </label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" class="checkbox" id="trailer_loaded_by_shipper">
+                                <label class="label ml-1 text-sm" for="trailer_loaded_by_driver">By Shipper
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="hu_counted" class="label text-sm">Pieces Counted
+                            </label>
+                            <textarea type="text" id="hu_counted" class="border-1px border-solid border-black bg-white w-100px h-35px">
+                        </textarea></div>
+                    </div>
+                    <div class="flex flex-col w-1-2">
+                        <h3 class="mt-1 text-sm font-semibold">Freight Counted:</h3>
+                        <div class="flex flex-col">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="checkbox" id="freight_counted_by_driver">
+                                <label class="label flex items-center text-sm ml-1" for="">By Driver
+                                </label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" class="checkbox" id="freight_counted_by_shipper">
+                                <label class="label ml-1 text-sm" for="freight_counted_by_shipper">By Shipper
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="hu_counted" class="label text-xs">HU Counted</label>
+                            <textarea type="text" id="hu_counted" class="border-1px border-solid border-black bg-white w-100px h-35px">
+                        </textarea></div>
+                    </div>
+                </div>
+                <div class="flex flex-col w-full ml-1">
+                    <label for="said_to_contain" class="label text-sm">Said to Contain</label>
+                    <textarea type="text" id="said_to_contain" class="border-1px border-solid border-black bg-white w-90pc h-35px">
+                </textarea></div>
+            </div>
+            <div class="flex flex-col mt--16px border-l-1px border-gray-500 w-32pc justify-between pl-2">
+                <h3 class="mt-2 text-md">Carrier Signature / Date</h3>
+                <div class="mt-2 flex flex-col notice">
+                    <p class="text-xs">
+                        This is to certify that the above-named materials are properly classified, described, packaged, marked and labeled, and are in proper condition for transportation according to the applicable regulations of the Department of Transportation
+                    </p>
+                </div>
+                <div class="flex flex-col">
+                    <p class="mt-3 text-xs flex">Signature: <span class="mt-3 ml-1 block border-t-1px border-gray-500 w-150px"></span></p>
+                    <p class="mt-4 text-xs flex">Date: <span class="mt-3 ml-1 block border-t-1px border-gray-500 w-150px"></span></p>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col border-t-1px border-gray-500 mt-4 max-w-100pc"></div>
+        <h3 class="mt-3 note text-xs">* NOTE Liability Limitation for loss or damage in this shipment may be applicable. See 49 U.S.C. 14706(c)(1)(A) and (B)</h3>
+</div>

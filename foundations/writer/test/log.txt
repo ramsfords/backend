@@ -1,0 +1,4 @@
+{"level":"info","ts":"2022-03-30T10:09:17.610-0700","caller":"test/test.go:30","msg":"ehllos","service":"service"}
+{"level":"info","ts":"2022-03-30T10:09:18.075-0700","caller":"test/test.go:31","msg":"debug message:new erors","service":"service"}
+{"level":"error","ts":"2022-03-30T10:10:44.101-0700","caller":"test/test.go:30","msg":"ehllos","service":"service"}
+{"level":"error","ts":"2022-03-30T10:10:44.325-0700","caller":"test/test.go:31","msg":"debug message:new erors","service":"service"}

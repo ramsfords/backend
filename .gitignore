@@ -1,0 +1,5 @@
+vendor 
+.env 
+configs/*.yaml
+configs/*.yml 
+configs/*.json

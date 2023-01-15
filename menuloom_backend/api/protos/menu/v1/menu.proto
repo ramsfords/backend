@@ -1,0 +1,20 @@
+syntax = "proto3";
+option go_package="./;menu";
+package menu;
+
+
+service menuService {
+    rpc createMenu (createMenuData) returns (menuResponse) {
+    }
+}
+
+message createMenuData {
+   // @gotags: dynamodbav:"cousineType"
+    string cousineType = 1;
+}
+message menuResponse {
+   // @gotags: dynamodbav:"message"
+    string message = 1;
+     // @gotags: dynamodbav:"success"
+    bool success = 2;
+}

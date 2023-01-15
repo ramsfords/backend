@@ -1,0 +1,66 @@
+syntax = "proto3";
+package user;
+option go_package="./;user";
+
+
+
+service UserService {
+    rpc SignUp (SignUpData) returns (userResponse) {
+    
+    }
+}
+
+message SignUpData {
+    string username = 1;
+    string password = 2;
+    string confirmPassword = 3;
+    string email = 4;
+    string name = 5;
+    string origin = 6;
+    repeated Role role = 7;
+    bool emailVisibility = 8;
+    string restaurantIds = 9;
+    string type = 10;
+}
+message userResponse {
+    string message = 1;
+    string id = 2;
+}
+message Login {
+    string email = 1;
+    string password = 2;
+}
+enum Role {
+  ADMIN = 0;
+  USER = 1;
+  STAFF = 2;
+  CASHIER = 3;
+  MANAGER = 4;
+  SYSTEM_ADMIN = 5;
+  SYSTEM_STAFF = 6;
+  SYSTEM_MANAGER = 7;
+}
+message  ResetPassword{
+  // @gotags: dynamodbav:"token"
+  string token  = 1;
+  // @gotags: dynamodbav:"password"
+  string password = 2;
+  // @gotags: dynamodbav:"confirmPassword"
+  string confirmPassword = 3;
+}
+message NonAuthUser{
+  // @gotags: dynamodbav:"email"
+  string email = 1;
+  // @gotags: dynamodbav:"name"
+  string name = 2;
+  // @gotags: dynamodbav:"origin"
+  string origin = 3;
+  // @gotags: dynamodbav:"role"
+  repeated Role role = 4;
+  // @gotags: dynamodbav:"tokenKey"
+  string tokenKey = 5;
+  // @gotags: dynamodbav:"restaurantIds"
+  string restaurantIds = 6;
+  // @gotags: dynamodbav:"type"
+  string type = 7;
+}

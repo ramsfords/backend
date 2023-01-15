@@ -1,0 +1,57 @@
+{
+    "billingAddress": {
+        "addressId": 1039341
+    },
+    "originShippingDetails": {
+        "pickupDate": "06/16/2022",
+        "address": {
+            "postalCode": "90013",
+            "commercialType": {
+                "accessorialId": 72,
+                "name": "Business"
+            },
+            "addressAccessorials": []
+        }
+    },
+    "destinationShippingDetails": {
+        "address": {
+            "postalCode": "60126",
+            "commercialType": {
+                "accessorialId": 72,
+                "name": "Business"
+            },
+            "addressAccessorials": []
+        }
+    },
+    "shipmentItems": [
+        {
+            "handlingUnitType": "PLT",
+            "handlingUnitNumber": 1,
+            "dimensions": {
+                "length": "48",
+                "width": "40",
+                "height": "75",
+                "currentLength": "48",
+                "currentWidth": "40",
+                "currentHeight": "75"
+            },
+            "stackable": false,
+            "commodities": [
+                {
+                    "description": "novelties",
+                    "commodityClass": "70",
+                    "pieces": 1,
+                    "totalWeight": "800",
+                    "currentTotalWeight": "800",
+                    "isHazardous": false
+                }
+            ]
+        }
+    ],
+    "freightCharge": 3,
+    "serviceType": 1,
+    "quoteErrors": [],
+    "customerCarrierId": 1070,
+    "totalWeight": "800.00",
+    "quoteDate": "06/14/2022"
+}

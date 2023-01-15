@@ -1,0 +1,26 @@
+version: v1
+deps:
+   - buf.build/googleapis/googleapis
+   - buf.build/envoyproxy/protoc-gen-validate
+   - buf.build/grpc-ecosystem/grpc-gateway
+build: 
+  excludes:
+    - menu/v1/validate
+    - menu/v1/google
+    - menu/v1/protoc-gen-openapiv2
+lint:
+  use:
+    - DEFAULT
+  except:
+    - PACKAGE_VERSION_SUFFIX
+    - PACKAGE_DIRECTORY_MATCH
+    - SERVICE_SUFFIX
+    - RPC_REQUEST_STANDARD_NAME
+    - RPC_RESPONSE_STANDARD_NAME  
+breaking:
+  use:
+    - FILE
+  ignore:
+    - buf.build/googleapis/googleapis
+    - buf.build/envoyproxy/protoc-gen-validate
+    - buf.build/grpc-ecosystem/grpc-gateway

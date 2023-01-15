@@ -1,0 +1,285 @@
+{
+  "capacityProviderAccountGroup": {
+    "code": "RamsFordinc_PROD_91762_1039341_202202111959",
+    "accounts": [{ "code": "CLNI" }]
+  },
+  "capacityProviderQuoteNumber": null,
+  "carrierCode": "CLNI",
+  "carrierCodeAdditional": "CLNI",
+  "shipperDetails": {
+    "companyName": "RamsFord inc",
+    "streetLine1": "1131 West 6th Street",
+    "streetLine2": null,
+    "city": "Ontario",
+    "state": "California",
+    "stateCode": "CA",
+    "postalCode": "91762",
+    "country": "USA",
+    "countryCode": "US",
+    "primaryContactPerson": {
+      "addressContactId": 1082586,
+      "name": "Surendra Kandel",
+      "firstName": "Surendra",
+      "lastName": "Kandel",
+      "phone": "7135162836",
+      "ext": null,
+      "email": "kandelsuren@gmail.com",
+      "position": null,
+      "isPrimary": true
+    },
+    "dateTimeWindow": {
+      "startTime": "8:00:00 AM",
+      "endTime": "5:30:00 PM",
+      "date": "08/19/2022"
+    },
+    "isFromAddressBook": true,
+    "isCanada": false,
+    "accessorials": [],
+    "instructionNote": "pickup up after 9 am ",
+    "saveToAddressBook": false,
+    "lat": 34.0845839,
+    "long": -117.6719935,
+    "updateDefaultsAddress": {
+      "isCompanyNameSelected": false,
+      "isStreetLine1Selected": false,
+      "isStreetLine2Selected": false,
+      "isDeliveryFromTimeSelected": false,
+      "isDeliveryToTimeSelected": false,
+      "isLastNameSelected": false,
+      "isFirstNameSelected": false,
+      "isEmailSelected": false,
+      "isPhoneSelected": false,
+      "isExtSelected": false,
+      "isStartTimeSelected": false,
+      "isEndTimeSelected": false
+    },
+    "addressId": 1039341
+  },
+  "consigneeDetails": {
+    "companyName": "everloom llc",
+    "streetLine1": "5401 chimney rock",
+    "streetLine2": null,
+    "city": "Houston",
+    "state": "Texas",
+    "stateCode": "TX",
+    "postalCode": "77081",
+    "country": "USA",
+    "countryCode": "US",
+    "primaryContactPerson": {
+      "addressContactId": null,
+      "name": null,
+      "email": null,
+      "firstName": "surendra",
+      "isPrimary": null,
+      "lastName": "kandel",
+      "phone": "7135162836",
+      "position": null,
+      "ext": null
+    },
+    "dateTimeWindow": {
+      "startTime": null,
+      "endTime": null,
+      "date": "08/30/2022"
+    },
+    "isFromAddressBook": false,
+    "isCanada": false,
+    "accessorials": [],
+    "instructionNote": "deliver after 4pm ",
+    "saveToAddressBook": true,
+    "lat": 29.713931,
+    "long": -95.479494,
+    "updateDefaultsAddress": {
+      "isCompanyNameSelected": false,
+      "isStreetLine1Selected": false,
+      "isStreetLine2Selected": false,
+      "isDeliveryFromTimeSelected": false,
+      "isDeliveryToTimeSelected": false,
+      "isLastNameSelected": false,
+      "isFirstNameSelected": false,
+      "isEmailSelected": false,
+      "isPhoneSelected": false,
+      "isExtSelected": false,
+      "isStartTimeSelected": false,
+      "isEndTimeSelected": false
+    },
+    "addressId": 0
+  },
+  "billingAddress": {
+    "addressId": 1039341,
+    "pickUpInstructions": null,
+    "deliveryInstructions": null,
+    "city": "Ontario",
+    "companyName": "RamsFord inc",
+    "primaryContactPerson": {
+      "addressContactId": 1082586,
+      "name": "Surendra Kandel",
+      "email": "kandelsuren@gmail.com",
+      "firstName": "Surendra",
+      "isPrimary": true,
+      "lastName": "Kandel",
+      "phone": "7135162836",
+      "position": null,
+      "ext": null
+    },
+    "addressContacts": [
+      {
+        "addressContactId": 1082586,
+        "name": "Surendra Kandel",
+        "firstName": "Surendra",
+        "lastName": "Kandel",
+        "phone": "7135162836",
+        "ext": null,
+        "email": "kandelsuren@gmail.com",
+        "position": null,
+        "isPrimary": true
+      }
+    ],
+    "country": "USA",
+    "countryCode": "US",
+    "deliveryFromTime": "8:00:00 AM",
+    "deliveryToTime": "5:30:00 PM",
+    "isCanada": false,
+    "postalCode": "91762",
+    "shippingFromTime": "8:00:00 AM",
+    "shippingToTime": "5:30:00 PM",
+    "state": "California",
+    "stateCode": "CA",
+    "streetLine1": "1131 West 6th Street",
+    "streetLine2": null,
+    "location": {
+      "addressId": 1039341,
+      "name": "RamsFord inc",
+      "isDefault": false
+    },
+    "commercialType": null,
+    "addressAccessorials": [],
+    "lat": 34.0845839,
+    "long": -117.6719935,
+    "bulkAddressId": null,
+    "bulkEditGuid": null,
+    "hasSaiaIntegration": false
+  },
+  "referenceNumberInfo": {
+    "customerBOL": "mybolnumber123",
+    "poNumber": "mypickupnumer123",
+    "referenceNumber": "myreference123",
+    "gS1CompanyPrefix": null
+  },
+  "emergencyContactPerson": {
+    "name": "Surendra Kandel",
+    "phone": "7135162836"
+  },
+  "handlingUnits": [
+    {
+      "handlingUnitType": "PLT",
+      "handlingUnitNumber": 1,
+      "dimensions": {
+        "length": "48",
+        "width": "40",
+        "height": "75",
+        "currentLength": 48,
+        "currentWidth": 40,
+        "currentHeight": 75
+      },
+      "stackable": false,
+      "commodities": [
+        {
+          "description": "novelties",
+          "nmfc": null,
+          "nmfcSub": null,
+          "commodityClass": "70",
+          "pieces": 1,
+          "totalWeight": "800",
+          "currentTotalWeight": 800,
+          "isHazardous": false,
+          "hazmatDetailInfo": {
+            "unCode": "UN",
+            "unNumber": "",
+            "properShippingName": "",
+            "hazardClass": null,
+            "packingGroup": "",
+            "packingType": "",
+            "classCode": null,
+            "packingGroupCode": null
+          },
+          "customerOrderNumber": null,
+          "additionalInfo": null
+        }
+      ]
+    }
+  ],
+  "handlingUnitVolume": 83.33333333333334,
+  "handlingUnitDensity": 9.6,
+  "handlingUnitTotal": 1,
+  "totalCost": 303.75,
+  "estimateDeliveryDate": "08/30/2022",
+  "carrierName": "Clear Lane Freight Systems",
+  "serviceName": null,
+  "handlingUnitTotalPackages": 1,
+  "totalShipmentWeight": 800,
+  "iconLogo": "https://content.mycarriertms.com/carriers/a5de6698-e946-41dd-90b5-049332c4b78d.png",
+  "carrierDeliveryDate": "Invalid date",
+  "isGuaranty": false,
+  "freightCharge": 1,
+  "bolText": null,
+  "quoteId": 8080468,
+  "originLocationId": 1039341,
+  "destinationLocationId": 0,
+  "billingAddressId": 1039341,
+  "bookedDate": "08/11/2022",
+  "carrierId": 1079,
+  "laneType": 2,
+  "transitTime": 7,
+  "shipmentId": null,
+  "serviceLevelCode": "STD",
+  "specialInstruction": null,
+  "shipmentPriceDetails": [
+    {
+      "amount": 32,
+      "rate": null,
+      "itemFreightClass": null,
+      "code": "CARBFEE",
+      "description": "CALIFORNIA CAPACITY SURCHARGE"
+    },
+    {
+      "amount": 47,
+      "rate": null,
+      "itemFreightClass": null,
+      "code": "LHS",
+      "description": "Line Haul Surcharge"
+    },
+    {
+      "amount": 69.75,
+      "rate": null,
+      "itemFreightClass": null,
+      "code": "FSC",
+      "description": "FUEL SURCHARGE"
+    },
+    {
+      "amount": 155,
+      "rate": null,
+      "itemFreightClass": null,
+      "code": "GFC",
+      "description": "Gross Freight Charge"
+    }
+  ],
+  "savedQuoteId": "ed2f0315-0f79-402b-9ce5-3294fc9e308b",
+  "serviceType": 1,
+  "linearFeet": null,
+  "unAcceptedAccessorials": null,
+  "dispatchTypeId": null,
+  "equipmentTypeId": null,
+  "equipmentSize": null,
+  "targetRate": null,
+  "shipmentNote": null,
+  "isHotLoad": false,
+  "opportunityId": 8080329,
+  "optionId": null,
+  "truckloadAccessorials": null,
+  "shipmentTruckloadId": null,
+  "cargoValue": null,
+  "isFromSavedQuote": false,
+  "isVicsBolShipment": false,
+  "originCode": null,
+  "referenceId": null
+}

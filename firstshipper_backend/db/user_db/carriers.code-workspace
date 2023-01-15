@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../../../../projects/carriers"
+		},
+		{
+			"path": "../../.."
+		},
+		{
+			"path": "../../../../protos"
+		}
+	],
+	"settings": {}
+}

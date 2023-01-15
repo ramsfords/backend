@@ -1,0 +1,48 @@
+package models
+
+type ShipmentByIdResponse struct {
+	CapacityProviderAccount    string                  `json:"capacityProviderAccount,omitempty" dynamodbav:"capacityProviderAccount"`
+	CarrierCode                string                  `json:"carrierCode,omitempty" dynamodbav:"carrierCode"`
+	CarrierName                string                  `json:"carrierName,omitempty" dynamodbav:"carrierName"`
+	CapacityQuoteNumber        string                  `json:"capacityQuoteNumber,omitempty" dynamodbav:"capacityQuoteNumber"`
+	CustomerBOLNumber          string                  `json:"customerBOLNumber,omitempty" dynamodbav:"customerBOLNumber"`
+	PoNumber                   string                  `json:"poNumber,omitempty" dynamodbav:"poNumber"`
+	ReferenceNumber            string                  `json:"referenceNumber,omitempty" dynamodbav:"referenceNumber"`
+	GS1CompanyPrefix           string                  `json:"gS1CompanyPrefix,omitempty" dynamodbav:"gS1CompanyPrefix"`
+	EmergencyPersonName        string                  `json:"emergencyPersonName,omitempty" dynamodbav:"emergencyPersonName"`
+	CheckDigit                 string                  `json:"checkDigit,omitempty" dynamodbav:"checkDigit"`
+	EmergencyPersonPhone       string                  `json:"emergencyPersonPhone,omitempty" dynamodbav:"emergencyPersonPhone"`
+	EstimatedDeliveryDate      string                  `json:"estimatedDeliveryDate,omitempty" dynamodbav:"estimatedDeliveryDate"`
+	HandlingUnitVolume         float64                 `json:"handlingUnitVolume,omitempty" dynamodbav:"handlingUnitVolume"`
+	HandlingUnitDensity        float64                 `json:"handlingUnitDensity,omitempty" dynamodbav:"handlingUnitDensity"`
+	HandlingUnitTotal          float64                 `json:"handlingUnitTotal,omitempty" dynamodbav:"handlingUnitTotal"`
+	HandlingUnitTotalPackages  float64                 `json:"handlingUnitTotalPackages,omitempty" dynamodbav:"handlingUnitTotalPackages"`
+	TotalShipmentWeight        float64                 `json:"totalShipmentWeight,omitempty" dynamodbav:"totalShipmentWeight"`
+	TotalCost                  float64                 `json:"totalCost,omitempty" dynamodbav:"totalCost"`
+	EmergeTruckloadID          string                  `json:"emergeTruckloadId,omitempty" dynamodbav:"emergeTruckloadId"`
+	TenderID                   string                  `json:"tenderId,omitempty" dynamodbav:"tenderId"`
+	BrokerOptionID             string                  `json:"brokerOptionId,omitempty" dynamodbav:"brokerOptionId"`
+	EquipmentTypeName          string                  `json:"equipmentTypeName,omitempty" dynamodbav:"equipmentTypeName"`
+	EquipmentSize              interface{}             `json:"equipmentSize,omitempty" dynamodbav:"equipmentSize"`
+	TargetRate                 interface{}             `json:"targetRate,omitempty" dynamodbav:"targetRate"`
+	IsHotLoad                  bool                    `json:"isHotLoad,omitempty" dynamodbav:"isHotLoad"`
+	ShipmentNote               string                  `json:"shipmentNote,omitempty" dynamodbav:"shipmentNote"`
+	CarrierPRONumber           string                  `json:"carrierPRONumber,omitempty" dynamodbav:"carrierPRONumber"`
+	ProNumberForBarCode        string                  `json:"proNumberForBarCode,omitempty" dynamodbav:"proNumberForBarCode"`
+	IconLogo                   string                  `json:"iconLogo,omitempty" dynamodbav:"iconLogo"`
+	TruckloadIconLogo          string                  `json:"truckloadIconLogo,omitempty" dynamodbav:"truckloadIconLogo"`
+	FreightCharge              int                     `json:"freightCharge,omitempty" dynamodbav:"freightCharge"`
+	BolText                    string                  `json:"bolText,omitempty" dynamodbav:"bolText"`
+	SecurityKey                string                  `json:"securityKey,omitempty" dynamodbav:"securityKey"`
+	SpecialInstruction         string                  `json:"specialInstruction,omitempty" dynamodbav:"specialInstruction"`
+	Logo                       string                  `json:"logo,omitempty" dynamodbav:"logo"`
+	ServiceType                int                     `json:"serviceType,omitempty" dynamodbav:"serviceType"`
+	IsMetricMeasurementEnabled bool                    `json:"isMetricMeasurementEnabled,omitempty" dynamodbav:"isMetricMeasurementEnabled"`
+	CargoValue                 interface{}             `json:"cargoValue,omitempty" dynamodbav:"cargoValue"`
+	CarrierID                  int                     `json:"carrierId,omitempty" dynamodbav:"carrierId"`
+	IsVicsBolShipment          bool                    `json:"isVicsBolShipment,omitempty" dynamodbav:"isVicsBolShipment"`
+	CargoInsuranceInfo         CargoInsuranceQuoteInfo `json:"cargoInsuranceInfo,omitempty" dynamodbav:"cargoInsuranceInfo"`
+	TruckloadAccessorials      []AddressAccessorial    `json:"truckloadAccessorials,omitempty" dynamodbav:"truckloadAccessorials"`
+	ShipmentDetails            []ShipmentItem          `json:"shipmentDetails,omitempty" dynamodbav:"shipmentDetails"`
+	ShipmentHandlingUnits      []ShipmentItem          `json:"shipmentHandlingUnits,omitempty" dynamodbav:"shipmentHandlingUnits"`
+}

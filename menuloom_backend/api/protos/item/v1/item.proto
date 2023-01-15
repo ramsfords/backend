@@ -1,0 +1,130 @@
+syntax = "proto3";
+package item;
+option go_package="./;item";
+
+
+service itemService {
+    rpc createItem (item) returns (itemResponse) {
+    }
+    rpc createItems (items) returns (itemResponse) {
+    }
+    rpc createCategory (category) returns (itemResponse) {
+
+    }
+    rpc createCategories (categories) returns (itemResponse) {
+
+    }
+}
+enum servingTime{
+    ALLDAY = 0;
+    MORNING = 1;
+    LUNCH = 2;
+    DINNER = 3;
+    BREAKFAST = 4;
+    BRUNCH = 5;
+
+}
+message image{
+     // @gotags: dynamodbav:"assetId"
+   string assetId  = 1;
+     // @gotags: dynamodbav:"publicId"
+   string publicId  = 2;
+     // @gotags: dynamodbav:"url"
+   string url  = 3;
+     // @gotags: dynamodbav:"secureUrl"
+   string secureUrl  = 4;
+}
+message categories {
+    // @gotags: dynamodbav:"categories"
+    repeated category categories = 1;
+}
+message category{
+    // @gotags: dynamodbav:"id"
+    string id = 1;
+    // @gotags: dynamodbav:"name"
+    string name = 2;
+    // @gotags: dynamodbav:"localName"
+    string localName = 3;
+    // @gotags: dynamodbav:"description"
+    string description = 4;
+    // @gotags: dynamodbav:"images"
+    repeated image images = 5;
+    // @gotags: dynamodbav:"servingTime"
+    servingTime servingTime = 6;
+    // @gotags: dynamodbav:"restaurantId"
+    string restaurantId = 7;
+    // @gotags: dynamodbav:"type"
+    string type = 8;
+    // @gotags: dynamodbav:"pk"
+    string pk = 9;
+    // @gotags: dynamodbav:"sk"
+    string sk = 10;
+    // @gotags: dynamodbav:"rank"
+    int32 rank = 11;
+    // @gotags: dynamodbav:"items"
+    repeated item items = 12;
+
+}
+
+
+message items {
+    // @gotags: dynamodbav:"items"
+    repeated item items = 1;
+}
+message item{
+    // @gotags: dynamodbav:"id"
+    string id = 1;
+    // @gotags: dynamodbav:"name"
+    string name = 2;
+    // @gotags: dynamodbav:"localName"
+    string localName = 3;
+    // @gotags: dynamodbav:"description"
+    string description = 4;
+    // @gotags: dynamodbav:"price"
+    string price = 5;
+    // @gotags: dynamodbav:"images"
+    repeated image images = 6;
+    // @gotags: dynamodbav:"spiceLevel"
+    string spiceLevel = 7;
+    // @gotags: dynamodbav:"isAvailable"
+    bool isAvailable = 11;
+    // @gotags: dynamodbav:"cookingTime"
+    string cookingTime = 12;
+    // @gotags: dynamodbav:"reviews"
+    repeated string reviews = 13;
+    // @gotags: dynamodbav:"restaurantId"
+    string restaurantId = 14;
+    // @gotags: dynamodbav:"type"
+    string type = 15;
+    // @gotags: dynamodbav:"pk"
+    string pk = 16;
+    // @gotags: dynamodbav:"sk"
+    string sk = 17;
+    // @gotags: dynamodbav:"categories"
+    // it holds names of categories it belongs to
+    repeated string categories = 18;
+     // @gotags: dynamodbav:"tags"
+    repeated string tags = 19;
+     // @gotags: dynamodbav:"isVeg"
+    bool isVeg = 20;
+     // @gotags: dynamodbav:"isVegan"
+    bool isVegan = 21;
+     // @gotags: dynamodbav:"isGlutenFree"
+    bool isGlutenFree = 22;
+     // @gotags: dynamodbav:"isDairyFree"
+    bool isDairyFree = 23;
+     // @gotags: dynamodbav:"isNutFree"
+    bool isNutFree = 24;
+     // @gotags: dynamodbav:"isEggFree"
+    bool isEggFree = 25;
+     // @gotags: dynamodbav:"isSoyFree"
+    bool isSoyFree = 26;
+
+    
+}
+message itemResponse{
+    // @gotags: dynamodbav:"success"
+    bool success = 1;
+    // @gotags: dynamodbav:"message"
+    string message = 2;
+}

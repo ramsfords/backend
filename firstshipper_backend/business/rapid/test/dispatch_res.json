@@ -1,0 +1,28 @@
+{
+    "shipmentId": 3388095,
+    "securityKey": "d1f05f2e-dda6-4faf-a7a6-b83a9d482230",
+    "pickupNumber": "52802687",
+    "carrierName": "Roadrunner Freight",
+    "carrierPhone": null,
+    "carrierPRONumber": "58582104",
+    "handlingUnitTotal": 1,
+    "isShipmentEdit": false,
+    "isShipmentManual": false,
+    "serviceType": 1,
+    "isTrackingEmailSend": true,
+    "isTrackingAPIEnabled": true,
+    "customerBOLNumber": "CUSTOMERBOL",
+    "shipperEmail": "kandelsuren@gmail.com",
+    "consigneeEmail": "rakeshneupane2045@gmail.com",
+    "result": {
+        "capacityProviderBolUrl": null,
+        "shipmentIdentifier": null,
+        "pickupNote": null,
+        "pickupDateTime": null,
+        "errors": null,
+        "infoMessages": [
+            "APPROVED",
+            "PU:TOTAL 1 H/U : PICKUP INSTRUCTION;48x40x75in;DEL:DELIVERY INSTRUCTIONS"
+        ]
+    }
+}
