@@ -10,7 +10,7 @@ type restaurantApi struct {
 	services services.Services
 }
 
-func New(echo *echo.Echo, services services.Services) {
+func New(echo *echo.Group, services services.Services) {
 	grp := echo.Group("/restaurant")
 	grp.Use(apis.RequireAdminOrRecordAuth())
 	menuHandler := restaurantApi{services: services}

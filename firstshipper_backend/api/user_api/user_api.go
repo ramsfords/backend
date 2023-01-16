@@ -27,7 +27,7 @@ func (user UserApi) EchoLogout(ctx echo.Context) error {
 	return nil
 }
 
-func New(echo *echo.Echo, services *services.Services) {
+func New(services *services.Services, echo *echo.Group) {
 	userApi := UserApi{
 		services: services,
 	}

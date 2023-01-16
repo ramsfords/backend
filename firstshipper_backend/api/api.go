@@ -12,9 +12,10 @@ import (
 )
 
 func SetUpAPi(echo *echo.Echo, services *services.Services, rapid *rapid.Rapid) {
-	bol_api.New(services, echo)
-	location_api.New(services, echo)
-	quote_api.New(services, echo, rapid)
-	tracking_api.New(services, echo, rapid)
-	user_api.New(echo, services)
+	grp := echo.Group("/firstshipper")
+	bol_api.New(services, grp)
+	location_api.New(services, grp)
+	quote_api.New(services, grp, rapid)
+	tracking_api.New(services, grp, rapid)
+	user_api.New(services, grp)
 }

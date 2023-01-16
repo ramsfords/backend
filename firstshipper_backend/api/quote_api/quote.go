@@ -21,7 +21,7 @@ type Quote struct {
 	rapid    *rapid.Rapid
 }
 
-func New(services *services.Services, echo *echo.Echo, rapid *rapid.Rapid) {
+func New(services *services.Services, echo *echo.Group, rapid *rapid.Rapid) {
 	qt := Quote{
 		services: services,
 		rapid:    rapid,

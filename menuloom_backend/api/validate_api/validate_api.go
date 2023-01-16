@@ -14,7 +14,7 @@ type Validate struct {
 	services services.Services
 }
 
-func New(echo *echo.Echo, services services.Services) {
+func New(echo *echo.Group, services services.Services) {
 	validate := &Validate{services}
 	api := echo.Group("/validate")
 	api.GET("/validate/:id", validate.getValid)

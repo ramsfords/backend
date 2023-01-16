@@ -10,8 +10,9 @@ import (
 )
 
 func SetUpAPi(echo *echo.Echo, services services.Services) {
-	menu_api.New(echo, services)
-	restaurant_api.New(echo, services)
-	validate_api.New(echo, services)
-	user_api.New(echo, services)
+	grp := echo.Group("/menuloom")
+	menu_api.New(grp, services)
+	restaurant_api.New(grp, services)
+	validate_api.New(grp, services)
+	user_api.New(grp, services)
 }

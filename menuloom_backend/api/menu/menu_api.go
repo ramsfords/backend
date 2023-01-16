@@ -33,7 +33,7 @@ type menuApi struct {
 	services services.Services
 }
 
-func New(echo *echo.Echo, services services.Services) {
+func New(echo *echo.Group, services services.Services) {
 	grp := echo.Group("/menu")
 	var menuHandler Menu = menuApi{services: services}
 	grp.POST("/item", menuHandler.createItem)

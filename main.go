@@ -10,7 +10,6 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/jsvm"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
@@ -63,7 +62,6 @@ func main() {
 		menuloom_backend.MenuloomRunner(conf, s3, logger, dynamodDb, e.Router, app)
 		firstshipper_backend.FirstShipperRunner(conf, s3, logger, dynamodDb, e.Router, app)
 		// serves static files from the provided public dir (if exists)
-		e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS(publicDirFlag), true))
 		e.Router.AddRoute(echo.Route{
 			Method: http.MethodGet,
 			Path:   "/api/ping",
@@ -77,7 +75,6 @@ func main() {
 		})
 
 		rountes := e.Router.Router().Routes()
-
 		fmt.Println("routes are: ", rountes, "length is", len(rountes))
 		return nil
 

@@ -11,7 +11,7 @@ type Tracking struct {
 	radpid   *rapid.Rapid
 }
 
-func New(services *services.Services, echo *echo.Echo, rapid *rapid.Rapid) {
+func New(services *services.Services, echo *echo.Group, rapid *rapid.Rapid) {
 	tracking := Tracking{
 		services: services,
 		radpid:   rapid,

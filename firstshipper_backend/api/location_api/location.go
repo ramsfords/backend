@@ -9,7 +9,7 @@ type Location struct {
 	services *services.Services
 }
 
-func New(services *services.Services, echo *echo.Echo) {
+func New(services *services.Services, echo *echo.Group) {
 	loc := Location{
 		services: services,
 	}
