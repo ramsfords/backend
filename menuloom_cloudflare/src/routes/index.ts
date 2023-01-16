@@ -8,7 +8,9 @@ index.get("*", async (c) => {
     if(auth_tokenss == null || auth_tokenss == undefined || auth_tokenss == ""){
         return c.text("authorization not found", 404)
     }
-    let newUrl = new URL(c.req.url)
+    let cleanUrl = c.req.url.replace("/firstshipper", "")
+    cleanUrl = c.req.url.replace("/menuloom", "")
+    let newUrl = new URL(cleanUrl)
     newUrl.host = "api.firstshipper.com"
     newUrl.hostname = "api.firstshipper.com"
     //@ts-ignore
