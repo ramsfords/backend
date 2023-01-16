@@ -14,7 +14,11 @@ import (
 func SetUpAPi(firstShipperGrp *echo.Echo, services *services.Services, rapid *rapid.Rapid) {
 	grp := firstShipperGrp.Group("/firstshipper")
 	grp.GET("/ping", func(ctx echo.Context) error {
-		return ctx.String(200, "Pong form FirstShipper")
+		return ctx.JSON(200, echo.Map{
+			"message": "pong",
+			"status":  "ok",
+			"code":    200,
+		})
 	})
 	bol_api.New(services, grp)
 	location_api.New(services, grp)

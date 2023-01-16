@@ -12,7 +12,11 @@ import (
 func SetUpAPi(menuLoomGrp *echo.Echo, services services.Services) {
 	grp := menuLoomGrp.Group("/menuloom")
 	grp.GET("/ping", func(ctx echo.Context) error {
-		return ctx.String(200, "Pong form Menuloom")
+		return ctx.JSON(200, echo.Map{
+			"message": "pong",
+			"status":  "ok",
+			"code":    200,
+		})
 	})
 	menu_api.New(grp, services)
 	restaurant_api.New(grp, services)
