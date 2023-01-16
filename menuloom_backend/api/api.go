@@ -9,8 +9,11 @@ import (
 	"github.com/ramsfords/backend/menuloom_backend/services"
 )
 
-func SetUpAPi(echo *echo.Echo, services services.Services) {
-	grp := echo.Group("/menuloom")
+func SetUpAPi(menuLoomGrp *echo.Echo, services services.Services) {
+	grp := menuLoomGrp.Group("/menuloom")
+	grp.GET("/ping", func(ctx echo.Context) error {
+		return ctx.String(200, "Pong form Menuloom")
+	})
 	menu_api.New(grp, services)
 	restaurant_api.New(grp, services)
 	validate_api.New(grp, services)

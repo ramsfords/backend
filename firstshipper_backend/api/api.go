@@ -11,8 +11,11 @@ import (
 	"github.com/ramsfords/backend/firstshipper_backend/services"
 )
 
-func SetUpAPi(echo *echo.Echo, services *services.Services, rapid *rapid.Rapid) {
-	grp := echo.Group("/firstshipper")
+func SetUpAPi(firstShipperGrp *echo.Echo, services *services.Services, rapid *rapid.Rapid) {
+	grp := firstShipperGrp.Group("/firstshipper")
+	grp.GET("/ping", func(ctx echo.Context) error {
+		return ctx.String(200, "Pong form FirstShipper")
+	})
 	bol_api.New(services, grp)
 	location_api.New(services, grp)
 	quote_api.New(services, grp, rapid)
