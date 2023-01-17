@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../menuloom"
+		},
+		{
+			"path": "../../projects/sharathi"
+		},
+		{
+			"path": "../firstshipper_cloudflare"
+		},
+		{
+			"path": "../menuloom_cloudflare"
+		},
+		{
+			"path": "../firstshipper"
+		}
+	],
+	"settings": {}
+}
