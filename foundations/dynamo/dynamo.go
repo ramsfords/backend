@@ -29,7 +29,7 @@ type DB struct {
 
 func New(conf *configs.Config) DB {
 	customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-		if service == dynamodb.ServiceID && region == "us-west-1" && conf.Env == "aws-deployment" {
+		if service == dynamodb.ServiceID && region == "us-west-1" && conf.Env == "prod" {
 			fmt.Println("hello")
 			return aws.Endpoint{
 				PartitionID:   "aws",
@@ -96,7 +96,7 @@ func NewProdDb(conf *configs.Config) DB {
 
 // func NewDynamoClient(env string, cred aws.CredentialsProvider) *dynamodb.Client {
 // 	customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-// 		if service == dynamodb.ServiceID && region == "us-west-1" && env == "aws-deployment" {
+// 		if service == dynamodb.ServiceID && region == "us-west-1" && env == "prod" {
 // 			fmt.Println("hello")
 // 			return aws.Endpoint{
 // 				PartitionID:   "aws",
