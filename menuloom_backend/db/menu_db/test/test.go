@@ -12,3 +12,8 @@ func getDB() (db dynamo.DB, conf configs.Config) {
 	dbClient := dynamo.New(confs)
 	return dbClient, *confs
 }
+func GetProdDb() dynamo.DB {
+	confs := configs.GetConfig()
+	dbClient := dynamo.NewProdDb(confs)
+	return dbClient
+}

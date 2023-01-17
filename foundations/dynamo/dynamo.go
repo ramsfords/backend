@@ -54,6 +54,24 @@ func New(conf *configs.Config) DB {
 	return DB{Client: client}
 
 }
+func NewProdDb(conf *configs.Config) DB {
+	customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+		return aws.Endpoint{
+			PartitionID:   "aws",
+			URL:           "https://dynamodb.us-west-1.amazonaws.com",
+			SigningRegion: "us-west-1",
+		}, nil
+	})
+	confs := aws.Config{
+		Region:                      "us-west-1",
+		Credentials:                 conf,
+		EndpointResolverWithOptions: customResolver,
+		RetryMaxAttempts:            10,
+	}
+	client := *dynamodb.NewFromConfig(confs)
+	return DB{Client: client}
+
+}
 
 // func (db Database) Getdb() Database {
 // 	return db

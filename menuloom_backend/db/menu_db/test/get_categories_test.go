@@ -13,12 +13,13 @@ import (
 )
 
 func TestGetCategories(t *testing.T) {
+	fmt.Println(conf.GetMenuloomTableName())
 	t.Run("create restaurant", func(t *testing.T) {
 		res, err := db.Client.GetItem(context.Background(), &dynamodb.GetItemInput{
 			TableName: aws.String(conf.GetMenuloomTableName()),
 			Key: map[string]types.AttributeValue{
-				"pk": &types.AttributeValueMemberS{Value: "pk#"},
-				"sk": &types.AttributeValueMemberS{Value: "category#"},
+				"pk": &types.AttributeValueMemberS{Value: "pk#himalayantasteusa.com"},
+				"sk": &types.AttributeValueMemberS{Value: "categories#"},
 			},
 		})
 		if err != nil {
