@@ -13,7 +13,7 @@ func New(services *services.Services, echo *echo.Group) {
 	bol := Bol{
 		services: services,
 	}
-	protectedBolGroup := echo.Group("/bol/v1/")
+	protectedBolGroup := echo.Group("/bol")
 	protectedBolGroup.GET(":id", bol.GinGetBOL)
 	protectedBolGroup.POST("", bol.GinCreateBOL)
 }

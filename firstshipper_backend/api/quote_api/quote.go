@@ -27,7 +27,7 @@ func New(services *services.Services, echo *echo.Group, rapid *rapid.Rapid) {
 		rapid:    rapid,
 	}
 	// quote api
-	protectedQuoteGroup := echo.Group("quote/v1/")
+	protectedQuoteGroup := echo.Group("quote")
 	protectedQuoteGroup.DELETE(":id", qt.EchoDeleteQuote)
 	protectedQuoteGroup.DELETE("", qt.EchoDeleteAllQuotes)
 	protectedQuoteGroup.GET("", qt.EchoGetQuotes)

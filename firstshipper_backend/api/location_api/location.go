@@ -13,7 +13,7 @@ func New(services *services.Services, echo *echo.Group) {
 	loc := Location{
 		services: services,
 	}
-	locationGrp := echo.Group("/location/v1/")
+	locationGrp := echo.Group("/location")
 	locationGrp.DELETE(":id", loc.EchoDeleteLocation)
 	locationGrp.DELETE("deleteall", loc.EchoDeleteLocations)
 	locationGrp.POST("", loc.EchoCreateLocation)

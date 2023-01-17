@@ -31,6 +31,6 @@ func New(services *services.Services, echo *echo.Group) {
 	userApi := UserApi{
 		services: services,
 	}
-	grp := echo.Group("/firstshipper/user")
+	grp := echo.Group("user")
 	grp.POST("/logout", userApi.EchoLogout)
 }

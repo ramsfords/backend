@@ -20,7 +20,7 @@ func SetUpAPi(menuLoomGrp *echo.Echo, services services.Services) {
 			"code":    200,
 		})
 	})
-	grp.GET("/", func(ctx echo.Context) error {
+	grp.GET("", func(ctx echo.Context) error {
 		return ctx.Redirect(http.StatusPermanentRedirect, "https://menuloom.com")
 	})
 	menu_api.New(grp, services)
