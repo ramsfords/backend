@@ -1,6 +1,8 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/firstshipper_backend/api/bol_api"
 	"github.com/ramsfords/backend/firstshipper_backend/api/location_api"
@@ -19,6 +21,9 @@ func SetUpAPi(firstShipperGrp *echo.Echo, services *services.Services, rapid *ra
 			"status":  "ok",
 			"code":    200,
 		})
+	})
+	grp.GET("/", func(ctx echo.Context) error {
+		return ctx.Redirect(http.StatusPermanentRedirect, "https://firstshipper.com")
 	})
 	bol_api.New(services, grp)
 	location_api.New(services, grp)
