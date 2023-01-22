@@ -41,7 +41,7 @@ func FirstShipperRunner(conf *configs.Config, s3 S3.S3Client, logger logger.Logg
 
 	api.SetUpAPi(echoRouter, services, rapid)
 	// OR send a completely different email template
-	app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(email, conf.SitesSettings.Menuloom.Email.FromName, conf.SitesSettings.Menuloom.Email.FromEmail))
+	app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(email, conf, services))
 	// OR send a completely different email template
 	app.OnMailerBeforeRecordResetPasswordSend().Add(utils.SendResetPasswordLinkEventHandler(email, conf.SitesSettings.Menuloom.Email.FromName, conf.SitesSettings.Menuloom.Email.FromEmail))
 	// this sets auth token to cloudflare KV on every login

@@ -22,15 +22,16 @@ type EmailSender interface {
 	SendWelcomeEmail(data EmailData) error
 }
 type Email struct {
-	conf configs.Email
-	*enmime.SMTPSender
+	conf   configs.Email
+	Sender *enmime.SMTPSender
 }
 
 func New(conf configs.Email) *Email {
-	// smtpHost := "smtp.zoho.com:587"
+	smtpHost := "smtp.zoho.com:587"
 	smtpAuth := smtp.PlainAuth("", conf.UserName, conf.Password, conf.SmtpHost)
+	sender := enmime.NewSMTP(smtpHost, smtpAuth)
 	return &Email{
-		conf:       conf,
-		SMTPSender: enmime.NewSMTP(conf.SmtpHost+":"+conf.SmtpPort, smtpAuth),
+		conf:   conf,
+		Sender: sender,
 	}
 }

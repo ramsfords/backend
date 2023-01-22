@@ -58,8 +58,8 @@ func main() {
 	})
 
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		menuloom_backend.MenuloomRunner(conf, s3, logger, dynamodDb, e.Router, app)
 		firstshipper_backend.FirstShipperRunner(conf, s3, logger, dynamodDb, e.Router, app)
+		menuloom_backend.MenuloomRunner(conf, s3, logger, dynamodDb, e.Router, app)
 		// serves static files from the provided public dir (if exists)
 		e.Router.AddRoute(echo.Route{
 			Method: http.MethodGet,

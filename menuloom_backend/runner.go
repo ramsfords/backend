@@ -24,7 +24,7 @@ func MenuloomRunner(conf *configs.Config, s3 S3.S3Client, logger logger.Logger, 
 	services := services.New(conf, s3, logger, email, repo, cloudinery, cloudFlareClient)
 	api.SetUpAPi(echoRouter, services)
 	// OR send a completely different email template
-	app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(email, conf.SitesSettings.Menuloom.Email.FromName, conf.SitesSettings.Menuloom.Email.FromEmail))
+	app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(email, conf.SitesSettings.Menuloom.Email.FromName, conf.SitesSettings.Menuloom.Email.FromEmail, repo))
 	// OR send a completely different email template
 	app.OnMailerBeforeRecordResetPasswordSend().Add(utils.SendResetPasswordLinkEventHandler(email, conf.SitesSettings.Menuloom.Email.FromName, conf.SitesSettings.Menuloom.Email.FromEmail))
 	// this sets auth token to cloudflare KV on every login

@@ -5,6 +5,7 @@ import (
 )
 
 func (email Email) SendEmail(template string, data EmailData) error {
+
 	master := enmime.Builder().
 		From(data.ReceiverName, data.SenderEmail).
 		Subject(data.EmailSubject).
@@ -12,7 +13,7 @@ func (email Email) SendEmail(template string, data EmailData) error {
 
 	// master is immutable, causing each msg below to have a single recipient.
 	msg := master.To(data.ReceiverName, data.ReceiverEmail)
-	err := msg.Send(email.SMTPSender)
+	err := msg.Send(email.Sender)
 	if err != nil {
 		return err
 	}
