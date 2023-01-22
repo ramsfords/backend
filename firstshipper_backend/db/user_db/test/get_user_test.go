@@ -13,26 +13,31 @@ import (
 
 func TestGetRestaurant(t *testing.T) {
 	t.Run("create restaurant", func(t *testing.T) {
-		res, err := db.Client.GetItem(context.Background(), &dynamodb.GetItemInput{
-			TableName: aws.String(conf.GetFirstShipperTableName()),
-			Key: map[string]types.AttributeValue{
-				"pk": &types.AttributeValueMemberS{Value: "pk#127.0.0.1:3000"},
-				"sk": &types.AttributeValueMemberS{Value: "users"},
+		res, err := db.Client.Query(context.Background(), &dynamodb.QueryInput{
+			TableName:              aws.String(conf.GetFirstShipperTableName()),
+			IndexName:              aws.String("user_index"),
+			KeyConditionExpression: aws.String("#user_pk = :user_pk"),
+			ExpressionAttributeValues: map[string]types.AttributeValue{
+				":user_pk": &types.AttributeValueMemberS{Value: "kandelsuren@gmail.com"},
 			},
-			ProjectionExpression: aws.String("#email"),
 			ExpressionAttributeNames: map[string]string{
-				"#email": "kandelsuren@gmail.com",
+				"#user_pk": "user_pk",
+				"#users":   "users",
 			},
+			ProjectionExpression: aws.String("#users"),
 		})
 		if err != nil {
 			t.Fatal(err, res)
 		}
 
 		userData := &v1.User{}
-		data, ok := res.Item["kandelsuren@gmail.com"]
+		data, ok := res.Items[0]["users"]
+		if !ok {
+			t.Fatal("no data found")
+		}
 		err = attributevalue.Unmarshal(data, &userData)
 		if err != nil {
-			t.Fatal(err, res, data, ok)
+			t.Fatal(err, res, data)
 		}
 
 	})

@@ -10,5 +10,5 @@ var db, conf = getDB()
 func getDB() (db dynamo.DB, conf configs.Config) {
 	confs := configs.GetConfig()
 	dbClient := dynamo.New(confs)
-	return dbClient, conf
+	return dbClient, *confs
 }

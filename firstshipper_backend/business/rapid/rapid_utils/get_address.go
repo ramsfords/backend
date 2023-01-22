@@ -62,15 +62,15 @@ func GetBillingAddress() models.Address {
 }
 func GetOriginAddress(quoteReq *v1.QuoteRequest, saveQuote *models.SaveQuote) models.Address {
 	address := models.Address{}
-	if quoteReq.Pickup.ShipperInstructions != "" {
-		address.PickUpInstructions = quoteReq.Pickup.ShipperInstructions
+	if quoteReq.ShipperInstructions != "" {
+		address.PickUpInstructions = quoteReq.ShipperInstructions
 	}
-	if quoteReq.Pickup.Address.AddressLine_1 != "" {
-		address.StreetLine1 = quoteReq.Pickup.Address.AddressLine_1
+	if quoteReq.Pickup.Address.AddressLine1 != "" {
+		address.StreetLine1 = quoteReq.Pickup.Address.AddressLine1
 	}
 
-	if quoteReq.Pickup.Address.AddressLine_2 != "" {
-		address.StreetLine2 = quoteReq.Pickup.Address.AddressLine_2
+	if quoteReq.Pickup.Address.AddressLine2 != "" {
+		address.StreetLine2 = quoteReq.Pickup.Address.AddressLine2
 	}
 
 	if quoteReq.Pickup.Address.City != "" {
@@ -116,15 +116,15 @@ func GetOriginAddress(quoteReq *v1.QuoteRequest, saveQuote *models.SaveQuote) mo
 }
 func GetDeliveryAddress(quoteReq *v1.QuoteRequest, saveQuote *models.SaveQuote) models.Address {
 	address := models.Address{}
-	if quoteReq.Delivery.ReceiverInstructions != "" {
-		address.DeliveryInstructions = quoteReq.Delivery.ReceiverInstructions
+	if quoteReq.ReceiverInstructions != "" {
+		address.DeliveryInstructions = quoteReq.ReceiverInstructions
 	}
-	if quoteReq.Delivery.Address.AddressLine_1 != "" {
-		address.StreetLine1 = quoteReq.Delivery.Address.AddressLine_1
+	if quoteReq.Delivery.Address.AddressLine1 != "" {
+		address.StreetLine1 = quoteReq.Delivery.Address.AddressLine1
 	}
 
-	if quoteReq.Delivery.Address.AddressLine_2 != "" {
-		address.StreetLine2 = quoteReq.Delivery.Address.AddressLine_2
+	if quoteReq.Delivery.Address.AddressLine2 != "" {
+		address.StreetLine2 = quoteReq.Delivery.Address.AddressLine2
 	}
 
 	if quoteReq.Delivery.Address.City != "" {

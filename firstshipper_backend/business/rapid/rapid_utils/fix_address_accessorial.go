@@ -49,112 +49,95 @@ import (
 // ]
 
 func FixAddressAccesorial(baseQuoteReq *v1.QuoteRequest, rapidQuote *models.QuoteDetails) {
-	// pickup fixes
-	if len(baseQuoteReq.Pickup.PickupLocationServices) < 1 && len(baseQuoteReq.Delivery.PickupLocationServices) < 1 {
-		return
-	}
+	//pickup fixes
 	pickup_services := []models.AddressAccessorial{}
-	for _, j := range baseQuoteReq.Pickup.PickupLocationServices {
-		if j == v1.PickupLocationServices_PICKUP_LOCATION_WITH_DOCK {
-			continue
-		}
-		if j == v1.PickupLocationServices_INSIDE_PICKUP {
-			pickup_services = append(pickup_services, models.AddressAccessorial{
-				AccessorialID:   28,
-				Name:            "Inside Pickup",
-				Code:            "INPU",
-				IsOnlyForCanada: false,
-				IsOnlyForUSA:    false,
-				DataType:        nil,
-				Value:           nil,
-			})
-		}
-		if j == v1.PickupLocationServices_LIFTGATE_PICKUP {
-			pickup_services = append(pickup_services, models.AddressAccessorial{
-				AccessorialID:   29,
-				Name:            "Liftgate Pickup",
-				Code:            "LGPU",
-				IsOnlyForCanada: false,
-				IsOnlyForUSA:    false,
-				DataType:        nil,
-				Value:           nil,
-			})
-		}
+	if baseQuoteReq.PickupLocationServices.InsidePickup {
+		pickup_services = append(pickup_services, models.AddressAccessorial{
+			AccessorialID:   28,
+			Name:            "Inside Pickup",
+			Code:            "INPU",
+			IsOnlyForCanada: false,
+			IsOnlyForUSA:    false,
+			DataType:        nil,
+			Value:           nil,
+		})
+	}
+	if baseQuoteReq.PickupLocationServices.LiftGatePickup {
+		pickup_services = append(pickup_services, models.AddressAccessorial{
+			AccessorialID:   29,
+			Name:            "Liftgate Pickup",
+			Code:            "LGPU",
+			IsOnlyForCanada: false,
+			IsOnlyForUSA:    false,
+			DataType:        nil,
+			Value:           nil,
+		})
 	}
 	for _, j := range baseQuoteReq.Commodities {
-		for _, k := range j.CommodityServices {
-			if k == v1.CommodityServices_PROTECT_FROM_FREEZE {
-				pickup_services = append(pickup_services, models.AddressAccessorial{
-					AccessorialID:   30,
-					Name:            "Protect From Freeze",
-					Code:            "PFZ",
-					IsOnlyForCanada: false,
-					IsOnlyForUSA:    false,
-					DataType:        nil,
-					Value:           nil,
-				})
-			}
+		if j.CommodityServices.ProtectFromFreeze {
+			pickup_services = append(pickup_services, models.AddressAccessorial{
+				AccessorialID:   30,
+				Name:            "Protect From Freeze",
+				Code:            "PFZ",
+				IsOnlyForCanada: false,
+				IsOnlyForUSA:    false,
+				DataType:        nil,
+				Value:           nil,
+			})
 		}
 	}
 	rapidQuote.OriginShippingDetails.Address.AddressAccessorials = pickup_services
 	// delivery
 	delivery_services := []models.AddressAccessorial{}
-	for _, j := range baseQuoteReq.Delivery.DeliveryLocationServices {
-		if j == v1.DeliveryLocationServices_DELIVERY_LOCATION_WITH_DOCK {
-			continue
-		}
-		if j == v1.DeliveryLocationServices_INSIDE_DELIVERY {
-			delivery_services = append(delivery_services, models.AddressAccessorial{
-				AccessorialID:   38,
-				Name:            "Inside Delivery",
-				DestinationCode: "INDEL",
-				IsOnlyForCanada: false,
-				IsOnlyForUSA:    false,
-				DataType:        nil,
-				Value:           nil,
-			})
-		}
-		if j == v1.DeliveryLocationServices_DELIVERY_APPOINTMENT {
-			delivery_services = append(delivery_services, models.AddressAccessorial{
-				AccessorialID:   120,
-				Name:            "Delivery Appointment",
-				DestinationCode: "APPTDEL",
-				IsOnlyForCanada: false,
-				IsOnlyForUSA:    false,
-				DataType:        0,
-			})
-		}
-		if j == v1.DeliveryLocationServices_LIFTGATE_DELIVERY {
-			delivery_services = append(delivery_services, models.AddressAccessorial{
-				AccessorialID:   35,
-				Name:            "Liftgate Delivery",
-				DestinationCode: "LGDEL",
-				IsOnlyForCanada: false,
-				IsOnlyForUSA:    false,
-			})
-		}
-		if j == v1.DeliveryLocationServices_DELIVERY_NOTIFICATION {
-			delivery_services = append(delivery_services, models.AddressAccessorial{
-				AccessorialID:   32,
-				Name:            "Notify Before Delivery",
-				DestinationCode: "NOTIFY",
-				IsOnlyForCanada: false,
-				IsOnlyForUSA:    false,
-			})
-		}
-
+	if baseQuoteReq.DeliveryLocationServices.InsideDelivery {
+		delivery_services = append(delivery_services, models.AddressAccessorial{
+			AccessorialID:   38,
+			Name:            "Inside Delivery",
+			DestinationCode: "INDEL",
+			IsOnlyForCanada: false,
+			IsOnlyForUSA:    false,
+			DataType:        nil,
+			Value:           nil,
+		})
 	}
+	if baseQuoteReq.DeliveryLocationServices.DeliveryAppointment {
+		delivery_services = append(delivery_services, models.AddressAccessorial{
+			AccessorialID:   120,
+			Name:            "Delivery Appointment",
+			DestinationCode: "APPTDEL",
+			IsOnlyForCanada: false,
+			IsOnlyForUSA:    false,
+			DataType:        0,
+		})
+	}
+	if baseQuoteReq.DeliveryLocationServices.LiftGateDelivery {
+		delivery_services = append(delivery_services, models.AddressAccessorial{
+			AccessorialID:   35,
+			Name:            "Liftgate Delivery",
+			DestinationCode: "LGDEL",
+			IsOnlyForCanada: false,
+			IsOnlyForUSA:    false,
+		})
+	}
+	if baseQuoteReq.DeliveryLocationServices.DeliveryAppointment {
+		delivery_services = append(delivery_services, models.AddressAccessorial{
+			AccessorialID:   32,
+			Name:            "Notify Before Delivery",
+			DestinationCode: "NOTIFY",
+			IsOnlyForCanada: false,
+			IsOnlyForUSA:    false,
+		})
+	}
+
 	for _, j := range baseQuoteReq.Commodities {
-		for _, k := range j.CommodityServices {
-			if k == v1.CommodityServices_SORT_AND_SEGREGATE {
-				delivery_services = append(delivery_services, models.AddressAccessorial{
-					AccessorialID:   36,
-					Name:            "Sort/Segregate Delivery",
-					DestinationCode: "SORTDEL",
-					IsOnlyForCanada: false,
-					IsOnlyForUSA:    false,
-				})
-			}
+		if j.CommodityServices.ProtectFromFreeze {
+			delivery_services = append(delivery_services, models.AddressAccessorial{
+				AccessorialID:   36,
+				Name:            "Sort/Segregate Delivery",
+				DestinationCode: "SORTDEL",
+				IsOnlyForCanada: false,
+				IsOnlyForUSA:    false,
+			})
 		}
 	}
 	rapidQuote.DestinationShippingDetails.Address.AddressAccessorials = delivery_services

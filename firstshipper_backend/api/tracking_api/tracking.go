@@ -17,6 +17,6 @@ func New(services *services.Services, echo *echo.Group, rapid *rapid.Rapid) {
 		radpid:   rapid,
 	}
 	protectedTrackGroup := echo.Group("/tracking")
-	protectedTrackGroup.GET(":id", tracking.GinGetTracking)
-	protectedTrackGroup.PATCH(":id", tracking.GinUpdateTracking)
+	protectedTrackGroup.GET("/:id", tracking.GinGetTracking)
+	protectedTrackGroup.PATCH("/:id", tracking.GinUpdateTracking)
 }

@@ -10,7 +10,7 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (quotedb QuoteDb) UpdateQuote(ctx context.Context, quoteReq v1.QuoteRequest) error {
+func (quotedb QuoteDb) UpdateQuote(ctx context.Context, quoteReq *v1.QuoteRequest) error {
 	marshalledItem, err := attributevalue.MarshalMap(quoteReq)
 	if err != nil {
 		return err

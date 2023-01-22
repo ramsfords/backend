@@ -12,15 +12,11 @@ func MakeBid(saveQuote *models.SaveQuote, qtReq *v1.QuoteRequest) []*v1.Bid {
 	if !saveQuote.QuoteRate.IsValid {
 		return nil
 	}
-	bids := make([]*v1.Bid, 0)
+	bids := []*v1.Bid{}
 	for _, j := range saveQuote.QuoteRate.DayDeliveries {
 		for i, k := range j.Standart {
 			estimatedDeliveryDate := strings.Split(*k.EstimateDeliveryDate, "T")[0]
 			transitTime := fmt.Sprintf("%d", *k.TransitDays)
-			largeLogo := ""
-			if k.LargeLogo != nil {
-				largeLogo = *k.LargeLogo
-			}
 			logo := ""
 			if k.Logo != nil {
 				logo = *k.Logo
@@ -42,20 +38,18 @@ func MakeBid(saveQuote *models.SaveQuote, qtReq *v1.QuoteRequest) []*v1.Bid {
 				capacityProviderQuoteNumber = *k.CapacityProviderQuoteNumber
 			}
 			bid := v1.Bid{
-				TransitTime:         transitTime,
-				Guranteed:           true,
-				VendorQuoteId:       saveQuote.SavedQuoteID,
-				QuoteId:             qtReq.QuoteId,
-				CompanyLargeLogoUrl: largeLogo,
-				CompanySmallLogoUrl: logo,
-				DeliveryDate:        estimatedDeliveryDate,
-				VendorName:          "rapid",
-				CarrierName:         carrierName,
-				CarrierCode:         carrierCode,
-				Carrier:             carrierCodeAddtional,
-				BidId:               qtReq.QuoteId + "#" + fmt.Sprint(i),
-				BusinessId:          qtReq.BusinessId,
-				CarrierQuoteId:      capacityProviderQuoteNumber,
+				TransitTime:    transitTime,
+				Guranteed:      true,
+				VendorQuoteId:  saveQuote.SavedQuoteID,
+				VendorLogo:     logo,
+				DeliveryDate:   estimatedDeliveryDate,
+				VendorName:     "rapid",
+				CarrierName:    carrierName,
+				CarrierCode:    carrierCode,
+				Carrier:        carrierCodeAddtional,
+				BidId:          qtReq.QuoteId + "bid" + fmt.Sprint(i),
+				QuoteId:        qtReq.QuoteId,
+				CarrierQuoteId: capacityProviderQuoteNumber,
 				Amount: &v1.Amount{
 					FullAmount: k.Total + 15,
 					NetAmount:  k.Total + 15,

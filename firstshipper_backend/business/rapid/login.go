@@ -50,7 +50,12 @@ func (rapid Rapid) Login(auth *models.AuthRequestPayload) error {
 			return fmt.Errorf("WARN conn error: %s\n", err)
 		}
 		fasthttp.ReleaseResponse(resp)
+		if ErrorChan != nil {
+			close(ErrorChan)
+			break
+		}
 		time.Sleep(58 * time.Minute)
 	}
+	return nil
 
 }

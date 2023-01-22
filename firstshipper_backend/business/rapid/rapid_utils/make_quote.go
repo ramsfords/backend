@@ -29,7 +29,7 @@ func MakeQuoteDetails(baseQuote *v1.QuoteRequest) (*models.QuoteDetails, error) 
 		TotalWeight:                    totalWeight,
 		QuoteDate:                      time.Now().Format("01/02/2006"),
 	}
-	pickupDate, err := time.Parse(time.RFC3339, baseQuote.ShipmentDetails.PickupDate)
+	pickupDate, err := time.Parse(time.RFC3339, baseQuote.PickupDate)
 	if err != nil {
 		return nil, errors.New("can not convert pick up date to rapid pickup date")
 	}

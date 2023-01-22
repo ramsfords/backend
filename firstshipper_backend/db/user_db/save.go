@@ -2,6 +2,7 @@ package user_db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -10,23 +11,23 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (user UserDb) SaveUser(ctx context.Context, usr v1.User, businessId string) error {
+func (userdb UserDb) SaveUser(ctx context.Context, usr v1.User, businessId string) error {
 	usr.Type = "user"
 	marshalledUser, err := attributevalue.MarshalMap(usr)
 	if err != nil {
 		return err
 	}
 	input := &dynamodb.PutItemInput{
-		TableName: aws.String(user.Config.GetFirstShipperTableName()),
+		TableName: aws.String(userdb.GetFirstShipperTableName()),
 		Item: map[string]types.AttributeValue{
 			"pk":      &types.AttributeValueMemberS{Value: "pk#" + businessId},
-			"sk":      &types.AttributeValueMemberS{Value: "sk#" + usr.Email},
-			"user_pk": &types.AttributeValueMemberS{Value: "user"},
+			"sk":      &types.AttributeValueMemberS{Value: "user#" + usr.Email},
 			"user_sk": &types.AttributeValueMemberS{Value: usr.Email},
-			"user":    &types.AttributeValueMemberM{Value: marshalledUser},
+			"users":   &types.AttributeValueMemberM{Value: marshalledUser},
 		},
+		ConditionExpression: aws.String(fmt.Sprintf("attribute_not_exists(%s)", "pk")),
 	}
-	_, err = user.Client.PutItem(ctx, input)
+	_, err = userdb.Client.PutItem(ctx, input)
 	if err != nil {
 		return err
 	}

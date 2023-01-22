@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -69,13 +68,8 @@ func main() {
 				obj := map[string]interface{}{"message": "pong"}
 				return c.JSON(http.StatusOK, obj)
 			},
-			// Middlewares: []echo.MiddlewareFunc{
-			// 	apis.RequireAdminOrUserAuth(),
-			// },
 		})
 
-		rountes := e.Router.Router().Routes()
-		fmt.Println("routes are: ", rountes, "length is", len(rountes))
 		return nil
 
 	})

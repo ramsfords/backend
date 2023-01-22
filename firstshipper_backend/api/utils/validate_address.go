@@ -10,7 +10,7 @@ func validateAddress(add *v1.Location) *errs.ApiErr {
 	if len(add.Address.ZipCode) != 5 && !valid.IsNumeric(add.Address.ZipCode) {
 		return &errs.InvalidAddress
 	}
-	if len(add.Address.AddressLine_1) < 3 && add.Address.AddressLine_1 == "" {
+	if len(add.Address.AddressLine1) < 3 && add.Address.AddressLine1 == "" {
 		return &errs.InvalidAddress
 	}
 	if len(add.Address.City) < 3 && add.Address.City == "" {

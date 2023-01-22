@@ -6,11 +6,5 @@ import (
 )
 
 func FixCommodityOriginAccessorial(commodities []*v1.Commodity, origin *models.OriginShippingDetails) {
-	for _, j := range commodities {
-		if j.ProtectFromFreeze {
-			origin.Address.AddressAccessorials = append(origin.Address.AddressAccessorials, ProtectFromFreeze())
-			return
-		}
-	}
 
 }

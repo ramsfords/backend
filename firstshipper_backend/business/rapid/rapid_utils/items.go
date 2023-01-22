@@ -19,7 +19,6 @@ func MakeItems(shippingItems []v1.Commodity) []models.Commodity {
 			Pieces:              int(j.Quantity),
 			TotalWeight:         utils.StrPtr(fmt.Sprintf("%v", (j.Weight))),
 			CurrentTotalWeight:  utils.StrPtr(fmt.Sprintf("%v", (j.Weight))),
-			IsHazardous:         j.Hazardous,
 			HazmatDetailInfo:    models.HazmatDetailInfo{},
 			CustomerOrderNumber: nil,
 			AdditionalInfo:      nil,

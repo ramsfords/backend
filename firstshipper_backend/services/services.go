@@ -4,7 +4,6 @@ import (
 	"github.com/cloudflare/cloudflare-go"
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/firstshipper_backend/db"
-	repository "github.com/ramsfords/backend/firstshipper_backend/db"
 	"github.com/ramsfords/backend/foundations/S3"
 	"github.com/ramsfords/backend/foundations/cloudinery"
 	"github.com/ramsfords/backend/foundations/logger"
@@ -21,18 +20,18 @@ type Services struct {
 	Cloudinery       *cloudinery.Cloudinery
 	Scalladb         gocqlx.Session
 	CloudFlareClient *cloudflare.API
-	db.Repository
+	db.DB
 }
 
-func New(conf *configs.Config, S3Client S3.S3Client, Logger logger.Logger, Email *zohomail.Email, Db repository.Repository, cloudinery *cloudinery.Cloudinery, cloudFlareClient *cloudflare.API) *Services {
+func New(conf *configs.Config, S3Client S3.S3Client, Logger logger.Logger, Email *zohomail.Email, Db db.DB, cloudinery *cloudinery.Cloudinery, cloudFlareClient *cloudflare.API) *Services {
 	newService := &Services{
 		Conf:             conf,
 		S3Client:         S3Client,
 		Logger:           Logger,
 		Email:            Email,
 		Cloudinery:       cloudinery,
-		Repository:       Db,
 		CloudFlareClient: cloudFlareClient,
+		DB:               Db,
 	}
 	return newService
 }

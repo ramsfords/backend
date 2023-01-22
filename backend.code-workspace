@@ -4,20 +4,20 @@
 			"path": "."
 		},
 		{
-			"path": "../menuloom"
-		},
-		{
-			"path": "../../projects/sharathi"
-		},
-		{
 			"path": "../firstshipper_cloudflare"
 		},
 		{
-			"path": "../menuloom_cloudflare"
+			"path": "../firstshipper"
 		},
 		{
-			"path": "../firstshipper"
+			"path": "../protos"
+		},
+		{
+			"path": "../../projects/carriers"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"deno.enable": true,
+		"deno.unstable": true
+	}
 }

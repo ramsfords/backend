@@ -6,11 +6,4 @@ import (
 )
 
 func FixCommodityDeliveryAccessorial(commodities []*v1.Commodity, delivery *models.DestinationShippingDetails) {
-	for _, j := range commodities {
-		if j.SortAndSegregate {
-			delivery.Address.AddressAccessorials = append(delivery.Address.AddressAccessorials, SortAndSegregateDelivery())
-			return
-		}
-	}
-
 }

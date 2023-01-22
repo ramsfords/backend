@@ -3,11 +3,11 @@ package utils
 import v1 "github.com/ramsfords/types_gen/v1"
 
 func ValidateQuoteRequest(qtReq *v1.QuoteRequest) error {
-	err := validateQuotePickup(qtReq.Pickup)
+	err := validateQuotePickup(qtReq)
 	if err != nil {
 		return err
 	}
-	err = validateQuoteDelivery(qtReq.Delivery)
+	err = validateQuoteDelivery(qtReq)
 	if err != nil {
 		return err
 	}
@@ -15,5 +15,6 @@ func ValidateQuoteRequest(qtReq *v1.QuoteRequest) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

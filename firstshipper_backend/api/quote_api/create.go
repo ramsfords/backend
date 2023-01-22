@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/labstack/echo/v5"
-	"github.com/pkg/errors"
 	"github.com/ramsfords/backend/firstshipper_backend/api/utils"
+	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils"
 	errs "github.com/ramsfords/backend/foundations/error"
 	v1 "github.com/ramsfords/types_gen/v1"
@@ -21,18 +20,15 @@ func (qt Quote) EchoCreateQuote(ctx echo.Context) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	ctx.Request().Header.Set("Cache-Control", "no-cache")
-	res, err := qt.GetNewQuote(ctx.Request().Context(), quote)
+	newCtx := ctx.Request().Context()
+	res, err := qt.GetNewQuote(newCtx, quote)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	return ctx.JSON(http.StatusCreated, res)
 }
 
-func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*v1.QuoteRequest, error) {
-	ctx, ok := ctxx.(*gin.Context)
-	if !ok {
-		return nil, errs.ErrInvalidInputs
-	}
+func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*v1.QuoteResponse, error) {
 	err := utils.ValidateQuoteRequest(qtReq)
 	if err != nil {
 		return nil, err
@@ -40,15 +36,7 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*v1.Q
 	quotId := utils.GenerateString(10)
 	quoteId := fmt.Sprint(quotId)
 	qtReq.QuoteId = quoteId
-	qtReq.ShipmentDetails.QuoteId = quoteId
-	for _, i := range qtReq.Commodities {
-		i.QuoteId = quoteId
 
-	}
-	err = qt.services.SaveQuote(ctx, *qtReq)
-	if err != nil {
-		return nil, errs.ErrStoreInternal
-	}
 	// make compatible rapid quote to send to rapid for quote rates
 	rapidQuote, err := rapid_utils.MakeQuoteDetails(qtReq)
 	if err != nil {
@@ -61,20 +49,27 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*v1.Q
 		qt.services.Logger.Error(err)
 		return nil, errs.ErrInternal
 	}
-	err = qt.services.SaveRapidQuote(ctx, *res, *qtReq)
-	if err != nil {
-		qt.services.Logger.Error(err)
-		return nil, errs.ErrInternal
-	}
+
 	saveQuote := rapid_utils.NewSaveQuoteStep2(rapidQuote, res)
-	err = qt.services.SaveRapidQuote(ctx, *res, *qtReq)
-	if err != nil {
-		qt.services.Logger.Error(err)
-		return nil, errors.New("could not save quote in rapid")
-	}
+	// err = qt.services.SaveRapidQuote(ctxx, *res, *qtReq)
+	// if err != nil {
+	// 	qt.services.Logger.Error(err)
+	// 	return nil, errors.New("could not save quote in rapid")
+	// }
+
 	bidRes := rapid_utils.MakeBid(saveQuote, qtReq)
 	if bidRes == nil {
 		return nil, errs.ErrInternal
+	}
+	// save quote with rapid quote
+	quoteRate := &model.QuoteRequest{
+		QuoteRequest: *qtReq,
+		SaveQuote:    *saveQuote,
+		Bids:         bidRes,
+	}
+	err = qt.services.SaveQuote(ctxx, quoteRate)
+	if err != nil {
+		return nil, errs.ErrStoreInternal
 	}
 	// validUntil := time.Now().Add(10 * time.Minute)
 	// pickupDate, err := time.Parse(time.RFC3339, qtReq.ShipmentDetails.PickupDate)
@@ -95,13 +90,9 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*v1.Q
 	// } else {
 	// 	validUntilStr = validUntil.Format(time.RFC3339)
 	// }
-	return &v1.QuoteRequest{
-		ShipmentDetails: qtReq.ShipmentDetails,
-		Pickup:          qtReq.Pickup,
-		Delivery:        qtReq.Delivery,
-		Commodities:     qtReq.Commodities,
-		Bids:            bidRes,
-		QuoteId:         quoteId,
-		Type:            "quote",
+	return &v1.QuoteResponse{
+		QuoteRequest: qtReq,
+		Bids:         bidRes,
+		Success:      true,
 	}, nil
 }

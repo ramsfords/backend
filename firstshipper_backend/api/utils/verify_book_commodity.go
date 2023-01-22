@@ -8,10 +8,10 @@ import (
 func verifyBookCommodities(bookComodities []*v1.Commodity, quoteCommodity []*v1.Commodity) error {
 	for _, j := range bookComodities {
 		qc := GetComodityByIndex(int(j.Index), quoteCommodity)
-		if qc.DimensionUom != j.DimensionUom {
+		if qc.DimensionUOM != j.DimensionUOM {
 			return errs.InvalidDimensionUOM
 		}
-		if qc.WeightUom != j.WeightUom {
+		if qc.WeightUOM != j.WeightUOM {
 			return errs.InvalidWeightUOM
 		}
 		if qc.Height != j.Height || qc.Length != j.Length || qc.Width != j.Width {
@@ -24,18 +24,18 @@ func verifyBookCommodities(bookComodities []*v1.Commodity, quoteCommodity []*v1.
 			return errs.InvalidWeight
 		}
 
-		if len(j.CommodityServices) != len(qc.CommodityServices) {
-			return errs.InvalidCommodityServices
-		}
-		validServices := true
-		for _, k := range j.CommodityServices {
-			if !IncludesService(toInt32ArrayFromCommodityServices(qc.CommodityServices), int32(*k.Enum())) {
-				validServices = false
-			}
-		}
-		if !validServices {
-			return errs.InvalidCommodityServices
-		}
+		// if len(j.CommodityServices) != len(qc.CommodityServices) {
+		// 	return errs.InvalidCommodityServices
+		// }
+		// validServices := true
+		// for _, k := range j.CommodityServices {
+		// 	if !IncludesService(toInt32ArrayFromCommodityServices(qc.CommodityServices), int32(*k.Enum())) {
+		// 		validServices = false
+		// 	}
+		// }
+		// if !validServices {
+		// 	return errs.InvalidCommodityServices
+		// }
 	}
 	return nil
 }

@@ -11,12 +11,12 @@ import (
 )
 
 func NewPickupDateTimeWindow(quoteReq *v1.QuoteRequest) models.DateTimeWindow {
-	pickupByTime := quoteReq.Pickup.ShipperPickupReadyBy
+	pickupByTime := quoteReq.ShipperPickupReadyBy
 	hour := strings.Split(pickupByTime, ":")[0]
 	if len(hour) == 0 {
 		startTime := "9:00:00 AM"
 		endTime := "5:00:00 PM"
-		now, err := time.Parse(time.RFC3339, quoteReq.ShipmentDetails.PickupDate)
+		now, err := time.Parse(time.RFC3339, quoteReq.PickupDate)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -58,7 +58,7 @@ func NewPickupDateTimeWindow(quoteReq *v1.QuoteRequest) models.DateTimeWindow {
 	}
 	startTime := hour + ":" + minute + ":" + "00 " + postFix
 	endTime := "5:00:00 PM"
-	now, err := time.Parse(time.RFC3339, quoteReq.ShipmentDetails.DisplayDate)
+	now, err := time.Parse(time.RFC3339, quoteReq.DisplayDate)
 	if err != nil {
 		fmt.Println(err)
 	}

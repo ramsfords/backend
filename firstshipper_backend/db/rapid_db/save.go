@@ -16,16 +16,21 @@ func (rapiddb RapidDb) SaveRapidQuote(ctx context.Context, quote models.QuoteRat
 	if err != nil {
 		return err
 	}
-	input := &dynamodb.PutItemInput{
+	input := &dynamodb.UpdateItemInput{
 		TableName: aws.String(rapiddb.Config.GetFirstShipperTableName()),
-		Item: map[string]types.AttributeValue{
-			"pk":             &types.AttributeValueMemberS{Value: "pk#" + quoteReq.BusinessId},
-			"sk":             &types.AttributeValueMemberS{Value: "rapid_quote_sk#" + quoteReq.BusinessId},
-			"rapid_quote_pk": &types.AttributeValueMemberS{Value: "rapid_quote"},
-			"rapid_quote_sk": &types.AttributeValueMemberS{Value: quoteReq.BusinessId},
-			"rapid_quote":    &types.AttributeValueMemberM{Value: marshalledItem},
+		Key: map[string]types.AttributeValue{
+			"pk": &types.AttributeValueMemberS{Value: "pk#" + quoteReq.BusinessId},
+			"sk": &types.AttributeValueMemberS{Value: "quotes#" + quoteReq.QuoteId},
 		},
+		ExpressionAttributeNames: map[string]string{
+			"#rapid_quote": "rapidQuoteRate",
+			"#quotes":      "quotes",
+		},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":rapid_quote": &types.AttributeValueMemberM{Value: marshalledItem},
+		},
+		UpdateExpression: aws.String("SET #quotes.#rapid_quote = :rapid_quote"),
 	}
-	_, err = rapiddb.Client.PutItem(ctx, input)
+	_, err = rapiddb.Client.UpdateItem(ctx, input)
 	return err
 }

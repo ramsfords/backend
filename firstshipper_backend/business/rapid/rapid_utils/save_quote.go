@@ -16,9 +16,9 @@ func NewSaveQuoteStep2(quoteDetails *models.QuoteDetails, quoteRate *models.Quot
 	}
 	return saveQt
 }
-func NewSaveQuoteStep3(quoteReq *v1.QuoteRequest, saveQuote *models.SaveQuote, serv services.Services) (models.SaveQuote, error) {
-	saveQuote = UpdateQuoteDetails(quoteReq, saveQuote)
-	saveQuote, err := NewConfirmAndDispatchStep3(quoteReq, saveQuote)
+func NewSaveQuoteStep3(quoteRes *v1.QuoteResponse, saveQuote *models.SaveQuote, serv services.Services) (models.SaveQuote, error) {
+	saveQuote = UpdateQuoteDetails(quoteRes, saveQuote)
+	saveQuote, err := NewConfirmAndDispatchStep3(quoteRes, saveQuote)
 	if err != nil {
 		serv.Logger.Error("Error in NewConfirmAndDispatchStep3", err)
 		return *saveQuote, err

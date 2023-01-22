@@ -17,26 +17,26 @@ func validateQuoteCommodities(qtReq *v1.QuoteRequest) error {
 	for _, j := range qtReq.Commodities {
 		totalItems += int32(j.Quantity)
 		totalWeight += int32(j.Weight)
-		if j.DimensionUom != 1 {
+		if (j.DimensionUOM.CM || !j.DimensionUOM.INCH) && (!j.DimensionUOM.CM || j.DimensionUOM.INCH) {
 			return errs.InvalidDimensionUOM
 		}
-		if j.WeightUom != 1 {
+		if !j.WeightUOM.LB {
 			return errs.InvalidWeightUOM
 		}
 		if j.PackageType == v1.PackageType_PACKAGE_NONE {
 			return errs.InvalidPackageType
 		}
-		if j.ShipmentDescription == "" || len(j.ShipmentDescription) < 2 {
+		if len(j.ShipmentDescription) < 2 {
 			return errs.InvalidShipmentDescription
 		}
-		if j.Height < 5 || j.Height > 100 || j.Length < 5 || j.Length > 100 || j.Width < 5 || j.Width > 100 {
+		if j.Height < 5 || j.Height > 76 || j.Length < 5 || j.Length > 76 || j.Width < 5 || j.Width > 76 {
 			return errs.InvalidDimension
 		}
 		if j.Weight < 0 || j.Weight > 10000 {
 			return errs.InvalidWeight
 		}
 	}
-	qtReq.ShipmentDetails.TotalItems = totalItems
-	qtReq.ShipmentDetails.TotalWeight = float32(totalWeight)
+	qtReq.TotalItems = totalItems
+	qtReq.TotalWeight = float32(totalWeight)
 	return nil
 }

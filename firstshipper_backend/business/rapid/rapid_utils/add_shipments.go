@@ -22,7 +22,6 @@ func AddShipments(baseCommodity []*v1.Commodity) *[]models.ShipmentItem {
 				CurrentWidth:  fmt.Sprintf("%v", int(j.Width)),
 				CurrentHeight: fmt.Sprintf("%v", int(j.Height)),
 			},
-			Stackable: j.Stackable,
 			Commodities: []models.Commodity{
 				{
 					Description:        utils.StrPtr(j.ShipmentDescription),

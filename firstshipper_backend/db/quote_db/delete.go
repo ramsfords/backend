@@ -14,7 +14,7 @@ func (quotedb QuoteDb) DeleteQuote(ctx context.Context, quoteId string) error {
 		TableName:           aws.String(quotedb.Config.GetFirstShipperTableName()),
 		ConditionExpression: aws.String(fmt.Sprintf("attribute_exists(%s)", "sk")),
 		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: "business#" + quoteId},
+			"pk": &types.AttributeValueMemberS{Value: "pk#" + quoteId},
 			"sk": &types.AttributeValueMemberS{Value: "quote#" + quoteId},
 		},
 	})

@@ -7,11 +7,6 @@ import (
 
 func validateLocationServices(pickLoc *v1.Location, bookPickup *v1.Location) *errs.ApiErr {
 	valid := true
-	for _, j := range bookPickup.PickupLocationServices {
-		if !IncludesService(toInt32ArrayFromPickupLocationServices(pickLoc.PickupLocationServices), int32(*j.Enum())) {
-			valid = false
-		}
-	}
 	if !valid {
 		return &errs.ErrInvalidPickupLocationServices
 	}

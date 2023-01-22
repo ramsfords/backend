@@ -5,16 +5,16 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func GetEmmergencyContact(quoteReq *v1.QuoteRequest) models.EmergencyContactPerson {
+func GetEmmergencyContact(quoteRes *v1.QuoteResponse) models.EmergencyContactPerson {
 	contact := models.EmergencyContactPerson{}
-	if quoteReq.Pickup.Contact.FirstName != "" {
-		contact.Name += quoteReq.Pickup.Contact.FirstName
+	if quoteRes.QuoteRequest.Pickup.Contact.FirstName != "" {
+		contact.Name += quoteRes.QuoteRequest.Pickup.Contact.FirstName
 	}
-	if quoteReq.Pickup.Contact.LastName != "" {
-		contact.Name += " " + quoteReq.Pickup.Contact.LastName
+	if quoteRes.QuoteRequest.Pickup.Contact.LastName != "" {
+		contact.Name += " " + quoteRes.QuoteRequest.Pickup.Contact.LastName
 	}
-	if quoteReq.Pickup.Contact.PhoneNumber != "" {
-		contact.Phone = quoteReq.Pickup.Contact.PhoneNumber
+	if quoteRes.QuoteRequest.Pickup.Contact.PhoneNumber != "" {
+		contact.Phone = quoteRes.QuoteRequest.Pickup.Contact.PhoneNumber
 	}
 	return contact
 }

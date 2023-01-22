@@ -7,11 +7,11 @@ import (
 )
 
 func (qt Quote) EchoGetQuoteById(ctx echo.Context) error {
-	id := ctx.PathParam("id")
+	id := ctx.PathParam("quoteId")
 	if id == "" {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	res, err := qt.services.GetQuote(ctx.Request().Context(), "2700")
+	res, err := qt.services.GetQuoteByQuoteId(ctx.Request().Context(), "2700", "id")
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

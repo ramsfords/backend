@@ -36,7 +36,7 @@ import (
 // "quoteId": 0,
 // "totalCost": 0,
 // "totalShipmentWeight": 0,
-func NewConfirmAndDispatchStep3(quoteReq *v1.QuoteRequest, saveQuote *models.SaveQuote) (*models.SaveQuote, error) {
+func NewConfirmAndDispatchStep3(quoteReq *v1.QuoteResponse, saveQuote *models.SaveQuote) (*models.SaveQuote, error) {
 	//TODO: fix HandlingUnitTotal in a quote
 	//TODO: fix HandlingUnitTotalPackages
 	// confirmAndDispatch, err := GetConfirmAndDispatch(booking, saveQuote)
@@ -67,7 +67,7 @@ func NewConfirmAndDispatchStep3(quoteReq *v1.QuoteRequest, saveQuote *models.Sav
 	var totalShipmentWeight float32
 	var handelingUnits int
 	var handlingUnitTotalPackages int
-	for _, j := range quoteReq.Commodities {
+	for _, j := range quoteReq.QuoteRequest.Commodities {
 		//75*48*40 * 0.0005787
 		handlingUnitVolume += j.Length * j.Width * j.Height * 0.0005787
 		totalShipmentWeight += j.Weight
@@ -90,8 +90,8 @@ func NewConfirmAndDispatchStep3(quoteReq *v1.QuoteRequest, saveQuote *models.Sav
 	saveQuote.ConfirmAndDispatch.ShipperDetails = GetShippperPartyDetails(quoteReq, saveQuote)
 	saveQuote.ConfirmAndDispatch.ConsigneeDetails = GetConsigneePartyDetails(quoteReq, saveQuote)
 	saveQuote.ConfirmAndDispatch.EmergencyContactPerson = GetEmmergencyContact(quoteReq)
-	bol := "BOL" + quoteReq.Bid.QuoteId
-	reference := "bid" + quoteReq.Bid.QuoteId
+	bol := "BOL" + quoteReq.QuoteRequest.QuoteId
+	reference := "bid" + quoteReq.QuoteRequest.QuoteId
 	saveQuote.ConfirmAndDispatch.ReferenceNumberInfo = models.ReferenceNumberInfo{
 		CustomerBOL:     &bol,
 		ReferenceNumber: &reference,
@@ -105,20 +105,21 @@ func NewConfirmAndDispatchStep3(quoteReq *v1.QuoteRequest, saveQuote *models.Sav
 	// 	fmt.Println(err)
 	// }
 	saveQuote.ConfirmAndDispatch.BookedDate = &bookDate
-	saveQuote.ConfirmAndDispatch.ConsigneeDetails.InstructionNote = &quoteReq.Delivery.ReceiverInstructions
+	saveQuote.ConfirmAndDispatch.ConsigneeDetails.InstructionNote = &quoteReq.QuoteRequest.ReceiverInstructions
 
 	return saveQuote, nil
 }
 
-func GetRateDetails(quoteReq *v1.QuoteRequest, saveQuote *models.SaveQuote) models.Standard {
+func GetRateDetails(quoteRes *v1.QuoteResponse, saveQuote *models.SaveQuote) models.Standard {
 	var standard models.Standard
 	for _, j := range saveQuote.QuoteRate.DayDeliveries {
 		for _, k := range j.Standart {
-			if *k.CarrierName == quoteReq.Bid.CarrierName {
-				standard = k
-				break
+			for _, j := range quoteRes.Bids {
+				if *k.CarrierName == j.CarrierName {
+					standard = k
+					break
+				}
 			}
-
 		}
 	}
 	return standard

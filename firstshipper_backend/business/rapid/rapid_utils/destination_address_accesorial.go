@@ -14,20 +14,20 @@ import (
 // CommodityServices_guaranteed          CommodityServices = 3
 // CommodityServices_hazardous           CommodityServices = 4
 func FixDestinationAddressAccesorial(deliveryLocation *v1.Location, newQuote *models.DestinationShippingDetails) {
-	for _, deliveryLocationServices := range deliveryLocation.DeliveryLocationServices {
-		if deliveryLocationServices == v1.DeliveryLocationServices_LIFTGATE_DELIVERY {
-			newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, LiftGateDelivery())
-		}
-		if deliveryLocationServices == v1.DeliveryLocationServices_INSIDE_DELIVERY {
-			newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, InsideDelivery())
-		}
-		if deliveryLocationServices == v1.DeliveryLocationServices_DELIVERY_APPOINTMENT {
-			newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, DeliveryAppt())
-		}
-		if deliveryLocationServices == v1.DeliveryLocationServices_DELIVERY_NOTIFICATION {
-			newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, NotifyBeforeDelivery())
-		}
-	}
+	// for _, deliveryLocationServices := range deliveryLocation.DeliveryLocationServices {
+	// 	if deliveryLocationServices == v1.DeliveryLocationService_LIFTGATE_DELIVERY {
+	// 		newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, LiftGateDelivery())
+	// 	}
+	// 	if deliveryLocationServices == v1.DeliveryLocationService_INSIDE_DELIVERY {
+	// 		newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, InsideDelivery())
+	// 	}
+	// 	if deliveryLocationServices == v1.DeliveryLocationService_DELIVERY_APPOINTMENT {
+	// 		newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, DeliveryAppt())
+	// 	}
+	// 	if deliveryLocationServices == v1.DeliveryLocationService_DELIVERY_NOTIFICATION {
+	// 		newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, NotifyBeforeDelivery())
+	// 	}
+	// }
 
 	// for _, j := range baseOrigin.LocationServices {
 	// 	var currentService models.AddressAccessorial

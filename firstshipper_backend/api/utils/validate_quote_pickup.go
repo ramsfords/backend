@@ -5,21 +5,11 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func validateQuotePickup(req *v1.Location) error {
-	if req.Address.ZipCode == "" || len(req.Address.ZipCode) != 5 {
+func validateQuotePickup(req *v1.QuoteRequest) error {
+	if req.Pickup.Address.ZipCode == "" || len(req.Pickup.Address.ZipCode) != 5 {
 		return errs.ErrInvalidPickupZipCode
 	}
-	withdock := false
-	liftgate := false
-	if IncludesService(toInt32ArrayFromPickupLocationServices(req.PickupLocationServices), int32(v1.PickupLocationServices_PICKUP_LOCATION_WITH_DOCK)) {
-		withdock = true
-	}
-
-	if IncludesService(toInt32ArrayFromDeliveryLocationServices(req.DeliveryLocationServices), int32(v1.DeliveryLocationServices_DELIVERY_LOCATION_WITH_DOCK)) {
-		liftgate = true
-	}
-
-	if !withdock && liftgate || withdock && !liftgate {
+	if !(req.PickupLocationServices.PickupLocationWithDock || !req.PickupLocationServices.LiftGatePickup) && (!req.PickupLocationServices.PickupLocationWithDock || req.PickupLocationServices.LiftGatePickup) {
 		return errs.ErrInvalidPickupLocationServices.Err
 	}
 	return nil

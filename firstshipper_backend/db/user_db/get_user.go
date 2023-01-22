@@ -2,7 +2,7 @@ package user_db
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -11,28 +11,32 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (user UserDb) Getuser(ctx context.Context, email string) (*v1.User, error) {
-	res, err := user.Client.GetItem(context.Background(), &dynamodb.GetItemInput{
-		TableName: aws.String(user.Config.GetFirstShipperTableName()),
-		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: email},
+func (userdb UserDb) Getuser(ctx context.Context, email string) (*v1.User, error) {
+	res, err := userdb.Client.Query(context.Background(), &dynamodb.QueryInput{
+		TableName:              aws.String(userdb.GetFirstShipperTableName()),
+		IndexName:              aws.String("user_index"),
+		KeyConditionExpression: aws.String("#user_pk = :user_pk"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":user_pk": &types.AttributeValueMemberS{Value: "kandelsuren@gmail.com"},
 		},
-		ProjectionExpression: aws.String("#email"),
 		ExpressionAttributeNames: map[string]string{
-			"#email": email,
+			"#user_pk": "user_pk",
+			"#users":   "users",
 		},
+		ProjectionExpression: aws.String("#users"),
 	})
 	if err != nil {
 		return nil, err
 	}
+
 	userData := &v1.User{}
-	data, ok := res.Item["kandelsuren@gmail.com"]
+	data, ok := res.Items[0]["users"]
 	if !ok {
-		return nil, fmt.Errorf("user not found")
+		return nil, errors.New("no data found")
 	}
 	err = attributevalue.Unmarshal(data, &userData)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("no data found")
 	}
 	return userData, nil
 }

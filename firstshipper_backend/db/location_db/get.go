@@ -19,7 +19,7 @@ func (locationdb LocationDb) GetLocation(ctx context.Context, businessId string,
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String(locationdb.Config.GetFirstShipperTableName()),
 		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: "business#" + businessId},
+			"pk": &types.AttributeValueMemberS{Value: "pk#" + businessId},
 			"sk": &types.AttributeValueMemberS{Value: "location#" + businessId},
 		},
 	}

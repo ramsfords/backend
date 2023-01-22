@@ -30,7 +30,7 @@ func (qt Quote) UpdateQuote(ctx context.Context, quoteReq *v1.QuoteRequest) (*v1
 		qt.services.Logger.Error("UpdateQuote Validate : req data validation failed: %s", err)
 		return nil, errs.ErrInputDataNotValid
 	}
-	err = qt.services.UpdateQuote(ctx, *quoteReq)
+	err = qt.services.UpdateQuote(ctx, quoteReq)
 	if err != nil {
 		qt.services.Logger.Error("UpdateQuote : error in updating quote into the database: %s", err)
 		return nil, errs.ErrLocationUpdationFailed

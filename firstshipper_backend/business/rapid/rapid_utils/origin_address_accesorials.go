@@ -22,17 +22,17 @@ func FixOriginAddressAccessorials(baseOrigin *v1.Location, newQuote *models.Orig
 	// 	}
 
 	// }
-	for _, pickupLocationServices := range baseOrigin.PickupLocationServices {
-		if pickupLocationServices == v1.PickupLocationServices_LIFTGATE_PICKUP {
-			newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, OriginLiftGate())
-		}
-		if pickupLocationServices == v1.PickupLocationServices_INSIDE_PICKUP {
-			newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, InsidePickup())
-		}
-		if pickupLocationServices == v1.PickupLocationServices_PICKUP_APPOINTMENT {
-			// newQuote.AddressAccessorials = append(newQuote.AddressAccessorials, DeliveryAppt())
-		}
+	// for _, pickupLocationServices := range baseOrigin.PickupLocationServices {
+	// 	if pickupLocationServices == v1.PickupLocationService_LIFTGATE_PICKUP {
+	// 		newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, OriginLiftGate())
+	// 	}
+	// 	if pickupLocationServices == v1.PickupLocationService_INSIDE_PICKUP {
+	// 		newQuote.Address.AddressAccessorials = append(newQuote.Address.AddressAccessorials, InsidePickup())
+	// 	}
+	// 	if pickupLocationServices == v1.PickupLocationService_PICKUP_LOCATION_WITH_DOCK {
+	// 		// newQuote.AddressAccessorials = append(newQuote.AddressAccessorials, DeliveryAppt())
+	// 	}
 
-	}
+	// }
 
 }

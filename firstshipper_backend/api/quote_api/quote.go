@@ -27,11 +27,13 @@ func New(services *services.Services, echo *echo.Group, rapid *rapid.Rapid) {
 		rapid:    rapid,
 	}
 	// quote api
-	protectedQuoteGroup := echo.Group("quote")
-	protectedQuoteGroup.DELETE(":id", qt.EchoDeleteQuote)
+	protectedQuoteGroup := echo.Group("/quote")
+	protectedQuoteGroup.DELETE("/:quoteId", qt.EchoDeleteQuote)
 	protectedQuoteGroup.DELETE("", qt.EchoDeleteAllQuotes)
 	protectedQuoteGroup.GET("", qt.EchoGetQuotes)
-	protectedQuoteGroup.GET(":id", qt.EchoGetQuoteById)
+	protectedQuoteGroup.GET("/bids/:businessId/:quoteId", qt.EchoGetBidsByQuoteId)
+	protectedQuoteGroup.GET("/bid/:businessId/:quoteId", qt.EchoGetBidsByQuoteId)
+	protectedQuoteGroup.GET("/:quoteId", qt.EchoGetQuoteById)
 	protectedQuoteGroup.POST("", qt.EchoCreateQuote)
 	protectedQuoteGroup.PATCH("", qt.EchoUpdateQuote)
 }

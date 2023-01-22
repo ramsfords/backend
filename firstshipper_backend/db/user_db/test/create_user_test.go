@@ -25,12 +25,14 @@ func TestCreateUser(t *testing.T) {
 			t.Fatal(err)
 		}
 		res, err := db.Client.PutItem(context.Background(), &dynamodb.PutItemInput{
-			TableName: aws.String(conf.GetMenuloomTableName()),
+			TableName: aws.String(conf.GetFirstShipperTableName()),
 			Item: map[string]types.AttributeValue{
-				"pk":    &types.AttributeValueMemberS{Value: conf.GetMenuloomPKPrefix() + "himalayen.menuloom.com"},
-				"sk":    &types.AttributeValueMemberS{Value: "users#" + item.Email},
-				"users": data,
+				"pk":      &types.AttributeValueMemberS{Value: "pk#" + "1cc284"},
+				"sk":      &types.AttributeValueMemberS{Value: "user#" + item.Email},
+				"user_sk": &types.AttributeValueMemberS{Value: item.Email},
+				"users":   data,
 			},
+			ConditionExpression: aws.String(fmt.Sprintf("attribute_not_exists(%s)", "pk")),
 		})
 		fmt.Println(res, err)
 	})
