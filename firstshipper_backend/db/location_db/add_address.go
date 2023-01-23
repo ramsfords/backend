@@ -10,26 +10,35 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (locationdb LocationDb) AddLocationAddress(ctx context.Context, businessId string, address *v1.Address) error {
-	marshalledAddress, err := attributevalue.MarshalMap(address)
+func (locationdb LocationDb) AddLocationAddress(ctx context.Context, businessId string, address *v1.Address) (*v1.Address, error) {
+	marshalledAddress, err := attributevalue.Marshal(address)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	input := &dynamodb.UpdateItemInput{
 		TableName: aws.String(locationdb.Config.GetFirstShipperTableName()),
 		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: "business#" + businessId},
-			"sk": &types.AttributeValueMemberS{Value: "location#" + businessId},
+			"pk": &types.AttributeValueMemberS{Value: "pk#" + businessId},
+			"sk": &types.AttributeValueMemberS{Value: "business#" + businessId},
 		},
 		ExpressionAttributeNames: map[string]string{
-			"#address":  "address",
-			"#location": "location",
+			"#business":            "business",
+			"#address":             "address",
+			"#addressUpdateNeeded": "addressUpdateNeeded",
+			"#needsAddressUpdate":  "needsAddressUpdate",
 		},
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":address": &types.AttributeValueMemberM{Value: marshalledAddress},
+			":address":             marshalledAddress,
+			":addressUpdateNeeded": &types.AttributeValueMemberBOOL{Value: false},
+			":needsAddressUpdate":  &types.AttributeValueMemberBOOL{Value: false},
 		},
-		UpdateExpression: aws.String("SET #location.#address = :address"),
+		UpdateExpression: aws.String("SET #business.#address = :address, #business.#addressUpdateNeeded = :addressUpdateNeeded, #business.#needsAddressUpdate = :needsAddressUpdate"),
+		ReturnValues:     types.ReturnValueAllNew,
 	}
 	_, err = locationdb.Client.UpdateItem(ctx, input)
-	return err
+	if err != nil {
+		return nil, err
+	}
+
+	return address, nil
 }

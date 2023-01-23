@@ -2,6 +2,7 @@ package business_db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -30,9 +31,10 @@ func (businessDb BusinessDb) GetBusiness(ctx context.Context, businessId string)
 	if !ok {
 		return nil, err
 	}
-	var businessData *v1.Business
-	err = attributevalue.Unmarshal(business, &businessData)
+	businessData := &v1.Business{}
+	err = attributevalue.Unmarshal(business, businessData)
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
 

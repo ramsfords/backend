@@ -35,6 +35,8 @@ func New(services *services.Services, rapid *rapid.Rapid, app *echo.Group) Busin
 	businessGrp.POST("/add_business_address", bis.AddBusinessAddress)
 	businessGrp.GET("/get_basic_info/:businessId", bis.GetBasicInfo)
 	businessGrp.PATCH("/update_pickup_address", bis.UpdateDefaultPickupAddress)
+	businessGrp.POST("/address/:businessId", bis.AddBusinessAddress)
+	businessGrp.POST("/phone/:businessId", bis.UpdateBusinessPhoneNumber)
 
 	return bis
 }

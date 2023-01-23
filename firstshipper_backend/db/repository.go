@@ -40,7 +40,7 @@ type DB interface {
 	GetLocations(ctx context.Context, businessId string) ([]*v1.Location, error)
 	GetAllLocations(ctx context.Context) ([]*v1.Location, error)
 	UpdateLocation(ctx context.Context, businessId string, location *v1.Location) error
-	AddLocationAddress(ctx context.Context, businessId string, address *v1.Address) error
+	AddLocationAddress(ctx context.Context, businessId string, address *v1.Address) (*v1.Address, error)
 	GetLocation(ctx context.Context, businessId string, locationId string) (*v1.Location, error)
 
 	// Quote DB
@@ -63,7 +63,6 @@ type DB interface {
 	DeleteRapidQuote(ctx context.Context, quoteId string) error
 
 	// Business DB
-	AddAddress(ctx context.Context, businessId string, address v1.Address) error
 	SaveStaff(ctx context.Context, businessId string, staff v1.User) error
 	UpdateBusinessAddressUpdateNeeded(ctx context.Context, businessId string) error
 	DeleteStaff(ctx context.Context, businessId string, email string) error
@@ -75,6 +74,7 @@ type DB interface {
 	SaveBusiness(ctx context.Context, business v1.Business) error
 	UpdateStaffRole(ctx context.Context, businessId string, staffEmail string, roles []v1.Role) error
 	UpdateBusiness(ctx context.Context, businessId string, business v1.Business) error
+	AddPhoneNumber(ctx context.Context, businessId string, phoneNumber *v1.PhoneNumber) (*v1.PhoneNumber, error)
 }
 
 type Repository struct {

@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/labstack/echo/v5"
-	"github.com/pocketbase/pocketbase/apis"
 	"github.com/ramsfords/backend/firstshipper_backend/api/bids_api"
 	"github.com/ramsfords/backend/firstshipper_backend/api/bol_api"
 	"github.com/ramsfords/backend/firstshipper_backend/api/business_api"
@@ -15,8 +14,9 @@ import (
 )
 
 func SetUpAPi(firstShipperGrp *echo.Echo, services *services.Services, rapid *rapid.Rapid) {
-	grp := firstShipperGrp.Group("/firstshipper")
-	grp.Use(apis.RequireAdminOrRecordAuth())
+	grp := firstShipperGrp.Group("")
+
+	// grp.Use(apis.RequireAdminOrRecordAuth())
 	grp.GET("/ping", func(ctx echo.Context) error {
 		return ctx.JSON(200, echo.Map{
 			"message": "pong",

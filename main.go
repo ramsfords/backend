@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/jsvm"
@@ -58,6 +59,13 @@ func main() {
 	})
 
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+		e.Router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowOrigins: []string{"https://firstshipper.com", "https://menuloom.com", "http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:8787"},
+			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "auth-guard"},
+		}))
+		e.Router.OPTIONS("/*", func(c echo.Context) error {
+			return c.NoContent(http.StatusOK)
+		})
 		firstshipper_backend.FirstShipperRunner(conf, s3, logger, dynamodDb, e.Router, app)
 		menuloom_backend.MenuloomRunner(conf, s3, logger, dynamodDb, e.Router, app)
 		// serves static files from the provided public dir (if exists)
