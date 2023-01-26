@@ -23,7 +23,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pocketbase/pocketbase v0.11.2
 	github.com/ramsfords/services v0.0.0-20230112221629-5d9830cc80b7
-	github.com/ramsfords/types_gen v0.0.0-20230126024306-8f4bafa24d27
+	github.com/ramsfords/types_gen v0.0.0-20230126200423-ca42101e5a2a
 	github.com/scylladb/gocqlx/v2 v2.8.0
 	github.com/spf13/viper v1.14.0
 	github.com/valyala/fasthttp v1.44.0

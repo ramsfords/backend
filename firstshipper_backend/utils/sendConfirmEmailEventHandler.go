@@ -48,7 +48,6 @@ func SendConfrimEmailEventHandler(email *zohomail.Email, conf *configs.Config, s
 		recordData := e.Record.Get("passwordHash")
 		fmt.Print(recordData)
 		businessData := v1.Business{
-			BusinessName:                      name,
 			BusinessId:                        emailID,
 			AccountingEmail:                   emailID,
 			CustomerServiceEmail:              emailID,
@@ -57,9 +56,10 @@ func SendConfrimEmailEventHandler(email *zohomail.Email, conf *configs.Config, s
 			NeedsAddressUpdate:                true,
 			NeedsDefaultPickupAddressUpdate:   true,
 			NeedsDefaultDeliveryAddressUpdate: true,
+			Address:                           &v1.Address{},
 		}
 
-		err = services.SaveBusiness(context.Background(), businessData)
+		err = services.SaveBusiness(context.Background(), businessData, emailID)
 		if err != nil {
 			return err
 		}

@@ -39,7 +39,7 @@ type DB interface {
 	DeleteLocation(ctx context.Context, locationId string, businessId string) error
 	GetLocations(ctx context.Context, businessId string) ([]*v1.Location, error)
 	GetAllLocations(ctx context.Context) ([]*v1.Location, error)
-	UpdateLocation(ctx context.Context, businessId string, location *v1.Location) error
+	UpdateLocation(ctx context.Context, businessId string, location *v1.Address) error
 	AddLocationAddress(ctx context.Context, businessId string, address *v1.Address) (*v1.Address, error)
 	GetLocation(ctx context.Context, businessId string, locationId string) (*v1.Location, error)
 
@@ -71,10 +71,11 @@ type DB interface {
 	GetStaffsForABusiness(ctx context.Context, businessId string) ([]*v1.User, error)
 	GetBusiness(ctx context.Context, businessId string) (*v1.Business, error)
 	SaveDefaultPickup(ctx context.Context, businessId string, address v1.Location) error
-	SaveBusiness(ctx context.Context, business v1.Business) error
+	SaveBusiness(ctx context.Context, business v1.Business, businessId string) error
 	UpdateStaffRole(ctx context.Context, businessId string, staffEmail string, roles []v1.Role) error
 	UpdateBusiness(ctx context.Context, businessId string, business v1.Business) error
 	AddPhoneNumber(ctx context.Context, businessId string, phoneNumber *v1.PhoneNumber) (*v1.PhoneNumber, error)
+	UpdateBusinessName(ctx context.Context, businessId string, businessName string) error
 }
 
 type Repository struct {

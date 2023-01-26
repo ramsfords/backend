@@ -11,18 +11,20 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (businessDb BusinessDb) SaveBusiness(ctx context.Context, business v1.Business) error {
+func (businessDb BusinessDb) SaveBusiness(ctx context.Context, business v1.Business, businessId string) error {
 	business.Type = "business"
-	itemMarshalled, err := attributevalue.MarshalMap(business)
+	itemMarshalled, err := attributevalue.Marshal(business)
 	if err != nil {
 		return err
 	}
 	putItem := &dynamodb.PutItemInput{
 		TableName: aws.String(businessDb.GetFirstShipperTableName()),
 		Item: map[string]types.AttributeValue{
-			"pk":       &types.AttributeValueMemberS{Value: "pk#" + business.BusinessId},
-			"sk":       &types.AttributeValueMemberS{Value: "business#" + business.BusinessId},
-			"business": &types.AttributeValueMemberM{Value: itemMarshalled},
+			"pk":       &types.AttributeValueMemberS{Value: "pk#" + businessId},
+			"sk":       &types.AttributeValueMemberS{Value: "business#" + businessId},
+			"business": itemMarshalled,
+			"users":    &types.AttributeValueMemberM{Value: map[string]types.AttributeValue{}},
+			"quotes":   &types.AttributeValueMemberM{Value: map[string]types.AttributeValue{}},
 		},
 		ConditionExpression: aws.String(fmt.Sprintf("attribute_not_exists(%s)", "pk")),
 	}

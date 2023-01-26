@@ -10,34 +10,27 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (locationdb LocationDb) UpdateLocation(ctx context.Context, businessId string, data *v1.Location) error {
-	marshalledLocation, err := attributevalue.MarshalMap(data)
+func (locationdb LocationDb) UpdateLocation(ctx context.Context, businessId string, data *v1.Address) error {
+	marshalledAddress, err := attributevalue.Marshal(data)
 	if err != nil {
 		return err
 	}
 	input := &dynamodb.UpdateItemInput{
 		TableName: aws.String(locationdb.Config.GetFirstShipperTableName()),
 		Key: map[string]types.AttributeValue{
-			"pk":          &types.AttributeValueMemberS{Value: "business#" + businessId},
-			"sk":          &types.AttributeValueMemberS{Value: "location#" + data.Id},
-			"location_pk": &types.AttributeValueMemberS{Value: "location"},
-			"location_sk": &types.AttributeValueMemberS{Value: data.Id},
-			"location":    &types.AttributeValueMemberM{Value: marshalledLocation},
+			"pk": &types.AttributeValueMemberS{Value: "pk#" + businessId},
+			"sk": &types.AttributeValueMemberS{Value: "business#" + businessId},
 		},
 		ExpressionAttributeNames: map[string]string{
-			"#pk":          "pk",
-			"#sk":          "sk",
-			"#location_pk": "location_pk",
-			"#location_sk": "location_sk",
-			"#location":    "location",
+			"#business":                        "business",
+			"#defaultPickupAddress":            "defaultPickupAddress",
+			"#needsDefaultPickupAddressUpdate": "needsDefaultPickupAddressUpdate",
 		},
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":pk":          &types.AttributeValueMemberS{Value: "business#" + businessId},
-			":sk":          &types.AttributeValueMemberS{Value: "location#" + data.Id},
-			":location_pk": &types.AttributeValueMemberS{Value: "location"},
-			":location_sk": &types.AttributeValueMemberS{Value: data.Id},
-			":location":    &types.AttributeValueMemberM{Value: marshalledLocation},
+			":defaultPickupAddress":            marshalledAddress,
+			":needsDefaultPickupAddressUpdate": &types.AttributeValueMemberBOOL{Value: false},
 		},
+		UpdateExpression: aws.String("SET #business.#defaultPickupAddress = :defaultPickupAddress, #business.#needsDefaultPickupAddressUpdate = :needsDefaultPickupAddressUpdate"),
 	}
 	_, err = locationdb.Client.UpdateItem(ctx, input)
 	return err

@@ -29,7 +29,7 @@ func (business Business) CreateBusiness(ctx context.Context, req *v1.Business) (
 		business.services.Logger.Errorf("CreateBusiness Validate : req data validation failed: %s", err)
 		return nil, errs.ErrInputDataNotValid
 	}
-	err = business.services.SaveBusiness(ctx, *req)
+	err = business.services.SaveBusiness(ctx, *req, req.BusinessId)
 	if err != nil {
 		business.services.Logger.Errorf("CreateBusiness InsertBusiness : error in inserting business into the database: %s", err)
 		return nil, errs.ErrLocationCreationFailed

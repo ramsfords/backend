@@ -8,13 +8,13 @@ import (
 )
 
 func (business Business) UpdateDefaultPickupAddress(ctx echo.Context) error {
-	address := &v1.Location{}
+	address := &v1.Address{}
 	//err := server.unMarshall(ctx, signUpReq)
 	err := ctx.Bind(address)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	businessId := ctx.PathParam("businessId")
+	businessId := ctx.QueryParam("businessId")
 	if businessId == "" {
 		return ctx.NoContent(http.StatusBadRequest)
 	}

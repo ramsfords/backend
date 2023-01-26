@@ -13,7 +13,7 @@ import (
 
 func (userdb UserDb) SaveUser(ctx context.Context, usr v1.User, businessId string) error {
 	usr.Type = "user"
-	marshalledUser, err := attributevalue.MarshalMap(usr)
+	marshalledUser, err := attributevalue.Marshal(usr)
 	if err != nil {
 		return err
 	}
@@ -23,7 +23,7 @@ func (userdb UserDb) SaveUser(ctx context.Context, usr v1.User, businessId strin
 			"pk":      &types.AttributeValueMemberS{Value: "pk#" + businessId},
 			"sk":      &types.AttributeValueMemberS{Value: "user#" + usr.Email},
 			"user_sk": &types.AttributeValueMemberS{Value: usr.Email},
-			"users":   &types.AttributeValueMemberM{Value: marshalledUser},
+			"users":   marshalledUser,
 		},
 		ConditionExpression: aws.String(fmt.Sprintf("attribute_not_exists(%s)", "pk")),
 	}

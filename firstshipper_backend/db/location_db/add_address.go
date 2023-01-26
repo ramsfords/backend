@@ -22,17 +22,15 @@ func (locationdb LocationDb) AddLocationAddress(ctx context.Context, businessId 
 			"sk": &types.AttributeValueMemberS{Value: "business#" + businessId},
 		},
 		ExpressionAttributeNames: map[string]string{
-			"#business":            "business",
-			"#address":             "address",
-			"#addressUpdateNeeded": "addressUpdateNeeded",
-			"#needsAddressUpdate":  "needsAddressUpdate",
+			"#business":           "business",
+			"#address":            "address",
+			"#needsAddressUpdate": "needsAddressUpdate",
 		},
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":address":             marshalledAddress,
-			":addressUpdateNeeded": &types.AttributeValueMemberBOOL{Value: false},
-			":needsAddressUpdate":  &types.AttributeValueMemberBOOL{Value: false},
+			":address":            marshalledAddress,
+			":needsAddressUpdate": &types.AttributeValueMemberBOOL{Value: false},
 		},
-		UpdateExpression: aws.String("SET #business.#address = :address, #business.#addressUpdateNeeded = :addressUpdateNeeded, #business.#needsAddressUpdate = :needsAddressUpdate"),
+		UpdateExpression: aws.String("SET #business.#address = :address, #business.#needsAddressUpdate = :needsAddressUpdate"),
 		ReturnValues:     types.ReturnValueAllNew,
 	}
 	_, err = locationdb.Client.UpdateItem(ctx, input)

@@ -10,7 +10,7 @@ import (
 )
 
 func (loc Location) EchoUpdateLocation(ctx echo.Context) error {
-	req := v1.Location{}
+	req := v1.Address{}
 	err := ctx.Bind(&req)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
@@ -24,13 +24,13 @@ func (loc Location) EchoUpdateLocation(ctx echo.Context) error {
 
 }
 
-func (loc Location) UpdateLocation(ctx context.Context, locationReq *v1.Location) (*v1.Ok, error) {
-	err := locationReq.Validate()
+func (loc Location) UpdateLocation(ctx context.Context, addressReq *v1.Address) (*v1.Ok, error) {
+	err := addressReq.Validate()
 	if err != nil {
 		loc.services.Logger.Error("UpdateLocation Validate : req data validation failed: %s", err)
 		return nil, errs.ErrInputDataNotValid
 	}
-	err = loc.services.UpdateLocation(ctx, locationReq.BusinessId, locationReq)
+	err = loc.services.UpdateLocation(ctx, addressReq.BusinessId, addressReq)
 	if err != nil {
 		loc.services.Logger.Error("UpdateLocation : error in updating location into the database: %s", err)
 		return nil, errs.ErrLocationUpdationFailed

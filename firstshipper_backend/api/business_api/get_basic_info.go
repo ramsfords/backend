@@ -1,9 +1,12 @@
 package business_api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/pocketbase/pocketbase/apis"
+	"github.com/pocketbase/pocketbase/models"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -17,6 +20,13 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 	if businessID == "" {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
+	user, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
+
+	if user == nil {
+		return ctx.NoContent(http.StatusBadRequest)
+	}
+	email := user.GetString("email")
+	fmt.Println(email)
 	users, err := business.services.GetStaffsForABusiness(ctx.Request().Context(), businessID)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
@@ -38,6 +48,8 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 		Users:    sanitizeUserToFrontEnd(users),
 		Bookings: bookings,
 		Quotes:   quotes,
+		User:     getUserFromUsers(email, users),
+		Valid:    true,
 	}
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
@@ -64,4 +76,12 @@ func sanitizeUserToFrontEnd(user []*v1.User) []*v1.User {
 		})
 	}
 	return userData
+}
+func getCurrentUser(users []v1.User, email string) *v1.User {
+	for _, j := range users {
+		if j.Email == email {
+			return &j
+		}
+	}
+	return nil
 }
