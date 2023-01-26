@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -44,6 +45,8 @@ func SendConfrimEmailEventHandler(email *zohomail.Email, conf *configs.Config, s
 		if emailID == "" {
 			return errors.New("could not find email for confirm email")
 		}
+		recordData := e.Record.Get("passwordHash")
+		fmt.Print(recordData)
 		businessData := v1.Business{
 			BusinessName:                      name,
 			BusinessId:                        emailID,
@@ -55,7 +58,27 @@ func SendConfrimEmailEventHandler(email *zohomail.Email, conf *configs.Config, s
 			NeedsDefaultPickupAddressUpdate:   true,
 			NeedsDefaultDeliveryAddressUpdate: true,
 		}
+
 		err = services.SaveBusiness(context.Background(), businessData)
+		if err != nil {
+			return err
+		}
+		originData := e.Record.OriginalCopy()
+		userBytes, err := originData.MarshalJSON()
+		if err != nil {
+			return err
+		}
+		fmt.Println(originData)
+		userData := v1.User{}
+		err = json.Unmarshal(userBytes, &userData)
+		if err != nil {
+			return err
+		}
+		userData.Email = emailID
+		userData.PasswordHash = e.Record.GetString("passwordHash")
+		userData.Token = token
+		userData.Type = "user"
+		err = services.SaveUser(context.Background(), userData, emailID)
 		if err != nil {
 			return err
 		}

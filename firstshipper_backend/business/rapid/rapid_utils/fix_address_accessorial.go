@@ -51,7 +51,7 @@ import (
 func FixAddressAccesorial(baseQuoteReq *v1.QuoteRequest, rapidQuote *models.QuoteDetails) {
 	//pickup fixes
 	pickup_services := []models.AddressAccessorial{}
-	if baseQuoteReq.PickupLocationServices.InsidePickup {
+	if baseQuoteReq.LocationServices.InsidePickup {
 		pickup_services = append(pickup_services, models.AddressAccessorial{
 			AccessorialID:   28,
 			Name:            "Inside Pickup",
@@ -62,7 +62,7 @@ func FixAddressAccesorial(baseQuoteReq *v1.QuoteRequest, rapidQuote *models.Quot
 			Value:           nil,
 		})
 	}
-	if baseQuoteReq.PickupLocationServices.LiftGatePickup {
+	if baseQuoteReq.LocationServices.LiftGatePickup {
 		pickup_services = append(pickup_services, models.AddressAccessorial{
 			AccessorialID:   29,
 			Name:            "Liftgate Pickup",
@@ -89,7 +89,7 @@ func FixAddressAccesorial(baseQuoteReq *v1.QuoteRequest, rapidQuote *models.Quot
 	rapidQuote.OriginShippingDetails.Address.AddressAccessorials = pickup_services
 	// delivery
 	delivery_services := []models.AddressAccessorial{}
-	if baseQuoteReq.DeliveryLocationServices.InsideDelivery {
+	if baseQuoteReq.LocationServices.InsideDelivery {
 		delivery_services = append(delivery_services, models.AddressAccessorial{
 			AccessorialID:   38,
 			Name:            "Inside Delivery",
@@ -100,7 +100,7 @@ func FixAddressAccesorial(baseQuoteReq *v1.QuoteRequest, rapidQuote *models.Quot
 			Value:           nil,
 		})
 	}
-	if baseQuoteReq.DeliveryLocationServices.DeliveryAppointment {
+	if baseQuoteReq.LocationServices.DeliveryAppointment {
 		delivery_services = append(delivery_services, models.AddressAccessorial{
 			AccessorialID:   120,
 			Name:            "Delivery Appointment",
@@ -110,7 +110,7 @@ func FixAddressAccesorial(baseQuoteReq *v1.QuoteRequest, rapidQuote *models.Quot
 			DataType:        0,
 		})
 	}
-	if baseQuoteReq.DeliveryLocationServices.LiftGateDelivery {
+	if baseQuoteReq.LocationServices.LiftGateDelivery {
 		delivery_services = append(delivery_services, models.AddressAccessorial{
 			AccessorialID:   35,
 			Name:            "Liftgate Delivery",
@@ -119,7 +119,7 @@ func FixAddressAccesorial(baseQuoteReq *v1.QuoteRequest, rapidQuote *models.Quot
 			IsOnlyForUSA:    false,
 		})
 	}
-	if baseQuoteReq.DeliveryLocationServices.DeliveryAppointment {
+	if baseQuoteReq.LocationServices.DeliveryAppointment {
 		delivery_services = append(delivery_services, models.AddressAccessorial{
 			AccessorialID:   32,
 			Name:            "Notify Before Delivery",

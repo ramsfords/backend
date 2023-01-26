@@ -35,7 +35,7 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 	}
 	homeReq := v1.BasicInfo{
 		Business: bis,
-		Users:    fontEndUserToUser(users),
+		Users:    sanitizeUserToFrontEnd(users),
 		Bookings: bookings,
 		Quotes:   quotes,
 	}
@@ -52,13 +52,16 @@ func getUserFromUsers(email string, users []*v1.User) *v1.User {
 	}
 	return &v1.User{}
 }
-func fontEndUserToUser(user []*v1.FrontEndUser) []*v1.User {
-	frontEndUser := []*v1.User{}
+func sanitizeUserToFrontEnd(user []*v1.User) []*v1.User {
+	userData := []*v1.User{}
 	for _, usr := range user {
-		frontEndUser = append(frontEndUser, &v1.User{
-			Email: usr.Email,
-			Name:  usr.Name,
+		userData = append(userData, &v1.User{
+			Email:    usr.Email,
+			Name:     usr.Name,
+			UserName: usr.UserName,
+			TokenKey: usr.TokenKey,
+			Avatar:   usr.Avatar,
 		})
 	}
-	return frontEndUser
+	return userData
 }

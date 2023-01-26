@@ -6,10 +6,10 @@ import (
 )
 
 func validateShippingParty(loc *v1.Location) *errs.ApiErr {
-	if loc.Contact.FirstName == "" || len(loc.Contact.FirstName) < 2 || loc.Contact.LastName == "" {
+	if len(loc.Contact.Name) < 2 {
 		return &errs.InvalidContactInfo
 	}
-	if (loc.CompanyName == "" || len(loc.CompanyName) < 5) && loc.Contact.FirstName == "" {
+	if len(loc.CompanyName) < 5 {
 		return &errs.InvalidCompanyName
 	}
 	if loc.Contact.EmailAddress == "" || len(loc.Contact.EmailAddress) < 5 {

@@ -68,7 +68,7 @@ type DB interface {
 	DeleteStaff(ctx context.Context, businessId string, email string) error
 	DeleteBusiness(ctx context.Context, businessId string) error
 	GetAllBusinesses(ctx context.Context, businessId string) ([]v1.Business, error)
-	GetStaffsForABusiness(ctx context.Context, businessId string) ([]*v1.FrontEndUser, error)
+	GetStaffsForABusiness(ctx context.Context, businessId string) ([]*v1.User, error)
 	GetBusiness(ctx context.Context, businessId string) (*v1.Business, error)
 	SaveDefaultPickup(ctx context.Context, businessId string, address v1.Location) error
 	SaveBusiness(ctx context.Context, business v1.Business) error

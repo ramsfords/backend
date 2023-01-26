@@ -9,7 +9,7 @@ func validateQuoteDelivery(req *v1.QuoteRequest) error {
 	if req.Delivery.Address.ZipCode == "" || len(req.Delivery.Address.ZipCode) != 5 {
 		return errs.ErrInvalidDeliveryZipCode
 	}
-	if !(req.DeliveryLocationServices.DeliverLocationWithDock && !req.DeliveryLocationServices.LiftGateDelivery) || (!req.DeliveryLocationServices.DeliverLocationWithDock && req.DeliveryLocationServices.LiftGateDelivery) {
+	if !(req.LocationServices.DeliveryLocationWithDock && !req.LocationServices.LiftGateDelivery) || (!req.LocationServices.DeliveryLocationWithDock && req.LocationServices.LiftGateDelivery) {
 		return errs.ErrInvalidPickupLocationServices.Err
 	}
 	return nil

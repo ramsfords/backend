@@ -29,7 +29,7 @@ import (
 //       "#87672": "sk"
 //     }
 
-func (businessDb BusinessDb) GetStaffsForABusiness(ctx context.Context, businessId string) ([]*v1.FrontEndUser, error) {
+func (businessDb BusinessDb) GetStaffsForABusiness(ctx context.Context, businessId string) ([]*v1.User, error) {
 	res, err := businessDb.Client.Query(ctx, &dynamodb.QueryInput{
 		TableName: aws.String(businessDb.GetFirstShipperTableName()),
 		ExpressionAttributeNames: map[string]string{
@@ -47,21 +47,21 @@ func (businessDb BusinessDb) GetStaffsForABusiness(ctx context.Context, business
 		KeyConditionExpression: aws.String("#pk = :pk And begins_with(#sk, :sk)"),
 	})
 	if err != nil {
-		return []*v1.FrontEndUser{}, err
+		return []*v1.User{}, err
 	}
 	if len(res.Items) == 0 {
-		return []*v1.FrontEndUser{}, nil
+		return []*v1.User{}, nil
 	}
-	usrs := []*v1.FrontEndUser{}
+	usrs := []*v1.User{}
 	for _, item := range res.Items {
 		data, ok := item["users"]
 		if !ok {
 			continue
 		}
-		usr := &v1.FrontEndUser{}
+		usr := &v1.User{}
 		err = attributevalue.Unmarshal(data, &usr)
 		if err != nil {
-			return []*v1.FrontEndUser{}, err
+			return []*v1.User{}, err
 		}
 		usrs = append(usrs, usr)
 	}

@@ -7,11 +7,11 @@ import (
 
 func GetEmmergencyContact(quoteRes *v1.QuoteResponse) models.EmergencyContactPerson {
 	contact := models.EmergencyContactPerson{}
-	if quoteRes.QuoteRequest.Pickup.Contact.FirstName != "" {
-		contact.Name += quoteRes.QuoteRequest.Pickup.Contact.FirstName
+	if quoteRes.QuoteRequest.Pickup.Contact.Name != "" {
+		contact.Name += quoteRes.QuoteRequest.Pickup.Contact.Name
 	}
-	if quoteRes.QuoteRequest.Pickup.Contact.LastName != "" {
-		contact.Name += " " + quoteRes.QuoteRequest.Pickup.Contact.LastName
+	if quoteRes.QuoteRequest.Pickup.Contact.Name != "" {
+		contact.Name += " " + quoteRes.QuoteRequest.Pickup.Contact.Name
 	}
 	if quoteRes.QuoteRequest.Pickup.Contact.PhoneNumber != "" {
 		contact.Phone = quoteRes.QuoteRequest.Pickup.Contact.PhoneNumber
