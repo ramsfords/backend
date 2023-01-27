@@ -3,13 +3,11 @@ package quote_db
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -21,33 +19,29 @@ import (
 // "ExpressionAttributeValues": {":quote_pk": {"S":"quote"},":pk": {"S":"business#1cc284"}}
 func (quoteDb QuoteDb) GetBidByBidID(ctx context.Context, businessId string, quoteId string, bidId string) (*v1.Bid, error) {
 	res, err := quoteDb.Client.Query(context.Background(), &dynamodb.QueryInput{
-		TableName:              aws.String(quoteDb.GetFirstShipperTableName()),
-		KeyConditionExpression: aws.String("#pk = :pk And begins_with(#sk, :sk)"),
+		TableName: aws.String(quoteDb.GetFirstShipperTableName()),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":pk": &types.AttributeValueMemberS{Value: "pk#" + businessId},
 			":sk": &types.AttributeValueMemberS{Value: "quote#" + quoteId},
 		},
 		ExpressionAttributeNames: map[string]string{
-			"#sk":     "sk",
-			"#pk":     "pk",
-			"#quotes": "quotes",
+			"#bids": "bids",
 		},
-		ProjectionExpression: aws.String("#quotes"),
+		ProjectionExpression: aws.String("#bids"),
 	})
 	if err != nil {
 		return nil, err
 	}
-	quote, ok := res.Items[0]["quotes"]
-	quoteRes := model.QuoteRequest{}
+	bids, ok := res.Items[0]["bids"]
+	bidRes := []*v1.Bid{}
 	if ok {
 
-		err := attributevalue.Unmarshal(quote, &quoteRes)
+		err := attributevalue.Unmarshal(bids, bidRes)
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println(quoteRes)
 	}
-	for _, bid := range quoteRes.Bids {
+	for _, bid := range bidRes {
 		if bid.BidId == bidId {
 			return bid, nil
 		}

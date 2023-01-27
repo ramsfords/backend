@@ -8,11 +8,11 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func MakeBid(saveQuote *models.SaveQuote, qtReq *v1.QuoteRequest) []*v1.Bid {
+func MakeBid(saveQuote *models.SaveQuote, qtReq *v1.QuoteRequest) []v1.Bid {
 	if !saveQuote.QuoteRate.IsValid {
 		return nil
 	}
-	bids := []*v1.Bid{}
+	bids := []v1.Bid{}
 	for _, j := range saveQuote.QuoteRate.DayDeliveries {
 		for i, k := range j.Standart {
 			estimatedDeliveryDate := strings.Split(*k.EstimateDeliveryDate, "T")[0]
@@ -55,7 +55,7 @@ func MakeBid(saveQuote *models.SaveQuote, qtReq *v1.QuoteRequest) []*v1.Bid {
 					NetAmount:  k.Total + 15,
 				},
 			}
-			bids = append(bids, &bid)
+			bids = append(bids, bid)
 		}
 	}
 	return bids

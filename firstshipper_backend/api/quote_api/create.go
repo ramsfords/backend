@@ -28,7 +28,7 @@ func (qt Quote) EchoCreateQuote(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, res)
 }
 
-func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*v1.QuoteResponse, error) {
+func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*model.QuoteRequest, error) {
 	err := utils.ValidateQuoteRequest(qtReq)
 	if err != nil {
 		return nil, err
@@ -63,9 +63,9 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*v1.Q
 	}
 	// save quote with rapid quote
 	quoteRate := &model.QuoteRequest{
-		QuoteRequest: *qtReq,
-		SaveQuote:    *saveQuote,
-		Bids:         bidRes,
+		QuoteRequest:   qtReq,
+		RapidSaveQuote: saveQuote,
+		Bids:           bidRes,
 	}
 	err = qt.services.SaveQuote(ctxx, quoteRate)
 	if err != nil {
@@ -90,9 +90,8 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*v1.Q
 	// } else {
 	// 	validUntilStr = validUntil.Format(time.RFC3339)
 	// }
-	return &v1.QuoteResponse{
+	return &model.QuoteRequest{
 		QuoteRequest: qtReq,
 		Bids:         bidRes,
-		Success:      true,
 	}, nil
 }

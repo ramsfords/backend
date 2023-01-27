@@ -36,4 +36,5 @@ func New(services *services.Services, echo *echo.Group, rapid *rapid.Rapid) {
 	protectedQuoteGroup.GET("/:quoteId", qt.EchoGetQuoteById)
 	protectedQuoteGroup.POST("", qt.EchoCreateQuote)
 	protectedQuoteGroup.PATCH("", qt.EchoUpdateQuote)
+	protectedQuoteGroup.POST("/book", qt.EchoCreateBook)
 }

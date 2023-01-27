@@ -7,9 +7,9 @@ import (
 
 // QuoteRequest is the request body for a quote request
 type QuoteRequest struct {
-	Bids         []*v1.Bid        `json:"bids" dynamodbav:"bids"`
-	QuoteRequest v1.QuoteRequest  `json:"quoteRequest" dynamodbav:"quoteRequest"`
-	SaveQuote    models.SaveQuote `json:"SaveQuote" dynamodbav:"SaveQuote"`
+	Bids           []v1.Bid          `json:"bids" dynamodbav:"bids"`
+	QuoteRequest   *v1.QuoteRequest  `json:"quoteRequest" dynamodbav:"quoteRequest"`
+	RapidSaveQuote *models.SaveQuote `json:"SaveQuote" dynamodbav:"rapidSaveQuote"`
 }
 
 type BidsWithQuote struct {

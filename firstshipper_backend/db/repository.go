@@ -45,7 +45,7 @@ type DB interface {
 
 	// Quote DB
 	SaveQuote(ctx context.Context, qtReq *model.QuoteRequest) error
-	GetQuoteByQuoteId(ctx context.Context, quoteId string, businessId string) (*v1.QuoteRequest, error)
+	GetQuoteByQuoteId(ctx context.Context, quoteId string, businessId string) (*model.QuoteRequest, error)
 	DeleteQuote(ctx context.Context, quoteId string) error
 	DeleteAllQuoteByBusinessId(ctx context.Context, buisnessId string) error
 	DeleteQuotesByQuoteIds(ctx context.Context, businessId string, quoteId []string) error

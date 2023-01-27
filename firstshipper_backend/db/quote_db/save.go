@@ -17,13 +17,13 @@ func (quotedb QuoteDb) SaveQuote(ctx context.Context, qtReq *model.QuoteRequest)
 	if err != nil {
 		return err
 	}
-	marshlledRapidSaveQuote, err := attributevalue.Marshal(qtReq.SaveQuote)
+	marshlledRapidSaveQuote, err := attributevalue.Marshal(qtReq.RapidSaveQuote)
 	if err != nil {
 		return err
 	}
 	bidMap := make(map[string]v1.Bid)
 	for _, bid := range qtReq.Bids {
-		bidMap[bid.CarrierName] = *bid
+		bidMap[bid.CarrierName] = bid
 	}
 	marshalledBids, err := attributevalue.Marshal(bidMap)
 	if err != nil {
