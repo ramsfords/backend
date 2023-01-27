@@ -23,7 +23,7 @@ func validateQuoteCommodities(qtReq *v1.QuoteRequest) error {
 		if !j.WeightUOM.LB {
 			return errs.InvalidWeightUOM
 		}
-		if j.PackageType == v1.PackageType_PACKAGE_NONE {
+		if j.PackageType == v1.PackageType_PACKAGENONE {
 			return errs.InvalidPackageType
 		}
 		if len(j.ShipmentDescription) < 2 {

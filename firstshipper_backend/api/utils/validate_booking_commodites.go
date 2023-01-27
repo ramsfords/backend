@@ -21,7 +21,7 @@ func validateBookingCommodities(quoteReq *v1.QuoteRequest, quoteCommodity *v1.Qu
 		// if j.WeightUOM != 0 {
 		// 	return &errs.InvalidWeightUOM
 		// }
-		if j.PackageType == v1.PackageType_PACKAGE_NONE {
+		if j.PackageType == v1.PackageType_PACKAGENONE {
 			return &errs.InvalidPackageType
 		}
 		if j.ShipmentDescription == "" || len(j.ShipmentDescription) < 2 {
