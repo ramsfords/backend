@@ -29,7 +29,7 @@ func (quotedb QuoteDb) SaveQuote(ctx context.Context, qtReq *model.QuoteRequest)
 	for _, bid := range qtReq.Bids {
 		bidMap[bid.CarrierName] = bid
 	}
-	marshalledBids, err := attributevalue.Marshal(bidMap)
+	marshalledBids, err := attributevalue.Marshal(qtReq.Bids)
 	if err != nil {
 		return err
 	}
