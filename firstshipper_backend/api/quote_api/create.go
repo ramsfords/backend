@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/firstshipper_backend/api/utils"
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
-	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils"
+	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils/quote"
 	errs "github.com/ramsfords/backend/foundations/error"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -33,63 +33,45 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 	if err != nil {
 		return nil, err
 	}
-	quotId := utils.GenerateString(10)
-	quoteId := fmt.Sprint(quotId)
-	qtReq.QuoteId = quoteId
+	qtReq.QuoteId = fmt.Sprint(qt.services.GetQuoteCount())
 
 	// make compatible rapid quote to send to rapid for quote rates
-	rapidQuote, err := rapid_utils.MakeQuoteDetails(qtReq)
+	rapidQuoteRequest, err := quote.MakeQuoteDetails(qtReq)
 	if err != nil {
 		return nil, errs.ErrInvalidInputs
 	}
 
 	// get quote from rapid
-	res, err := qt.rapid.GetQuote(rapidQuote)
+	res, err := qt.rapid.GetQuote(rapidQuoteRequest)
 	if err != nil {
 		qt.services.Logger.Error(err)
 		return nil, errs.ErrInternal
 	}
 
-	saveQuote := rapid_utils.NewSaveQuoteStep2(rapidQuote, res)
-	// err = qt.services.SaveRapidQuote(ctxx, *res, *qtReq)
-	// if err != nil {
-	// 	qt.services.Logger.Error(err)
-	// 	return nil, errors.New("could not save quote in rapid")
-	// }
+	saveQuote := quote.SaveQuoteStep2(rapidQuoteRequest, res)
+	saveQuoteRes, err := qt.rapid.SaveQuoteStep(saveQuote)
+	if err != nil {
+		// just log the error not Need to return error
+		qt.services.Logger.Error(err)
+	}
 
-	bidRes := rapid_utils.MakeBid(saveQuote, qtReq)
+	bidRes := quote.MakeBid(qtReq, res.DayDeliveries, qt.Mutex)
 	if bidRes == nil {
 		return nil, errs.ErrInternal
 	}
 	// save quote with rapid quote
 	quoteRate := &model.QuoteRequest{
-		QuoteRequest:   qtReq,
-		RapidSaveQuote: saveQuote,
-		Bids:           bidRes,
+		QuoteRequest:      qtReq,
+		RapidSaveQuote:    saveQuote,
+		Bids:              bidRes,
+		SaveQuoteResponse: saveQuoteRes,
+		RapidBooking:      nil,
+		Bid:               nil,
 	}
 	err = qt.services.SaveQuote(ctxx, quoteRate)
 	if err != nil {
 		return nil, errs.ErrStoreInternal
 	}
-	// validUntil := time.Now().Add(10 * time.Minute)
-	// pickupDate, err := time.Parse(time.RFC3339, qtReq.ShipmentDetails.PickupDate)
-	// if err != nil {
-	// 	return nil, errs.ErrInternal
-	// }
-	// validUntilStr := ""
-
-	// fmt.Println(pickupDate.Day())
-	// if pickupDate.Day() == validUntil.Day() {
-	// 	hour, _, _ := validUntil.Clock()
-	// 	fmt.Println(qt.provider.Conf().LastPickupTime)
-	// 	if hour < qt.provider.Conf().LastPickupTime {
-	// 		validUntilStr = validUntil.Format(time.RFC3339)
-	// 	} else {
-	// 		validUntilStr = ""
-	// 	}
-	// } else {
-	// 	validUntilStr = validUntil.Format(time.RFC3339)
-	// }
 	return &model.QuoteRequest{
 		QuoteRequest: qtReq,
 		Bids:         bidRes,

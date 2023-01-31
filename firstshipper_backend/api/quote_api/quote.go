@@ -2,6 +2,7 @@ package quote_api
 
 import (
 	"context"
+	"sync"
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/firstshipper_backend/business/rapid"
@@ -19,12 +20,14 @@ type QuoteContract interface {
 type Quote struct {
 	services *services.Services
 	rapid    *rapid.Rapid
+	*sync.Mutex
 }
 
 func New(services *services.Services, echo *echo.Group, rapid *rapid.Rapid) {
 	qt := Quote{
 		services: services,
 		rapid:    rapid,
+		Mutex:    &sync.Mutex{},
 	}
 	// quote api
 	protectedQuoteGroup := echo.Group("/quote")

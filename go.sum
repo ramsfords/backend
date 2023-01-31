@@ -478,6 +478,8 @@ github.com/PuerkitoBio/purell v1.0.0/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbt
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20160726150825-5bd2802263f2/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
+github.com/SebastiaanKlippert/go-wkhtmltopdf v1.8.2 h1:n66+ofm9qVFC1qygyOJ1DgzSv2hSAO66XRbbMQ4JMNI=
+github.com/SebastiaanKlippert/go-wkhtmltopdf v1.8.2/go.mod h1:SQq4xfIdvf6WYKSDxAJc+xOJdolt+/bc1jnQKMtPMvQ=
 github.com/Shopify/logrus-bugsnag v0.0.0-20171204204709-577dee27f20d/go.mod h1:HI8ITrYtUY+O+ZhtlqUnD8+KwNPOyugEhfP9fdUIaEQ=
 github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWXgklEdEo=
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
@@ -1713,8 +1715,8 @@ github.com/ramsfords/foundations v0.0.0-20230112221324-93568d22d73a h1:kZViEpAao
 github.com/ramsfords/foundations v0.0.0-20230112221324-93568d22d73a/go.mod h1:0VS+hbvGgiwUrwEizGyBn4CzZIDzH1D8/Nvn9sU8nZk=
 github.com/ramsfords/services v0.0.0-20230112221629-5d9830cc80b7 h1:GBc7kLUEX8Lir8CHzQr/hvzElI0szVhVYZfgTmbWdAw=
 github.com/ramsfords/services v0.0.0-20230112221629-5d9830cc80b7/go.mod h1:UHLrgR8/dVqMd03UYfTEeN7VoVhq6ucL0RcuREaz1eg=
-github.com/ramsfords/types_gen v0.0.0-20230127001907-9931b8b0c673 h1:noXSFYzi1pYW90r2UIQSo+KIcjNUX8AM1VNpkuy62FY=
-github.com/ramsfords/types_gen v0.0.0-20230127001907-9931b8b0c673/go.mod h1:+Gmwq7K2nI1U2WdCt3hEdIRmZKD4zbhK+4ZbikvDMbY=
+github.com/ramsfords/types_gen v0.0.0-20230131032009-8fb6144ba95a h1:2z0mp5tq5+kl2QyYhDfhfLGA1xFXC4KtRdE6S+qXlTo=
+github.com/ramsfords/types_gen v0.0.0-20230131032009-8fb6144ba95a/go.mod h1:+Gmwq7K2nI1U2WdCt3hEdIRmZKD4zbhK+4ZbikvDMbY=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 github.com/remyoudompheng/bigfft v0.0.0-20220927061507-ef77025ab5aa h1:tEkEyxYeZ43TR55QU/hsIt9aRGBxbgGuz9CGykjvogY=

@@ -3,6 +3,7 @@ module github.com/ramsfords/backend
 go 1.19
 
 require (
+	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.8.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/aws/aws-sdk-go v1.44.180
 	github.com/aws/aws-sdk-go-v2 v1.17.3
@@ -23,7 +24,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pocketbase/pocketbase v0.11.2
 	github.com/ramsfords/services v0.0.0-20230112221629-5d9830cc80b7
-	github.com/ramsfords/types_gen v0.0.0-20230127001907-9931b8b0c673
+	github.com/ramsfords/types_gen v0.0.0-20230131032009-8fb6144ba95a
 	github.com/scylladb/gocqlx/v2 v2.8.0
 	github.com/spf13/viper v1.14.0
 	github.com/valyala/fasthttp v1.44.0

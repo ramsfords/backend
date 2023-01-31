@@ -1,26 +1,31 @@
 package bol_api
 
 import (
-	"context"
 	"fmt"
-	"io"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/labstack/echo/v5"
 )
 
-func (bol Bol) GinGetBOL(ctx echo.Context) error {
-	id := ctx.PathParam("id")
+func (bol Bol) EchoGetBOL(ctx echo.Context) error {
+	quoteId := ctx.QueryParam("quoteId")
 	// if !okay {
 	// 	utils.Respond(bol.provider, ctx, utils.Ok{Success: false, StatusCode: errs.ErrInputDataNotValid.Cod}, errs.ErrInvalidInputs)
 	// 	return
 	// }
-	if len(id) < 1 || id == "" {
+	if len(quoteId) < 1 || quoteId == "" {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
-
+	businessId := ctx.QueryParam("businessId")
+	if len(businessId) < 1 || businessId == "" {
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+	ctxx := ctx.Request().Context()
+	qtReq, err := bol.services.GetBooking(ctxx, quoteId, businessId)
+	if err != nil {
+		return ctx.NoContent(http.StatusNotFound)
+	}
+	fmt.Print(qtReq)
 	// clms, ok := ctx.Get("claims")
 	// var claims auth.Claims
 	// if ok {
@@ -39,20 +44,21 @@ func (bol Bol) GinGetBOL(ctx echo.Context) error {
 	// 	utils.Respond(bol.provider, ctx, utils.Ok{Success: false, StatusCode: errs.ErrNotAllowed.Cod}, errs.ErrNotAllowed)
 	// 	return
 	// }
-	s3Input := &s3.GetObjectInput{
-		Bucket: aws.String("firstshipperbol"),
-		Key:    aws.String("bol" + id + ".pdf"),
-	}
-	bolPdf, err := bol.services.S3Client.Client.GetObject(context.Background(), s3Input)
-	if err != nil {
-		return ctx.NoContent(http.StatusNotFound)
-	}
-	fmt.Println(bolPdf)
-	pdfBytes, err := io.ReadAll(bolPdf.Body)
-	if err != nil {
-		return ctx.NoContent(http.StatusNotFound)
-	}
-	ctx.Request().Header.Set("Cache-Control", "max-age=604800")
-	return ctx.Blob(http.StatusOK, "application/pdf", pdfBytes)
+	return ctx.JSON(http.StatusOK, qtReq)
+	// s3Input := &s3.GetObjectInput{
+	// 	Bucket: aws.String("firstshipperbol"),
+	// 	Key:    aws.String("bol" + quoteId + ".pdf"),
+	// }
+	// bolPdf, err := bol.services.S3Client.Client.GetObject(context.Background(), s3Input)
+	// if err != nil {
+	// 	return ctx.NoContent(http.StatusNotFound)
+	// }
+	// fmt.Println(bolPdf)
+	// pdfBytes, err := io.ReadAll(bolPdf.Body)
+	// if err != nil {
+	// 	return ctx.NoContent(http.StatusNotFound)
+	// }
+	// ctx.Request().Header.Set("Cache-Control", "max-age=604800")
+	// return ctx.Blob(http.StatusOK, "application/pdf", pdfBytes)
 
 }

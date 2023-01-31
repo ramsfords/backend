@@ -21,7 +21,11 @@ func (quotedb QuoteDb) SaveQuote(ctx context.Context, qtReq *model.QuoteRequest)
 	if err != nil {
 		return err
 	}
-	bidMap := make(map[string]v1.Bid)
+	marshlledSaveQuoteResponose, err := attributevalue.Marshal(qtReq.SaveQuoteResponse)
+	if err != nil {
+		return err
+	}
+	bidMap := make(map[string]*v1.Bid)
 	for _, bid := range qtReq.Bids {
 		bidMap[bid.CarrierName] = bid
 	}
@@ -32,11 +36,15 @@ func (quotedb QuoteDb) SaveQuote(ctx context.Context, qtReq *model.QuoteRequest)
 	input := &dynamodb.PutItemInput{
 		TableName: aws.String(quotedb.Config.GetFirstShipperTableName()),
 		Item: map[string]types.AttributeValue{
-			"pk":             &types.AttributeValueMemberS{Value: "pk#" + qtReq.QuoteRequest.BusinessId},
-			"sk":             &types.AttributeValueMemberS{Value: "quote#" + qtReq.QuoteRequest.QuoteId},
-			"quoteRequest":   marshlledQtReq,
-			"rapidSaveQuote": marshlledRapidSaveQuote,
-			"bids":           marshalledBids,
+			"pk":                &types.AttributeValueMemberS{Value: "pk#" + qtReq.QuoteRequest.BusinessId},
+			"sk":                &types.AttributeValueMemberS{Value: "quote#" + qtReq.QuoteRequest.QuoteId},
+			"quoteRequest":      marshlledQtReq,
+			"rapidSaveQuote":    marshlledRapidSaveQuote,
+			"bids":              marshalledBids,
+			"saveQuoteResponse": marshlledSaveQuoteResponose,
+			"rapidBooking":      &types.AttributeValueMemberM{Value: nil},
+			"bookingInfo":       &types.AttributeValueMemberM{Value: nil},
+			"bid":               &types.AttributeValueMemberM{Value: nil},
 		},
 	}
 	_, err = quotedb.Client.PutItem(ctx, input)

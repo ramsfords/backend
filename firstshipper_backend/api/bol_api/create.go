@@ -43,7 +43,7 @@ type BolGenerateResponse struct {
 	RemainingCredits int32  `json:"remainingCredits,omitempty" dynamodbav:"remainingCredits,omitempty"`
 }
 
-func (bol *Bol) GinCreateBOL(ctx echo.Context) error {
+func (bol *Bol) EchoCreateBOL(ctx echo.Context) error {
 	//booking id
 	id := &v1.Id{}
 	err := ctx.Bind(id)
@@ -51,13 +51,13 @@ func (bol *Bol) GinCreateBOL(ctx echo.Context) error {
 		return errs.ErrInvalidInputs
 
 	}
-	bookingData, err := bol.services.GetBooking(ctx.Request().Context(), id.Id)
+	bookingData, err := bol.services.GetBooking(ctx.Request().Context(), id.Id, id.Id)
 	if err != nil {
 		return errs.ErrInvalidInputs
 	}
-	bookingData.BolUrl = fmt.Sprintf("https://api.firstshipper.com/bol/v1/%s", bookingData.QuoteId)
+	bookingData.BookingInfo.BolUrl = fmt.Sprintf("https://api.firstshipper.com/bol/v1/%s", bookingData.Bid.ShipmentId)
 	bolGen := BOlGenerateReq{
-		Url:             fmt.Sprintf("https://firstshipper.com/documents/booking_id=%s&token=ADMINuEvTLNWGJlJOKTENawuMQYBfboqOASkurvgmQUamNREeWdDTnh", bookingData.QuoteId),
+		Url:             fmt.Sprintf("https://firstshipper.com/documents/booking_id=%s&token=ADMINuEvTLNWGJlJOKTENawuMQYBfboqOASkurvgmQUamNREeWdDTnh", bookingData.Bid.ShipmentId),
 		Margins:         "5mm",
 		PaperSize:       "A4",
 		Orientation:     "Portrait",
@@ -104,7 +104,7 @@ func (bol *Bol) GinCreateBOL(ctx echo.Context) error {
 		ContentDisposition: aws.String("inline"),
 		Body:               strings.NewReader(string(pdfBytes)),
 		Metadata: map[string]string{
-			"business_id": bookingData.BusinessId,
+			"businessId": bookingData.QuoteRequest.QuoteId,
 		},
 	}
 	s3res, err := bol.services.S3Client.Client.PutObject(context.Background(), s3Input)

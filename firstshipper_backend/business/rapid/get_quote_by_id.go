@@ -7,16 +7,17 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/models"
 	"github.com/ramsfords/backend/foundations/vault"
 	"github.com/valyala/fasthttp"
 )
 
-func (rapid Rapid) GetQuoteById(rapidQuoteData SaveResponse) (*models.SaveQuote, error) {
+func (rapid Rapid) GetQuoteById(rapidQuoteData model.QuoteRequest) (*models.SaveQuote, error) {
 	// per-request timeout
 	reqTimeout := time.Duration(20) * time.Second
 	req := fasthttp.AcquireRequest()
-	url := fmt.Sprintf("https://rapidshipltl.mycarriertms.com/MyCarrierAPI//api/SaveQuote/GetSavedQuote?savedQuoteId=%s&isReRunShipment=%v", rapidQuoteData.SavedQuoteId, false)
+	url := fmt.Sprintf("https://rapidshipltl.mycarriertms.com/MyCarrierAPI//api/SaveQuote/GetSavedQuote?savedQuoteId=%s&isReRunShipment=%v", rapidQuoteData.SaveQuoteResponse.SavedQuoteID, false)
 	req.SetRequestURI(url)
 	req.Header.SetMethod(fasthttp.MethodPost)
 	req.Header.SetContentTypeBytes([]byte("application/json"))

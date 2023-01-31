@@ -1,302 +1,327 @@
 {
-  "isValid": true,
-  "titleHeadData": {
-    "accessorialServices": [],
-    "originZip": "91762",
-    "destinationZip": "77081",
-    "weight": 800.0,
-    "quoteKey": "4e40c57a-ab62-4fda-91a7-5a909e8181bb",
-    "classes": ["70"],
-    "pickUpDate": "2022-08-12T00:00:00",
-    "formatedPickUpDate": {
-      "formatedDay": "12",
-      "formatedWeekDay": "Fri",
-      "formatedMonth": "08"
-    }
-  },
-  "quoteId": 8102110,
-  "errorMessages": [],
-  "carriersNotInQuote": [],
-  "dayDeliveries": [
-    {
-      "formatedGuaranteedDate": "2022-08-18T00:00:00",
-      "guarantedDate": "2022-08-18T00:00:00",
-      "isHoliday": false,
-      "isWeekend": false,
-      "holidayName": null,
-      "isUnspecifiedTransitCarrier": false,
-      "dayDeliveryFormated": {
-        "formatedDay": "18",
+    "isValid": true,
+    "titleHeadData": {
+      "accessorialServices": [],
+      "originZip": "91762",
+      "destinationZip": "77081",
+      "weight": 1000,
+      "quoteKey": "55f210bc-86fc-40e5-9118-3a22edcdaaf7",
+      "classes": [
+        "70"
+      ],
+      "pickUpDate": "2023-02-02T00:00:00",
+      "formatedPickUpDate": {
+        "formatedDay": "02",
         "formatedWeekDay": "Thu",
-        "formatedMonth": "08"
-      },
-      "transitDays": 4,
-      "standart": [
-        {
-          "carrierCode": "RDFS",
-          "carrierCodeAdditional": "RDFS",
-          "carrierName": "Roadrunner Freight",
-          "networkPartnerId": null,
-          "isGuaranty": false,
-          "carrierDeliveryDate": "08/18",
-          "carrierDeliveryTime": null,
-          "estimateDeliveryDate": "2022-08-18T00:00:00",
-          "deliveryTime": null,
-          "capacityProviderQuoteNumber": "7492897",
-          "truckloadIconLogo": null,
-          "capacityProviderAccountGroup": {
-            "code": "RamsFordinc_PROD_91762_1039341_202202111959",
-            "accounts": [{ "code": "RDFS" }]
-          },
-          "carrierRequiredField": {
-            "carrierRequiredFieldId": 1070,
-            "shipperEmailAddress": false,
-            "consigneeEmailAddress": false,
-            "shipperLastName": false,
-            "consigneeLastName": false,
-            "nmfcCode": false,
-            "consigneeTime": false
-          },
-          "carrierAPIs": {
-            "carrierAPIId": 1070,
-            "quotingAPIEnabled": true,
-            "dispatchAPIEnabled": true,
-            "trackingAPIEnabled": true,
-            "documentImagesAPIEnabled": true
-          },
-          "onTimeRisk": 91.2,
-          "logo": "https://content.mycarriertms.com/carriers/d5700f5d-ae85-4119-b4c0-b0d14ad08da4.png",
-          "largeLogo": "https://content.mycarriertms.com/carriers/651af2b5-638a-463e-918d-9dedb42da42b.png",
-          "quoteNumber": "7492897",
-          "infoMessage": null,
-          "currencyCode": "0",
-          "total": 288.38,
-          "serviceName": null,
-          "bolText": null,
-          "carrierId": 1070,
-          "isTermsAndConditionsEnabled": false,
-          "termAndCondition": null,
-          "laneType": 0,
-          "laneTypeName": "DIRECT",
-          "rateQuoteDetails": [
-            {
-              "amount": 2052.88,
-              "rate": 256.61,
-              "itemFreightClass": null,
-              "code": "ITEM",
-              "description": "Item Charge"
-            },
-            {
-              "amount": 60.0,
-              "rate": 0.0,
-              "itemFreightClass": null,
-              "code": "CARBFEE",
-              "description": "California Compliance Charge"
-            },
-            {
-              "amount": 37.23,
-              "rate": 0.0,
-              "itemFreightClass": null,
-              "code": "LH",
-              "description": "Linehaul Surcharge - 27.90%"
-            },
-            {
-              "amount": -1919.44,
-              "rate": -93.5,
-              "itemFreightClass": null,
-              "code": "DSC",
-              "description": "Discount - 93.50%"
-            },
-            {
-              "amount": 57.71,
-              "rate": 43.25,
-              "itemFreightClass": null,
-              "code": "FSC",
-              "description": "Fuel Surcharge - 43.25%"
-            }
-          ],
-          "serviceLevelCode": "STD",
-          "isSelectedCarrier": false,
-          "transitDays": 4,
-          "dispatchTypeId": null,
-          "effectiveDate": null,
-          "unAcceptedAccessorials": null,
-          "carrierVolumeQuoteNum": null,
-          "contractId": null,
-          "expirationDate": null,
-          "truckloadAvailabilityDate": null,
-          "priorityMessageHeading": null,
-          "priorityMessages": null,
-          "displayAPIWarning": false,
-          "isHasITMContract": true,
-          "apiOutageMessage": "Roadrunner Freight's APIs are currently offline. We have reached out and are working with their team to resolve this. We'll send a follow up message once they are back online."
-        }
-      ],
-      "guarantyAM": [],
-      "guarantyPM": []
+        "formatedMonth": "02"
+      }
     },
-    {
-      "formatedGuaranteedDate": "0001-01-01T00:00:00",
-      "guarantedDate": "2022-08-19T00:00:00",
-      "isHoliday": false,
-      "isWeekend": false,
-      "holidayName": null,
-      "isUnspecifiedTransitCarrier": false,
-      "dayDeliveryFormated": {
-        "formatedDay": "19",
-        "formatedWeekDay": "Fri",
-        "formatedMonth": "08"
-      },
-      "transitDays": 5,
-      "standart": [],
-      "guarantyAM": [],
-      "guarantyPM": []
-    },
-    {
-      "formatedGuaranteedDate": "0001-01-01T00:00:00",
-      "guarantedDate": "2022-08-22T00:00:00",
-      "isHoliday": false,
-      "isWeekend": false,
-      "holidayName": null,
-      "isUnspecifiedTransitCarrier": false,
-      "dayDeliveryFormated": {
-        "formatedDay": "22",
-        "formatedWeekDay": "Mon",
-        "formatedMonth": "08"
-      },
-      "transitDays": 6,
-      "standart": [],
-      "guarantyAM": [],
-      "guarantyPM": []
-    },
-    {
-      "formatedGuaranteedDate": "2022-08-23T00:00:00",
-      "guarantedDate": "2022-08-23T00:00:00",
-      "isHoliday": false,
-      "isWeekend": false,
-      "holidayName": null,
-      "isUnspecifiedTransitCarrier": false,
-      "dayDeliveryFormated": {
-        "formatedDay": "23",
-        "formatedWeekDay": "Tue",
-        "formatedMonth": "08"
-      },
-      "transitDays": 7,
-      "standart": [
-        {
-          "carrierCode": "CLNI",
-          "carrierCodeAdditional": "CLNI",
-          "carrierName": "Clear Lane Freight Systems",
-          "networkPartnerId": null,
-          "isGuaranty": false,
-          "carrierDeliveryDate": "08/23",
-          "carrierDeliveryTime": null,
-          "estimateDeliveryDate": "2022-08-23T00:00:00",
-          "deliveryTime": null,
-          "capacityProviderQuoteNumber": null,
-          "truckloadIconLogo": null,
-          "capacityProviderAccountGroup": {
-            "code": "RamsFordinc_PROD_91762_1039341_202202111959",
-            "accounts": [{ "code": "CLNI" }]
-          },
-          "carrierRequiredField": {
-            "carrierRequiredFieldId": 1079,
-            "shipperEmailAddress": false,
-            "consigneeEmailAddress": false,
-            "shipperLastName": false,
-            "consigneeLastName": false,
-            "nmfcCode": false,
-            "consigneeTime": false
-          },
-          "carrierAPIs": {
-            "carrierAPIId": 1079,
-            "quotingAPIEnabled": true,
-            "dispatchAPIEnabled": true,
-            "trackingAPIEnabled": true,
-            "documentImagesAPIEnabled": true
-          },
-          "onTimeRisk": 84.0,
-          "logo": "https://content.mycarriertms.com/carriers/89ea3c55-14a7-4e4c-9256-a9f84ece6b2e.png",
-          "largeLogo": "https://content.mycarriertms.com/carriers/a5de6698-e946-41dd-90b5-049332c4b78d.png",
-          "quoteNumber": null,
-          "infoMessage": null,
-          "currencyCode": "0",
-          "total": 303.75,
-          "serviceName": null,
-          "bolText": null,
-          "carrierId": 1079,
-          "isTermsAndConditionsEnabled": false,
-          "termAndCondition": null,
-          "laneType": 2,
-          "laneTypeName": "UNSPECIFIED",
-          "rateQuoteDetails": [
-            {
-              "amount": 32.0,
-              "rate": null,
-              "itemFreightClass": null,
-              "code": "CARBFEE",
-              "description": "CALIFORNIA CAPACITY SURCHARGE"
+    "quoteId": 10099076,
+    "errorMessages": [
+      "XPO LTL: An error occurred while retrieving rates. [500: ROBN1004: Msg not found for Orig: 1999060105 RT: -60 RC: 4 M: CCAR0031]"
+    ],
+    "gfpErrorMessages": [],
+    "carriersNotInQuote": [
+      {
+        "icon": "https://content.mycarriertms.com/carriers/29f70c94-378e-4828-9765-07b678ea0d22.png",
+        "name": "XPO LTL",
+        "code": "XPOL",
+        "messages": [
+          "An error occurred while retrieving rates. [500: ROBN1004: Msg not found for Orig: 1999060105 RT: -60 RC: 4 M: CCAR0031]"
+        ],
+        "displayAPIWarning": false,
+        "apiOutageMessage": "XPO's APIs are currently offline. We have reached out and are working with their team to resolve this. We'll send a follow up message once they are back online."
+      }
+    ],
+    "dayDeliveries": [
+      {
+        "formatedGuaranteedDate": "2023-02-08T00:00:00",
+        "guarantedDate": "2023-02-08T00:00:00",
+        "isHoliday": false,
+        "isWeekend": false,
+        "holidayName": null,
+        "isUnspecifiedTransitCarrier": false,
+        "dayDeliveryFormated": {
+          "formatedDay": "08",
+          "formatedWeekDay": "Wed",
+          "formatedMonth": "02"
+        },
+        "transitDays": 4,
+        "standart": [
+          {
+            "carrierCode": "RDFS",
+            "carrierCodeAdditional": "RDFS",
+            "carrierName": "Roadrunner Freight",
+            "networkPartnerId": null,
+            "isGuaranty": false,
+            "carrierDeliveryDate": "02/08",
+            "carrierDeliveryTime": null,
+            "estimateDeliveryDate": "2023-02-08T00:00:00",
+            "deliveryTime": null,
+            "capacityProviderQuoteNumber": "9355646",
+            "truckloadIconLogo": null,
+            "capacityProviderAccountGroup": {
+              "code": "RamsFordinc_PROD_91762_1039341_202202111959",
+              "accounts": [
+                {
+                  "code": "RDFS"
+                }
+              ]
             },
-            {
-              "amount": 47.0,
-              "rate": null,
-              "itemFreightClass": null,
-              "code": "LHS",
-              "description": "Line Haul Surcharge"
+            "carrierRequiredField": {
+              "carrierRequiredFieldId": 1070,
+              "shipperEmailAddress": false,
+              "consigneeEmailAddress": false,
+              "shipperLastName": false,
+              "consigneeLastName": false,
+              "nmfcCode": false,
+              "consigneeTime": false
             },
-            {
-              "amount": 69.75,
-              "rate": null,
-              "itemFreightClass": null,
-              "code": "FSC",
-              "description": "FUEL SURCHARGE"
+            "carrierAPIs": {
+              "carrierAPIId": 1070,
+              "quotingAPIEnabled": true,
+              "dispatchAPIEnabled": true,
+              "trackingAPIEnabled": true,
+              "documentImagesAPIEnabled": true
             },
-            {
-              "amount": 155.0,
-              "rate": null,
-              "itemFreightClass": null,
-              "code": "GFC",
-              "description": "Gross Freight Charge"
-            }
-          ],
-          "serviceLevelCode": "STD",
-          "isSelectedCarrier": false,
-          "transitDays": 7,
-          "dispatchTypeId": null,
-          "effectiveDate": null,
-          "unAcceptedAccessorials": null,
-          "carrierVolumeQuoteNum": null,
-          "contractId": null,
-          "expirationDate": null,
-          "truckloadAvailabilityDate": null,
-          "priorityMessageHeading": null,
-          "priorityMessages": null,
-          "displayAPIWarning": false,
-          "isHasITMContract": false,
-          "apiOutageMessage": "Clear Lane Freight Systems' APIs are currently offline. We have reached out and are working with their team to resolve this. We'll send a follow up message once they are back online."
-        }
-      ],
-      "guarantyAM": [],
-      "guarantyPM": []
-    },
-    {
-      "formatedGuaranteedDate": "0001-01-01T00:00:00",
-      "guarantedDate": null,
-      "isHoliday": false,
-      "isWeekend": false,
-      "holidayName": null,
-      "isUnspecifiedTransitCarrier": true,
-      "dayDeliveryFormated": {
-        "formatedDay": null,
-        "formatedWeekDay": null,
-        "formatedMonth": null
+            "onTimeRisk": 91.2,
+            "logo": "https://content.mycarriertms.com/carriers/d5700f5d-ae85-4119-b4c0-b0d14ad08da4.png",
+            "largeLogo": "https://content.mycarriertms.com/carriers/651af2b5-638a-463e-918d-9dedb42da42b.png",
+            "quoteNumber": "9355646",
+            "infoMessage": null,
+            "currencyCode": "0",
+            "total": 298.51,
+            "serviceName": null,
+            "bolText": null,
+            "carrierId": 1070,
+            "isTermsAndConditionsEnabled": false,
+            "termAndCondition": null,
+            "laneType": 0,
+            "laneTypeName": "DIRECT",
+            "rateQuoteDetails": [
+              {
+                "amount": 2179.6,
+                "rate": 217.96,
+                "itemFreightClass": null,
+                "code": "ITEM",
+                "description": "Item Charge"
+              },
+              {
+                "amount": 60,
+                "rate": 0,
+                "itemFreightClass": null,
+                "code": "CARBFEE",
+                "description": "California Compliance Charge"
+              },
+              {
+                "amount": 39.53,
+                "rate": 0,
+                "itemFreightClass": null,
+                "code": "LH",
+                "description": "Linehaul Surcharge - 27.90%"
+              },
+              {
+                "amount": -2037.93,
+                "rate": -93.5,
+                "itemFreightClass": null,
+                "code": "DSC",
+                "description": "Discount - 93.50%"
+              },
+              {
+                "amount": 57.31,
+                "rate": 40.45,
+                "itemFreightClass": null,
+                "code": "FSC",
+                "description": "Fuel Surcharge - 40.45%"
+              }
+            ],
+            "serviceLevelCode": "STD",
+            "isSelectedCarrier": false,
+            "transitDays": 4,
+            "dispatchTypeId": null,
+            "effectiveDate": null,
+            "unAcceptedAccessorials": null,
+            "carrierVolumeQuoteNum": null,
+            "contractId": null,
+            "expirationDate": null,
+            "truckloadAvailabilityDate": null,
+            "priorityMessageHeading": null,
+            "priorityMessages": null,
+            "displayAPIWarning": false,
+            "isHasITMContract": true,
+            "apiOutageMessage": "Roadrunner Freight's APIs are currently offline. We have reached out and are working with their team to resolve this. We'll send a follow up message once they are back online."
+          }
+        ],
+        "guarantyAM": [],
+        "guarantyPM": []
       },
-      "transitDays": null,
-      "standart": [],
-      "guarantyAM": [],
-      "guarantyPM": []
-    }
-  ],
-  "selectedCarrier": null,
-  "selectedCarrierTransitTime": null
-}
+      {
+        "formatedGuaranteedDate": "0001-01-01T00:00:00",
+        "guarantedDate": "2023-02-09T00:00:00",
+        "isHoliday": false,
+        "isWeekend": false,
+        "holidayName": null,
+        "isUnspecifiedTransitCarrier": false,
+        "dayDeliveryFormated": {
+          "formatedDay": "09",
+          "formatedWeekDay": "Thu",
+          "formatedMonth": "02"
+        },
+        "transitDays": 5,
+        "standart": [],
+        "guarantyAM": [],
+        "guarantyPM": []
+      },
+      {
+        "formatedGuaranteedDate": "0001-01-01T00:00:00",
+        "guarantedDate": "2023-02-10T00:00:00",
+        "isHoliday": false,
+        "isWeekend": false,
+        "holidayName": null,
+        "isUnspecifiedTransitCarrier": false,
+        "dayDeliveryFormated": {
+          "formatedDay": "10",
+          "formatedWeekDay": "Fri",
+          "formatedMonth": "02"
+        },
+        "transitDays": 6,
+        "standart": [],
+        "guarantyAM": [],
+        "guarantyPM": []
+      },
+      {
+        "formatedGuaranteedDate": "2023-02-13T00:00:00",
+        "guarantedDate": "2023-02-13T00:00:00",
+        "isHoliday": false,
+        "isWeekend": false,
+        "holidayName": null,
+        "isUnspecifiedTransitCarrier": false,
+        "dayDeliveryFormated": {
+          "formatedDay": "13",
+          "formatedWeekDay": "Mon",
+          "formatedMonth": "02"
+        },
+        "transitDays": 7,
+        "standart": [
+          {
+            "carrierCode": "CLNI",
+            "carrierCodeAdditional": "CLNI",
+            "carrierName": "Clear Lane Freight Systems",
+            "networkPartnerId": null,
+            "isGuaranty": false,
+            "carrierDeliveryDate": "02/13",
+            "carrierDeliveryTime": null,
+            "estimateDeliveryDate": "2023-02-13T00:00:00",
+            "deliveryTime": null,
+            "capacityProviderQuoteNumber": null,
+            "truckloadIconLogo": null,
+            "capacityProviderAccountGroup": {
+              "code": "RamsFordinc_PROD_91762_1039341_202202111959",
+              "accounts": [
+                {
+                  "code": "CLNI"
+                }
+              ]
+            },
+            "carrierRequiredField": {
+              "carrierRequiredFieldId": 1079,
+              "shipperEmailAddress": false,
+              "consigneeEmailAddress": false,
+              "shipperLastName": false,
+              "consigneeLastName": false,
+              "nmfcCode": false,
+              "consigneeTime": false
+            },
+            "carrierAPIs": {
+              "carrierAPIId": 1079,
+              "quotingAPIEnabled": true,
+              "dispatchAPIEnabled": true,
+              "trackingAPIEnabled": true,
+              "documentImagesAPIEnabled": true
+            },
+            "onTimeRisk": 84,
+            "logo": "https://content.mycarriertms.com/carriers/89ea3c55-14a7-4e4c-9256-a9f84ece6b2e.png",
+            "largeLogo": "https://content.mycarriertms.com/carriers/4a04f866-55b0-4056-9689-b9a7ba331ea3.png",
+            "quoteNumber": null,
+            "infoMessage": null,
+            "currencyCode": "0",
+            "total": 287.18,
+            "serviceName": null,
+            "bolText": null,
+            "carrierId": 1079,
+            "isTermsAndConditionsEnabled": false,
+            "termAndCondition": null,
+            "laneType": 2,
+            "laneTypeName": "UNSPECIFIED",
+            "rateQuoteDetails": [
+              {
+                "amount": 32,
+                "rate": null,
+                "itemFreightClass": null,
+                "code": "CARBFEE",
+                "description": "CALIFORNIA CAPACITY SURCHARGE"
+              },
+              {
+                "amount": 50,
+                "rate": null,
+                "itemFreightClass": null,
+                "code": "LHS",
+                "description": "Line Haul Surcharge"
+              },
+              {
+                "amount": 60.18,
+                "rate": null,
+                "itemFreightClass": null,
+                "code": "FSC",
+                "description": "FUEL SURCHARGE"
+              },
+              {
+                "amount": 145,
+                "rate": null,
+                "itemFreightClass": null,
+                "code": "GFC",
+                "description": "Gross Freight Charge"
+              }
+            ],
+            "serviceLevelCode": "STD",
+            "isSelectedCarrier": false,
+            "transitDays": 7,
+            "dispatchTypeId": null,
+            "effectiveDate": null,
+            "unAcceptedAccessorials": null,
+            "carrierVolumeQuoteNum": null,
+            "contractId": null,
+            "expirationDate": null,
+            "truckloadAvailabilityDate": null,
+            "priorityMessageHeading": null,
+            "priorityMessages": null,
+            "displayAPIWarning": false,
+            "isHasITMContract": false,
+            "apiOutageMessage": "Clear Lane Freight Systems' APIs are currently offline. We have reached out and are working with their team to resolve this. We'll send a follow up message once they are back online."
+          }
+        ],
+        "guarantyAM": [],
+        "guarantyPM": []
+      },
+      {
+        "formatedGuaranteedDate": "0001-01-01T00:00:00",
+        "guarantedDate": null,
+        "isHoliday": false,
+        "isWeekend": false,
+        "holidayName": null,
+        "isUnspecifiedTransitCarrier": true,
+        "dayDeliveryFormated": {
+          "formatedDay": null,
+          "formatedWeekDay": null,
+          "formatedMonth": null
+        },
+        "transitDays": null,
+        "standart": [],
+        "guarantyAM": [],
+        "guarantyPM": []
+      }
+    ],
+    "selectedCarrier": null,
+    "selectedCarrierTransitTime": null,
+    "isGFPShipment": false
+  }

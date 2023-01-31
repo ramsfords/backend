@@ -8,11 +8,11 @@ type SaveQuote struct {
 	ReferenceID                   string              `json:"referenceId" dynamodbav:"referenceId"`
 	IsFromSavedQuote              bool                `json:"isFromSavedQuote" dynamodbav:"isFromSavedQuote"`
 	PickupDate                    string              `json:"pickupDate" dynamodbav:"pickupDate"`
-	InfoMessage                   string              `json:"infoMessage" dynamodbav:"infoMessage"`
+	InfoMessage                   *string             `json:"infoMessage" dynamodbav:"infoMessage"`
 	IsFavorite                    bool                `json:"isFavorite" dynamodbav:"isFavorite"`
 	IsSystemAdmin                 bool                `json:"isSystemAdmin" dynamodbav:"isSystemAdmin"`
 	IsKeepAdminChangesModeEnabled bool                `json:"isKeepAdminChangesModeEnabled" dynamodbav:"isKeepAdminChangesModeEnabled"`
-	OrderID                       string              `json:"orderId" dynamodbav:"orderId"`
+	OrderID                       *string             `json:"orderId" dynamodbav:"orderId"`
 	QuoteErrors                   []string            `json:"quoteErrors" dynamodbav:"quoteErrors"`
 	Step                          int                 `json:"step" dynamodbav:"step"`
 	GfpTotals                     interface{}         `json:"gfpTotals"`

@@ -5,7 +5,7 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func ValidateBookRequest(qtReq *v1.QuoteRequest, bookReq *v1.QuoteRequest, bid v1.Bid) error {
+func ValidateBookRequest(qtReq *v1.QuoteRequest, bookReq *v1.QuoteRequest, bid *v1.Bid) error {
 	if qtReq.QuoteId != bid.QuoteId {
 		return errs.ErrInvalidInputs
 	}

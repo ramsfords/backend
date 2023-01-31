@@ -5,7 +5,7 @@ type QuoteDetails struct {
 	BillingAddress                   Address                    `json:"billingAddress,omitempty" dynamodbav:"billingAddress"`
 	OriginShippingDetails            OriginShippingDetails      `json:"originShippingDetails,omitempty" dynamodbav:"originShippingDetails"`
 	DestinationShippingDetails       DestinationShippingDetails `json:"destinationShippingDetails,omitempty" dynamodbav:"destinationShippingDetails"`
-	ShipmentItems                    *[]ShipmentItem            `json:"shipmentItems,omitempty" dynamodbav:"shipmentItems"`
+	ShipmentItems                    []*ShipmentItem            `json:"shipmentItems,omitempty" dynamodbav:"shipmentItems"`
 	FreightCharge                    int                        `json:"freightCharge,omitempty" dynamodbav:"freightCharge"`
 	ShipmentID                       string                     `json:"shipmentId,omitempty" dynamodbav:"shipmentId"`
 	IsInsuredShipment                bool                       `json:"isInsuredShipment,omitempty" dynamodbav:"isInsuredShipment"`

@@ -25,6 +25,7 @@ func (rapid Rapid) Dispatch(rapidQuoteData *models.ConfirmAndDispatch) (*models.
 	}
 	req.Header.Set(rapid.AuthTokenName, authToken)
 	out, err := json.Marshal(rapidQuoteData)
+	fmt.Println("\n \n \n dispatch request")
 	fmt.Println(string(out))
 	if err != nil {
 		return nil, nil

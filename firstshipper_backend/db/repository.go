@@ -2,7 +2,14 @@ package db
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"strconv"
+	"sync"
 
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/models"
@@ -27,10 +34,10 @@ type DB interface {
 	UpdateUserConfirmEmail(ctx context.Context, businessId, email string) (bool, error)
 
 	//LTL BOOKING DB
-	SaveBooking(ctx context.Context, booking *v1.BookingResponse) error
+	SaveBooking(ctx context.Context, bookingRes *model.QuoteRequest) error
 	UpdateBooking(ctx context.Context, booking *v1.BookingResponse, businessId string) error
 	DeleteBooking(ctx context.Context, BookingId string, businessId string) error
-	GetBooking(ctx context.Context, BookingId string) (*v1.BookingResponse, error)
+	GetBooking(ctx context.Context, bookingId string, businessId string) (*v1.BookingResponse, error)
 	GetAllBookingsByBusinessId(ctx context.Context, businessId string) ([]*v1.BookingResponse, error)
 	GetAllBookings(ctx context.Context) ([]*v1.BookingResponse, error)
 
@@ -76,10 +83,18 @@ type DB interface {
 	UpdateBusiness(ctx context.Context, businessId string, business v1.Business) error
 	AddPhoneNumber(ctx context.Context, businessId string, phoneNumber *v1.PhoneNumber) (*v1.PhoneNumber, error)
 	UpdateBusinessName(ctx context.Context, businessId string, businessName string) error
+
+	// Incraase quote Count
+	IncreateQuoteCount()
+	// Get Quote Count
+	GetQuoteCount() int64
 }
 
 type Repository struct {
-	dynamo.DB
+	sync.Mutex
+	QuoteCount int64
+	Config     *configs.Config
+	DB         dynamo.DB
 	user_db.UserDb
 	booking_db.BookingDb
 	location_db.LocationDb
@@ -97,8 +112,38 @@ type Repository struct {
 // }
 
 func New(db dynamo.DB, configs *configs.Config) DB {
-	var repo DB = Repository{}
-	repo = Repository{
+	getCountInput := &dynamodb.GetItemInput{
+		TableName: aws.String(configs.GetFirstShipperTableName()),
+		Key: map[string]types.AttributeValue{
+			"pk": &types.AttributeValueMemberS{
+				Value: "quoteCount",
+			},
+			"sk": &types.AttributeValueMemberS{
+				Value: "quoteCount",
+			},
+		},
+	}
+	qtCount, err := db.Client.GetItem(context.Background(), getCountInput)
+	if err != nil {
+		log.Println("Error getting quote count", err)
+	}
+	countValue := qtCount.Item["quoteCount"].(*types.AttributeValueMemberN).Value
+	fmt.Println(qtCount)
+	var repo DB = &Repository{}
+	var count int64
+	if countValue != "0" {
+		if _, ok := repo.(*Repository); ok {
+			quoteIntCount, err := strconv.ParseInt(countValue, 10, 64)
+			if err != nil {
+				log.Println("Error converting quote count to int", err)
+			}
+			count = quoteIntCount
+		}
+	}
+	repo = &Repository{
+		QuoteCount: count,
+		Config:     configs,
+		DB:         db,
 		UserDb: user_db.UserDb{
 			Config: configs,
 			DB:     db,
@@ -124,5 +169,36 @@ func New(db dynamo.DB, configs *configs.Config) DB {
 			DB:     db,
 		},
 	}
+	repo.IncreateQuoteCount()
 	return repo
+}
+func (repo *Repository) IncreateQuoteCount() {
+	repo.Mutex.Lock()
+	defer repo.Mutex.Unlock()
+	repo.QuoteCount++
+	res, err := repo.DB.Client.UpdateItem(context.Background(), &dynamodb.UpdateItemInput{
+		TableName: aws.String(repo.Config.GetFirstShipperTableName()),
+		Key: map[string]types.AttributeValue{
+			"pk": &types.AttributeValueMemberS{
+				Value: "quoteCount",
+			},
+			"sk": &types.AttributeValueMemberS{
+				Value: "quoteCount",
+			},
+		},
+		UpdateExpression: aws.String("set quoteCount =  :val"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":val": &types.AttributeValueMemberN{
+				Value: fmt.Sprint(repo.QuoteCount),
+			},
+		},
+		ReturnValues: "UPDATED_NEW",
+	})
+	if err != nil {
+		log.Println("Error updating quote count", err)
+	}
+	fmt.Println(res)
+}
+func (repo *Repository) GetQuoteCount() int64 {
+	return repo.QuoteCount
 }

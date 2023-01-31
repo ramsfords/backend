@@ -9,15 +9,15 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
-	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/models"
-	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-type QuoteRequest struct {
-	Bids           map[string]v1.Bid `json:"bids" dynamodbav:"bids"`
-	QuoteRequest   *v1.QuoteRequest  `json:"quoteRequest" dynamodbav:"quoteRequest"`
-	RapidSaveQuote *models.SaveQuote `json:"SaveQuote" dynamodbav:"rapidSaveQuote"`
-}
+// type QuoteRequest struct {
+// 	Bids              map[string]v1.Bid         `json:"bids" dynamodbav:"bids"`
+// 	QuoteRequest      *v1.QuoteRequest          `json:"quoteRequest" dynamodbav:"quoteRequest"`
+// 	RapidSaveQuote    *models.SaveQuote         `json:"SaveQuote" dynamodbav:"rapidSaveQuote"`
+// 	SaveQuoteResponse *models.SaveQuoteResponse `json:"saveQuoteResponse" dynamodbav:"saveQuoteResponse"`
+// 	RapidBooking      *models.DispatchResponse  `json:"Booking" dynamodbav:"rapidBooking"`
+// }
 
 func (quoteDb QuoteDb) GetQuoteByQuoteId(ctx context.Context, quoteId string, businessId string) (*model.QuoteRequest, error) {
 	res, err := quoteDb.Client.GetItem(context.Background(), &dynamodb.GetItemInput{
@@ -31,20 +31,12 @@ func (quoteDb QuoteDb) GetQuoteByQuoteId(ctx context.Context, quoteId string, bu
 		return nil, err
 	}
 
-	quoteData := &QuoteRequest{}
+	quoteData := &model.QuoteRequest{}
 	err = attributevalue.UnmarshalMap(res.Item, quoteData)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
 	}
-	bids := []v1.Bid{}
-	for _, bid := range quoteData.Bids {
-		bids = append(bids, bid)
-	}
-	resQuote := &model.QuoteRequest{
-		Bids:           bids,
-		QuoteRequest:   quoteData.QuoteRequest,
-		RapidSaveQuote: quoteData.RapidSaveQuote,
-	}
-	return resQuote, nil
+
+	return quoteData, nil
 }

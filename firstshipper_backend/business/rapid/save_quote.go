@@ -12,12 +12,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-type SaveResponse struct {
-	IsSucceeded  bool   `json:"isSucceeded"`
-	SavedQuoteId string `json:"savedQuoteId"`
-}
-
-func (rapid Rapid) SaveQuote(rapidQuoteData *models.SaveQuote) (*SaveResponse, error) {
+func (rapid Rapid) SaveQuoteStep(rapidQuoteData *models.SaveQuote) (*models.SaveQuoteResponse, error) {
 	// per-request timeout
 	reqTimeout := time.Duration(20) * time.Second
 	req := fasthttp.AcquireRequest()
@@ -40,7 +35,7 @@ func (rapid Rapid) SaveQuote(rapidQuoteData *models.SaveQuote) (*SaveResponse, e
 	err = rapid.Client.DoTimeout(req, resp, reqTimeout)
 	fasthttp.ReleaseRequest(req)
 	defer fasthttp.ReleaseResponse(resp)
-	saveRes := SaveResponse{}
+	saveRes := &models.SaveQuoteResponse{}
 	if err == nil {
 		statusCode := resp.StatusCode()
 		respBody := resp.Body()
@@ -48,7 +43,7 @@ func (rapid Rapid) SaveQuote(rapidQuoteData *models.SaveQuote) (*SaveResponse, e
 			err = json.Unmarshal(respBody, &saveRes)
 			if err != io.EOF || err == nil {
 				fmt.Println(saveRes)
-				return &saveRes, nil
+				return saveRes, nil
 			} else {
 				return nil, fmt.Errorf("ERR failed to parse reponse: %s", err)
 			}

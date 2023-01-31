@@ -8,8 +8,8 @@ type ConfirmAndDispatch struct {
 	ShipperDetails               PartyDetails                 `json:"shipperDetails"`
 	ConsigneeDetails             PartyDetails                 `json:"consigneeDetails"`
 	BillingAddress               Address                      `json:"billingAddress"`
-	HandlingUnits                *[]ShipmentItem              `json:"handlingUnits,omitempty"`
-	ShipmentItems                *[]ShipmentItem              `json:"shipmentItems,omitempty"`
+	HandlingUnits                []*ShipmentItem              `json:"handlingUnits,omitempty"`
+	ShipmentItems                []*ShipmentItem              `json:"shipmentItems,omitempty"`
 	HandlingUnitVolume           float64                      `json:"handlingUnitVolume"`
 	HandlingUnitDensity          float64                      `json:"handlingUnitDensity"`
 	HandlingUnitTotal            int                          `json:"handlingUnitTotal"`

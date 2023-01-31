@@ -1,7 +1,0 @@
-{
-    "ShipmentId": 3388352,
-    "OriginLocation": "https://rapidshipltl.mycarriertms.com",
-    "SecurityKey": "c81a2c7a-8d44-4f35-86f2-d378c7666baf",
-    "CustomerBOLNumber": "1720770",
-    "urlis": "https://rapidshipltl.mycarriertms.com/MyCarrierAPI//api/Quote/SaveBolAsPdf"
-}

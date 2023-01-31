@@ -2,36 +2,33 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	v1 "github.com/ramsfords/types_gen/v1"
+	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 )
 
 func TestQuoteByQuoteId(t *testing.T) {
 	res, err := quoteDb.Client.GetItem(context.Background(), &dynamodb.GetItemInput{
 		TableName: aws.String(quoteDb.GetFirstShipperTableName()),
 		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: "pk#" + "1cc284"},
-			"sk": &types.AttributeValueMemberS{Value: "quote#" + "2"},
+			"pk": &types.AttributeValueMemberS{Value: "pk#" + "kandelsuren@gmail.com"},
+			"sk": &types.AttributeValueMemberS{Value: "quote#" + "23015"},
 		},
-		ProjectionExpression: aws.String("quotes"),
 	})
 	if err != nil {
-		t.Error(err)
+		fmt.Println(err)
 	}
 
-	quoteData := &v1.QuoteRequest{}
-	data, ok := res.Item["quotes"]
-	if !ok {
-		t.Error(err)
-	}
-	err = attributevalue.Unmarshal(data, &quoteData)
+	quoteData := &model.QuoteRequest{}
+	err = attributevalue.UnmarshalMap(res.Item, quoteData)
 	if err != nil {
-		t.Error(err)
+		fmt.Println(err.Error())
 	}
+
 	t.Error(err)
 }

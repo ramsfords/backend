@@ -1,0 +1,12 @@
+{
+  "result": "Successful",
+  "resultMessage": "None",
+  "excludedItemMatch": "",
+  "insurancePremium": 30.71,
+  "providerFee": 0.0,
+  "excludedItemIdMatch": "",
+  "customerCargoInsuranceId": 72120,
+  "integrationFee": 30.0,
+  "certificateShippingGuid": "bbf78320-2599-4808-a72a-5c90f2de3645",
+  "status": 3
+}
