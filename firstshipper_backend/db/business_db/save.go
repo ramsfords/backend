@@ -23,8 +23,6 @@ func (businessDb BusinessDb) SaveBusiness(ctx context.Context, business v1.Busin
 			"pk":       &types.AttributeValueMemberS{Value: "pk#" + businessId},
 			"sk":       &types.AttributeValueMemberS{Value: "business#" + businessId},
 			"business": itemMarshalled,
-			"users":    &types.AttributeValueMemberM{Value: map[string]types.AttributeValue{}},
-			"quotes":   &types.AttributeValueMemberM{Value: map[string]types.AttributeValue{}},
 		},
 		ConditionExpression: aws.String(fmt.Sprintf("attribute_not_exists(%s)", "pk")),
 	}

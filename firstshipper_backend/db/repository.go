@@ -58,10 +58,10 @@ type DB interface {
 	DeleteQuotesByQuoteIds(ctx context.Context, businessId string, quoteId []string) error
 	GetAllQuotesByBusinessId(ctx context.Context, businessId string) ([]*v1.QuoteRequest, error)
 	GetBidsByQuoteId(ctx context.Context, businessId string, quoteId string) ([]*v1.Bid, error)
+	GetBidsWithQuoteByQuoteId(ctx context.Context, businessId string, quoteId string) (*model.QuoteRequest, error)
 	GetBidByBidID(ctx context.Context, businessId string, quoteId string, bidId string) (*v1.Bid, error)
 	UpdateQuote(ctx context.Context, quoteReq *v1.QuoteRequest) error
-	GetBidsWithQuoteByQuoteId(ctx context.Context, businessId string, quoteId string) (*model.BidsWithQuote, error)
-	GetBidWithQuoteByQuoteId(ctx context.Context, businessId string, quoteId string, bidId string) (*model.BidWithQuote, error)
+	GetBidByQuoteId(ctx context.Context, businessId string, quoteId string, bidId string) (*model.QuoteRequest, error)
 
 	// Rapid Quote DB
 	SaveRapidQuote(ctx context.Context, quote models.QuoteRate, quoteReq v1.QuoteRequest) error
@@ -83,7 +83,7 @@ type DB interface {
 	UpdateBusiness(ctx context.Context, businessId string, business v1.Business) error
 	AddPhoneNumber(ctx context.Context, businessId string, phoneNumber *v1.PhoneNumber) (*v1.PhoneNumber, error)
 	UpdateBusinessName(ctx context.Context, businessId string, businessName string) error
-
+	GetAllDataByBusinessId(ctx context.Context, businessId string) (*model.BusinessData, error)
 	// Incraase quote Count
 	IncreateQuoteCount()
 	// Get Quote Count

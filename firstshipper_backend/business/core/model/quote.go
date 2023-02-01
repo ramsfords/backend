@@ -24,3 +24,13 @@ type BidWithQuote struct {
 	Bid          *v1.Bid          `json:"bid" dynamodbav:"bid"`
 	QuoteRequest *v1.QuoteRequest `json:"quoteRequest" dynamodbav:"quoteRequest"`
 }
+type BusinessData struct {
+	Business      *v1.Business    `json:"business" dynamodbav:"business"`
+	Users         []*v1.User      `json:"users" dynamodbav:"users"`
+	QuoteRequests []*QuoteRequest `json:"quoteRequest" dynamodbav:"quoteRequest"`
+}
+type FrontEndBusinessData struct {
+	Business      *v1.Business       `json:"business" dynamodbav:"business"`
+	Users         []*v1.FrontEndUser `json:"users" dynamodbav:"users"`
+	QuoteRequests []*QuoteRequest    `json:"quoteRequest" dynamodbav:"quoteRequest"`
+}

@@ -55,7 +55,7 @@ func newConfirmAndDispatch(quoteRequest *model.QuoteRequest) error {
 	poNumber := "PO" + quoteRequest.QuoteRequest.QuoteId
 	bookedDate := time.Now().Format("01/02/2006")
 	confirmAndDispatch := &models.ConfirmAndDispatch{
-		CapacityProviderAccountGroup: GetCapacityProviderAccountGroup(quoteRequest.Bids[0]),
+		CapacityProviderAccountGroup: GetCapacityProviderAccountGroup(quoteRequest.Bid),
 		CapacityProviderQuoteNumber:  rateDetails.CapacityProviderQuoteNumber,
 		CarrierCode:                  rateDetails.CarrierCode,
 		CarrierCodeAdditional:        rateDetails.CarrierCode,
@@ -64,7 +64,7 @@ func newConfirmAndDispatch(quoteRequest *model.QuoteRequest) error {
 		BillingAddress:               billingAddress,
 		ReferenceNumberInfo: models.ReferenceNumberInfo{
 			CustomerBOL:     &bol,
-			ReferenceNumber: &quoteRequest.Bids[0].BidId,
+			ReferenceNumber: &quoteRequest.Bid.BidId,
 			PoNumber:        &poNumber,
 			PickupNumber:    &poNumber,
 		},
@@ -100,13 +100,12 @@ func getRateDetails(quoteReq *model.QuoteRequest) models.Standard {
 	var standard models.Standard
 	for _, j := range quoteReq.RapidSaveQuote.QuoteRate.DayDeliveries {
 		for _, k := range j.Standart {
-			for _, j := range quoteReq.Bids {
-				if *k.CarrierName == j.CarrierName {
-					standard = k
-					break
-				}
+			if *k.CarrierName == quoteReq.Bid.CarrierName {
+				standard = k
+				break
 			}
 		}
+
 	}
 	return standard
 }

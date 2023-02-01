@@ -69,6 +69,7 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 		Bid:               nil,
 	}
 	err = qt.services.SaveQuote(ctxx, quoteRate)
+	go qt.services.IncreateQuoteCount()
 	if err != nil {
 		return nil, errs.ErrStoreInternal
 	}

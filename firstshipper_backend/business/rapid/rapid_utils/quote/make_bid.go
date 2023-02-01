@@ -56,7 +56,7 @@ func MakeBid(quoteRequest *v1.QuoteRequest, bidsData []models.DayDelivery, mu *s
 				CarrierName:    carrierName,
 				CarrierCode:    carrierCode,
 				Carrier:        carrierCodeAddtional,
-				BidId:          quoteRequest.QuoteId + "#bid#" + index,
+				BidId:          quoteRequest.QuoteId + "-" + index,
 				QuoteId:        quoteRequest.QuoteId,
 				CarrierID:      int64(k.CarrierID),
 				CarrierQuoteId: capacityProviderQuoteNumber,

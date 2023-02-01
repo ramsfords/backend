@@ -24,7 +24,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pocketbase/pocketbase v0.11.2
 	github.com/ramsfords/services v0.0.0-20230112221629-5d9830cc80b7
-	github.com/ramsfords/types_gen v0.0.0-20230131032009-8fb6144ba95a
+	github.com/ramsfords/types_gen v0.0.0-20230201004921-acd9d808d724
 	github.com/scylladb/gocqlx/v2 v2.8.0
 	github.com/spf13/viper v1.14.0
 	github.com/valyala/fasthttp v1.44.0
