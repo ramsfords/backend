@@ -11,6 +11,13 @@ build:
 	go get  github.com/ramsfords/services@latest
 	go mod tidy
 	go mod vendor
+deploy:
+	git stash
+	git pull origin main
+	go mod tidy
+	go mod vendor
+	go build main.go
+	screen ./main serve --http="0.0.0.0:8090"
 run:
 	go run main.go
 makezod:
