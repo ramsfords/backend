@@ -2,12 +2,12 @@ package booking_db
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/models"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -22,29 +22,30 @@ type QuoteRequest struct {
 	BookingInfo       *v1.BookingInfo           `json:"bookingInfo" dynamodbav:"bookingInfo"`
 }
 
-func (bookingdb BookingDb) GetBooking(ctx context.Context, bookingId string, businessId string) (*v1.BookingResponse, error) {
-	res, err := bookingdb.Client.GetItem(context.Background(), &dynamodb.GetItemInput{
-		TableName: aws.String(bookingdb.GetFirstShipperTableName()),
-		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: "pk#" + businessId},
-			"sk": &types.AttributeValueMemberS{Value: "quote#" + bookingId},
+func (bookingdb BookingDb) GetBooking(ctx context.Context, quoteId string) (*v1.BookingResponse, error) {
+	res, err := bookingdb.Client.Query(context.Background(), &dynamodb.QueryInput{
+		TableName:              aws.String(bookingdb.GetFirstShipperTableName()),
+		IndexName:              aws.String("quote_index"),
+		KeyConditionExpression: aws.String("#quote_pk = :quote_pk"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":quote_pk": &types.AttributeValueMemberS{Value: quoteId},
+		},
+		ExpressionAttributeNames: map[string]string{
+			"#quote_pk": "quote_pk",
 		},
 	})
 	if err != nil {
 		return nil, err
 	}
-
-	quoteData := &QuoteRequest{}
-	err = attributevalue.UnmarshalMap(res.Item, quoteData)
+	bookingReq := &model.QuoteRequest{}
+	err = attributevalue.UnmarshalMap(res.Items[0], bookingReq)
 	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
-
 	resQuote := &v1.BookingResponse{
-		Bid:          quoteData.Bid,
-		QuoteRequest: quoteData.QuoteRequest,
-		BookingInfo:  quoteData.BookingInfo,
+		Bid:          bookingReq.Bid,
+		QuoteRequest: bookingReq.QuoteRequest,
+		BookingInfo:  bookingReq.BookingInfo,
 	}
 	return resQuote, nil
 }

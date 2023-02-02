@@ -18,7 +18,7 @@ type Business struct {
 	rapid    *rapid.Rapid
 }
 
-func New(services *services.Services, rapid *rapid.Rapid, app *echo.Group) Business {
+func New(services *services.Services, rapid *rapid.Rapid, app *echo.Echo) Business {
 	bis := Business{
 		services: services,
 		rapid:    rapid,

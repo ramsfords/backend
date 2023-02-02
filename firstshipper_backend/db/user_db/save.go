@@ -22,7 +22,7 @@ func (userdb UserDb) SaveUser(ctx context.Context, usr v1.User, businessId strin
 		Item: map[string]types.AttributeValue{
 			"pk":      &types.AttributeValueMemberS{Value: "pk#" + businessId},
 			"sk":      &types.AttributeValueMemberS{Value: "user#" + usr.Email},
-			"user_sk": &types.AttributeValueMemberS{Value: usr.Email},
+			"user_pk": &types.AttributeValueMemberS{Value: usr.Email},
 			"users":   marshalledUser,
 		},
 		ConditionExpression: aws.String(fmt.Sprintf("attribute_not_exists(%s)", "pk")),

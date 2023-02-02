@@ -51,7 +51,7 @@ func (bol *Bol) EchoCreateBOL(ctx echo.Context) error {
 		return errs.ErrInvalidInputs
 
 	}
-	bookingData, err := bol.services.GetBooking(ctx.Request().Context(), id.Id, id.Id)
+	bookingData, err := bol.services.GetBooking(ctx.Request().Context(), id.Id)
 	if err != nil {
 		return errs.ErrInvalidInputs
 	}

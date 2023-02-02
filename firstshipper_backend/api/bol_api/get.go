@@ -21,7 +21,7 @@ func (bol Bol) EchoGetBOL(ctx echo.Context) error {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	ctxx := ctx.Request().Context()
-	qtReq, err := bol.services.GetBooking(ctxx, quoteId, businessId)
+	qtReq, err := bol.services.GetBooking(ctxx, quoteId)
 	if err != nil {
 		return ctx.NoContent(http.StatusNotFound)
 	}

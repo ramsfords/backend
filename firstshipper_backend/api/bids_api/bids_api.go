@@ -11,13 +11,13 @@ type Bids struct {
 	rapid    *rapid.Rapid
 }
 
-func New(services *services.Services, echo *echo.Group, rapid *rapid.Rapid) {
+func New(services *services.Services, echo *echo.Echo, rapid *rapid.Rapid) {
 	bids := Bids{
 		services: services,
 		rapid:    rapid,
 	}
 	protectedBidsGroup := echo.Group("/bids")
 	protectedBidsGroup.GET("", bids.EchoGetQuoteWithBids)
-	protectedBidsGroup.GET("/bid", bids.EchoGetQuoteWithBid)
+	protectedBidsGroup.GET("/bid", bids.EchoGetBidWithQuoteByBidId)
 	protectedBidsGroup.DELETE("", bids.EchoDeleteBids)
 }

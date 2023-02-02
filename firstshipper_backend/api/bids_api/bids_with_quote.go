@@ -12,10 +12,10 @@ func (bid Bids) EchoGetQuoteWithBids(ctx echo.Context) error {
 	if len(quoteId) < 5 || quoteId == "" {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
-	businessId := ctx.QueryParam("businessId")
-	if len(businessId) < 5 || businessId == "" {
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
+	// businessId := ctx.QueryParam("businessId")
+	// if len(businessId) < 5 || businessId == "" {
+	// 	return ctx.NoContent(http.StatusInternalServerError)
+	// }
 	// admin, _ := ctx.Get(ContextAdminKey).(*models.Admin)
 	// record, _ := ctx.Get(ContextAuthRecordKey).(*models.Record)
 
@@ -29,7 +29,7 @@ func (bid Bids) EchoGetQuoteWithBids(ctx echo.Context) error {
 	// }
 
 	// ctxs := ctx.Request().Context()
-	bids, err := bid.services.GetBidsWithQuoteByQuoteId(context.Background(), businessId, quoteId)
+	bids, err := bid.services.GetBidsWithQuoteByQuoteId(context.Background(), quoteId)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

@@ -14,6 +14,7 @@ type QuoteRequest struct {
 	SaveQuoteResponse *models.SaveQuoteResponse `json:"saveQuoteResponse" dynamodbav:"saveQuoteResponse"`
 	RapidBooking      *models.DispatchResponse  `json:"Booking" dynamodbav:"rapidBooking"`
 	BookingInfo       *v1.BookingInfo           `json:"bookingInfo" dynamodbav:"bookingInfo"`
+	Business          *v1.Business              `json:"business" dynamodbav:"business"`
 }
 
 type BidsWithQuote struct {

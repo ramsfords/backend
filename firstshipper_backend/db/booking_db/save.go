@@ -12,7 +12,7 @@ import (
 )
 
 func (bookingdb BookingDb) SaveBooking(ctx context.Context, bookingRes *model.QuoteRequest) error {
-	quoteMarshaled, err := attributevalue.Marshal(bookingRes.QuoteRequest)
+	bookingMarshlled, err := attributevalue.Marshal(bookingRes.QuoteRequest)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,8 @@ func (bookingdb BookingDb) SaveBooking(ctx context.Context, bookingRes *model.Qu
 		Item: map[string]types.AttributeValue{
 			"pk":                &types.AttributeValueMemberS{Value: "pk#" + bookingRes.QuoteRequest.BusinessId},
 			"sk":                &types.AttributeValueMemberS{Value: "quote#" + bookingRes.QuoteRequest.QuoteId},
-			"quoteRequest":      quoteMarshaled,
+			"quote_pk":          &types.AttributeValueMemberS{Value: bookingRes.Bid.QuoteId},
+			"quoteRequest":      bookingMarshlled,
 			"rapidSaveQuote":    rapidSavedMarshalled,
 			"bids":              bidsMarshed,
 			"saveQuoteResponse": rapidSaveQuoteResponseMarshalled,

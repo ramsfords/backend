@@ -38,6 +38,7 @@ func (quotedb QuoteDb) SaveQuote(ctx context.Context, qtReq *model.QuoteRequest)
 		Item: map[string]types.AttributeValue{
 			"pk":                &types.AttributeValueMemberS{Value: "pk#" + qtReq.QuoteRequest.BusinessId},
 			"sk":                &types.AttributeValueMemberS{Value: "quote#" + qtReq.QuoteRequest.QuoteId},
+			"quote_pk":          &types.AttributeValueMemberS{Value: qtReq.QuoteRequest.QuoteId},
 			"quoteRequest":      marshlledQtReq,
 			"rapidSaveQuote":    marshlledRapidSaveQuote,
 			"bids":              marshalledBids,

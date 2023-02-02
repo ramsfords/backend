@@ -37,7 +37,7 @@ type DB interface {
 	SaveBooking(ctx context.Context, bookingRes *model.QuoteRequest) error
 	UpdateBooking(ctx context.Context, booking *v1.BookingResponse, businessId string) error
 	DeleteBooking(ctx context.Context, BookingId string, businessId string) error
-	GetBooking(ctx context.Context, bookingId string, businessId string) (*v1.BookingResponse, error)
+	GetBooking(ctx context.Context, bookingId string) (*v1.BookingResponse, error)
 	GetAllBookingsByBusinessId(ctx context.Context, businessId string) ([]*v1.BookingResponse, error)
 	GetAllBookings(ctx context.Context) ([]*v1.BookingResponse, error)
 
@@ -57,8 +57,8 @@ type DB interface {
 	DeleteAllQuoteByBusinessId(ctx context.Context, buisnessId string) error
 	DeleteQuotesByQuoteIds(ctx context.Context, businessId string, quoteId []string) error
 	GetAllQuotesByBusinessId(ctx context.Context, businessId string) ([]*v1.QuoteRequest, error)
-	GetBidsByQuoteId(ctx context.Context, businessId string, quoteId string) ([]*v1.Bid, error)
-	GetBidsWithQuoteByQuoteId(ctx context.Context, businessId string, quoteId string) (*model.QuoteRequest, error)
+	GetBidsByQuoteId(ctx context.Context, quoteId string) ([]*v1.Bid, error)
+	GetBidsWithQuoteByQuoteId(ctx context.Context, quoteId string) (*model.QuoteRequest, error)
 	GetBidByBidID(ctx context.Context, businessId string, quoteId string, bidId string) (*v1.Bid, error)
 	UpdateQuote(ctx context.Context, quoteReq *v1.QuoteRequest) error
 	GetBidByQuoteId(ctx context.Context, businessId string, quoteId string, bidId string) (*model.QuoteRequest, error)
