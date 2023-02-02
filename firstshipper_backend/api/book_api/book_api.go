@@ -19,7 +19,7 @@ func New(services *services.Services, echoClient *echo.Echo) {
 	protectedBolGroup.GET("/hello", func(ctx echo.Context) error {
 		return ctx.String(http.StatusOK, "Hello from book, World!")
 	})
-	protectedBolGroup.GET("/:bidId", bol.EchoGetBooking)
+	protectedBolGroup.GET("/bid/:bidId", bol.EchoGetBooking)
 	protectedBolGroup.POST("", bol.EchoCreateBooking)
 	protectedBolGroup.GET("/inform_bol_gen", bol.EchoInformBOlGeneratedHandler)
 }

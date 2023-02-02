@@ -17,7 +17,7 @@ func (booking *Booking) EchoGetBooking(ctx echo.Context) error {
 	ctxx := ctx.Request().Context()
 	qtReq, err := booking.services.GetBooking(ctxx, quoteId)
 	if err != nil {
-		return ctx.NoContent(http.StatusNotFound)
+		return ctx.NoContent(http.StatusBadRequest)
 	}
 	fmt.Print(qtReq)
 	if len(qtReq.BookingInfo.CarrierProNumber) < 4 {
