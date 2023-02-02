@@ -2,6 +2,7 @@ package booking_db
 
 import (
 	"context"
+	"errors"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -38,6 +39,9 @@ func (bookingdb BookingDb) GetBooking(ctx context.Context, quoteId string) (*v1.
 		return nil, err
 	}
 	bookingReq := &model.QuoteRequest{}
+	if len(res.Items) < 1 {
+		return nil, errors.New("booking not found")
+	}
 	err = attributevalue.UnmarshalMap(res.Items[0], bookingReq)
 	if err != nil {
 		return nil, err
