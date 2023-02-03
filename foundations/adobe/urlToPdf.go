@@ -16,7 +16,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/ramsfords/backend/foundations/S3"
 	"github.com/ramsfords/backend/foundations/logger"
-	"github.com/ramsfords/backend/menuloom_backend/api/errs"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -61,7 +60,7 @@ func NewAdobe(s3Client S3.S3Client, logger *logger.Logger) *Adobe {
 	return adobe
 }
 func (adobe *Adobe) UrlToPdf(bid *v1.Bid) (string, error) {
-	adobe.logger.Info("starting url to pdf")
+	adobe.logger.Infof("starting url to pdf %v", time.Now().Local())
 	tryAgain := true
 	for tryAgain {
 		url := "https://pdf-services-ue1.adobe.io/operation/htmltopdf"
@@ -106,12 +105,12 @@ func (adobe *Adobe) UrlToPdf(bid *v1.Bid) (string, error) {
 		}
 
 	}
-	adobe.logger.Info("finished url to pdf")
+	adobe.logger.Infof("finished url to pdf %v", time.Now().Local())
 	return "", nil
 }
 func (adobe *Adobe) PullObjectResult(pullObjectId string, bid *v1.Bid) (adobeResourceURL string, err error) {
-	adobe.logger.Info("starting PullObjectResult from adobe")
-	time.Sleep(5 * time.Second)
+	adobe.logger.Infof("starint pull object from adobe %v", time.Now().Local())
+	time.Sleep(10 * time.Second)
 	url := "https://pdf-services-ue1.adobe.io/operation/htmltopdf/{PULLOBJECTID}/status"
 	url = strings.Replace(url, "{PULLOBJECTID}", pullObjectId, 1)
 	req, _ := http.NewRequest("GET", url, nil)
@@ -122,33 +121,33 @@ func (adobe *Adobe) PullObjectResult(pullObjectId string, bid *v1.Bid) (adobeRes
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		adobe.logger.Errorf("Error in pull object from adobe %v", err)
 	}
 
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		adobe.logger.Errorf("Error in pull object from adobe %v", err)
 	}
 	resData := AdoblePullRes{}
 	err = json.Unmarshal(body, &resData)
 	if err != nil {
-		fmt.Println(err)
+		adobe.logger.Errorf("Error in pull object from adobe %v", err)
 	}
 	adobe.UploadBOlTOS3(resData.Aseets.DownloadUri, bid)
 	adobe.logger.Info("finised PullObjectResult from adobe")
 	return "", nil
 }
 func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bid *v1.Bid) (string, error) {
-	adobe.logger.Info("starting upload bol to s3")
+	adobe.logger.Infof("starting upload bol to s3", time.Now().Local())
 	// gets pdf from provided url
 	reqs, err := http.Get(adobeResourceURl)
 	if err != nil {
-		return "", errs.ErrInternal
+		adobe.logger.Errorf("Error in pull object from adobe %v", err)
 	}
 	pdfBytes, err := io.ReadAll(reqs.Body)
 	if err != nil {
-		return "", errs.ErrInternal
+		adobe.logger.Errorf("Error in pull object from adobe %v", err)
 	}
 	reqs.Body.Close()
 	s3Input := &s3.PutObjectInput{
@@ -161,13 +160,14 @@ func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bid *v1.Bid) (string,
 	}
 	s3res, err := adobe.Client.PutObject(context.Background(), s3Input)
 	if err != nil {
-		return "", errs.ErrInternal
+		adobe.logger.Errorf("Error in putting object in s3 %v", err)
 	}
 	fmt.Println(s3res)
 	adobe.logger.Info("finished upload bol to s3")
 	return "", nil
 }
 func (adobe *Adobe) ExchangeToken() error {
+	adobe.logger.Infof("starting exchange token form adobe %v", time.Now().Local())
 	urls := "https://ims-na1.adobelogin.com/ims/exchange/jwt/"
 	form := url.Values{}
 	form.Add("client_id", "1a0995378e964e85a260ce3e98f5e6b7")
@@ -176,22 +176,26 @@ func (adobe *Adobe) ExchangeToken() error {
 
 	res, err := http.PostForm(urls, form)
 	if err != nil {
-		fmt.Println(err)
+		adobe.logger.Errorf("Error in exchanging token from adobe %v", err)
+		return err
 	}
 
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		adobe.logger.Errorf("Error in exchanging token from adobe %v", err)
+		return err
 	}
 	token := &TokenRes{}
 	err = json.Unmarshal(body, token)
 	if err != nil || res.Status != "200 OK" {
+		adobe.logger.Errorf("Error in exchanging token from adobe %v", err)
 		return err
 	}
 	token.AccessToken = "Bearer " + token.AccessToken
 	adobe.TokenRes.AccessToken = token.AccessToken
 	adobe.TokenRes.ExpiresIn = token.ExpiresIn
 	adobe.TokenRes.TokenType = token.TokenType
+	adobe.logger.Infof("done exchange token form adobe %v", time.Now().Local())
 	return nil
 }
