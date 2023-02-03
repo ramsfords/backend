@@ -2,16 +2,17 @@ package book
 
 import (
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
+	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func SaveQuoteStep3(quoteRequest *model.QuoteRequest) error {
+func SaveQuoteStep3(quoteRequest *model.QuoteRequest, bid *v1.Bid) error {
 	quoteRequest.RapidSaveQuote.QuoteErrors = []string{}
 	quoteRequest.RapidSaveQuote.Step = 3
-	err := makeQuoteDetails(quoteRequest)
+	err := makeQuoteDetails(quoteRequest, bid)
 	if err != nil {
 		return err
 	}
-	err = newConfirmAndDispatch(quoteRequest)
+	err = newConfirmAndDispatch(quoteRequest, bid)
 	if err != nil {
 		return err
 	}

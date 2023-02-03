@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
-	v1 "github.com/ramsfords/types_gen/v1"
 )
 
 func (quotedb QuoteDb) SaveQuote(ctx context.Context, qtReq *model.QuoteRequest) error {
@@ -24,10 +23,6 @@ func (quotedb QuoteDb) SaveQuote(ctx context.Context, qtReq *model.QuoteRequest)
 	marshlledSaveQuoteResponose, err := attributevalue.Marshal(qtReq.SaveQuoteResponse)
 	if err != nil {
 		return err
-	}
-	bidMap := make(map[string]*v1.Bid)
-	for _, bid := range qtReq.Bids {
-		bidMap[bid.CarrierName] = bid
 	}
 	marshalledBids, err := attributevalue.Marshal(qtReq.Bids)
 	if err != nil {

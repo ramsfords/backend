@@ -31,13 +31,20 @@ func New(services *services.Services, echo *echo.Echo, rapid *rapid.Rapid) {
 	}
 	// quote api
 	protectedQuoteGroup := echo.Group("/quote")
+
+	//GET
+	protectedQuoteGroup.GET("/quotes", qt.EchoGetAllQuotes)
+	protectedQuoteGroup.GET("/:quoteId", qt.EchoGetQuoteByQuoteId)
+	protectedQuoteGroup.GET("/bids/:quoteId", qt.EchoGetBidsByQuoteId)
+	protectedQuoteGroup.GET("/quotewithbid/:bidId", qt.EchoGetQuoteWithBidByBidId)
+	protectedQuoteGroup.GET("/quotewithbids/:quoteId", qt.EchoGetQuoteWithBidsByQuoteId)
+	protectedQuoteGroup.GET("/business/:businessId", qt.EchoGetQuotesByBusinessId)
+	//POST
+	protectedQuoteGroup.POST("", qt.EchoCreateQuote)
+	//DELETE
 	protectedQuoteGroup.DELETE("/:quoteId", qt.EchoDeleteQuote)
 	protectedQuoteGroup.DELETE("", qt.EchoDeleteAllQuotes)
-	protectedQuoteGroup.GET("", qt.EchoGetQuotes)
-	protectedQuoteGroup.GET("/bids/:businessId/:quoteId", qt.EchoGetBidsByQuoteId)
-	protectedQuoteGroup.GET("/bid/:businessId/:quoteId", qt.EchoGetBidsByQuoteId)
-	protectedQuoteGroup.GET("/:quoteId", qt.EchoGetQuoteById)
-	protectedQuoteGroup.POST("", qt.EchoCreateQuote)
+	//PATCH
 	protectedQuoteGroup.PATCH("", qt.EchoUpdateQuote)
-	protectedQuoteGroup.POST("/book", qt.EchoCreateBook)
+
 }

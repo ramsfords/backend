@@ -3,9 +3,10 @@ package book
 import (
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/models"
+	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func makeQuoteDetails(quoteRequest *model.QuoteRequest) error {
+func makeQuoteDetails(quoteRequest *model.QuoteRequest, bid *v1.Bid) error {
 	err := originShippingDetails(quoteRequest)
 	if err != nil {
 		return err
@@ -20,7 +21,7 @@ func makeQuoteDetails(quoteRequest *model.QuoteRequest) error {
 	poNumber := "PO" + quoteRequest.QuoteRequest.QuoteId
 	quoteRequest.RapidSaveQuote.QuoteDetails.ReferenceNumberInfo = &models.ReferenceNumberInfo{
 		CustomerBOL:     &bol,
-		ReferenceNumber: &quoteRequest.Bids[0].QuoteId,
+		ReferenceNumber: &bid.BidId,
 		PoNumber:        &poNumber,
 		PickupNumber:    &poNumber,
 	}

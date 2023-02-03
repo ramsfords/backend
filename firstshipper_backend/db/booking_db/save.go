@@ -46,6 +46,7 @@ func (bookingdb BookingDb) SaveBooking(ctx context.Context, bookingRes *model.Qu
 			"pk":                &types.AttributeValueMemberS{Value: "pk#" + bookingRes.QuoteRequest.BusinessId},
 			"sk":                &types.AttributeValueMemberS{Value: "quote#" + bookingRes.QuoteRequest.QuoteId},
 			"quote_pk":          &types.AttributeValueMemberS{Value: bookingRes.Bid.QuoteId},
+			"booking_pk":        &types.AttributeValueMemberS{Value: bookingRes.QuoteRequest.QuoteId},
 			"quoteRequest":      bookingMarshlled,
 			"rapidSaveQuote":    rapidSavedMarshalled,
 			"bids":              bidsMarshed,

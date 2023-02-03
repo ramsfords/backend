@@ -16,6 +16,7 @@ import (
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/firstshipper_backend"
 	"github.com/ramsfords/backend/foundations/S3"
+	"github.com/ramsfords/backend/foundations/adobe"
 	"github.com/ramsfords/backend/foundations/dynamo"
 	"github.com/ramsfords/backend/foundations/logger"
 	"github.com/ramsfords/backend/menuloom_backend"
@@ -35,6 +36,7 @@ func main() {
 	dynamodDb := dynamo.New(conf)
 	logger := logger.New("backend")
 	app := pocketbase.New()
+	adobe := adobe.NewAdobe(s3)
 	var publicDirFlag string
 
 	// add "--publicDir" option flag
@@ -66,7 +68,7 @@ func main() {
 		e.Router.OPTIONS("/*", func(c echo.Context) error {
 			return c.NoContent(http.StatusOK)
 		})
-		firstshipper_backend.FirstShipperRunner(conf, s3, logger, dynamodDb, e.Router, app)
+		firstshipper_backend.FirstShipperRunner(conf, s3, logger, dynamodDb, e.Router, app, adobe)
 		menuloom_backend.MenuloomRunner(conf, s3, logger, dynamodDb, e.Router, app)
 		// serves static files from the provided public dir (if exists)
 		e.Router.AddRoute(echo.Route{

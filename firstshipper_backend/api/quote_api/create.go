@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/firstshipper_backend/api/utils"
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
-	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils/quote"
+	rapid "github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils/quote"
 	errs "github.com/ramsfords/backend/foundations/error"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -36,7 +36,7 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 	qtReq.QuoteId = fmt.Sprint(qt.services.GetQuoteCount())
 
 	// make compatible rapid quote to send to rapid for quote rates
-	rapidQuoteRequest, err := quote.MakeQuoteDetails(qtReq)
+	rapidQuoteRequest, err := rapid.MakeQuoteDetails(qtReq)
 	if err != nil {
 		return nil, errs.ErrInvalidInputs
 	}
@@ -48,14 +48,14 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 		return nil, errs.ErrInternal
 	}
 
-	saveQuote := quote.SaveQuoteStep2(rapidQuoteRequest, res)
+	saveQuote := rapid.SaveQuoteStep2(rapidQuoteRequest, res)
 	saveQuoteRes, err := qt.rapid.SaveQuoteStep(saveQuote)
 	if err != nil {
 		// just log the error not Need to return error
 		qt.services.Logger.Error(err)
 	}
 
-	bidRes := quote.MakeBid(qtReq, res.DayDeliveries, qt.Mutex)
+	bidRes := rapid.MakeBid(qtReq, res.DayDeliveries, qt.Mutex)
 	if bidRes == nil {
 		return nil, errs.ErrInternal
 	}

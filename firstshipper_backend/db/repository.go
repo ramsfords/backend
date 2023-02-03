@@ -52,11 +52,11 @@ type DB interface {
 
 	// Quote DB
 	SaveQuote(ctx context.Context, qtReq *model.QuoteRequest) error
-	GetQuoteByQuoteId(ctx context.Context, quoteId string, businessId string) (*model.QuoteRequest, error)
+	GetQuoteByQuoteId(ctx context.Context, quoteId string) (*model.QuoteRequest, error)
 	DeleteQuote(ctx context.Context, quoteId string) error
 	DeleteAllQuoteByBusinessId(ctx context.Context, buisnessId string) error
 	DeleteQuotesByQuoteIds(ctx context.Context, businessId string, quoteId []string) error
-	GetAllQuotesByBusinessId(ctx context.Context, businessId string) ([]*v1.QuoteRequest, error)
+	GetAllQuotesByBusinessId(ctx context.Context, businessId string) ([]*model.QuoteRequest, error)
 	GetBidsByQuoteId(ctx context.Context, quoteId string) ([]*v1.Bid, error)
 	GetBidsWithQuoteByQuoteId(ctx context.Context, quoteId string) (*model.QuoteRequest, error)
 	GetBidByBidID(ctx context.Context, businessId string, quoteId string, bidId string) (*v1.Bid, error)

@@ -2,7 +2,6 @@ package quote_db
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -19,24 +18,35 @@ import (
 // 	RapidBooking      *models.DispatchResponse  `json:"Booking" dynamodbav:"rapidBooking"`
 // }
 
-func (quoteDb QuoteDb) GetQuoteByQuoteId(ctx context.Context, quoteId string, businessId string) (*model.QuoteRequest, error) {
-	res, err := quoteDb.Client.GetItem(context.Background(), &dynamodb.GetItemInput{
-		TableName: aws.String(quoteDb.GetFirstShipperTableName()),
-		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: "pk#" + businessId},
-			"sk": &types.AttributeValueMemberS{Value: "quote#" + quoteId},
+func (quoteDb QuoteDb) GetQuoteByQuoteId(ctx context.Context, quoteId string) (*model.QuoteRequest, error) {
+	res, err := quoteDb.Client.Query(context.Background(), &dynamodb.QueryInput{
+		TableName:              aws.String(quoteDb.GetFirstShipperTableName()),
+		IndexName:              aws.String("quote_index"),
+		KeyConditionExpression: aws.String("#quote_pk = :quote_pk"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":quote_pk": &types.AttributeValueMemberS{Value: quoteId},
+		},
+		ExpressionAttributeNames: map[string]string{
+			"#quote_pk": "quote_pk",
 		},
 	})
 	if err != nil {
 		return nil, err
 	}
-
-	quoteData := &model.QuoteRequest{}
-	err = attributevalue.UnmarshalMap(res.Item, quoteData)
+	bidsRequest := &model.QuoteRequest{}
+	err = attributevalue.UnmarshalMap(res.Items[0], bidsRequest)
 	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
+	quoteWithBidsRes := &model.QuoteRequest{
+		QuoteRequest:      bidsRequest.QuoteRequest,
+		Bids:              bidsRequest.Bids,
+		BookingInfo:       bidsRequest.BookingInfo,
+		RapidSaveQuote:    bidsRequest.RapidSaveQuote,
+		SaveQuoteResponse: bidsRequest.SaveQuoteResponse,
+		RapidBooking:      bidsRequest.RapidBooking,
+		Business:          bidsRequest.Business,
+	}
 
-	return quoteData, nil
+	return quoteWithBidsRes, nil
 }

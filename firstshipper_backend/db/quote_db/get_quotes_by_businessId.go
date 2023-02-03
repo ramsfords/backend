@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	v1 "github.com/ramsfords/types_gen/v1"
+	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 )
 
 // "TableName": "first-shipper-dev",
@@ -16,7 +16,7 @@ import (
 // "FilterExpression": "#pk = :pk",
 // "ExpressionAttributeNames": {"#quote_pk":"quote_pk","#pk":"pk"},
 // "ExpressionAttributeValues": {":quote_pk": {"S":"quote"},":pk": {"S":"business#1cc284"}}
-func (quoteDb QuoteDb) GetAllQuotesByBusinessId(ctx context.Context, businessId string) ([]*v1.QuoteRequest, error) {
+func (quoteDb QuoteDb) GetAllQuotesByBusinessId(ctx context.Context, businessId string) ([]*model.QuoteRequest, error) {
 	res, err := quoteDb.Client.Query(context.Background(), &dynamodb.QueryInput{
 		TableName:              aws.String(quoteDb.GetFirstShipperTableName()),
 		KeyConditionExpression: aws.String("#pk = :pk And begins_with(#sk, :sk)"),
@@ -34,9 +34,9 @@ func (quoteDb QuoteDb) GetAllQuotesByBusinessId(ctx context.Context, businessId 
 	if err != nil {
 		return nil, err
 	}
-	quotes := []*v1.QuoteRequest{}
+	quotes := []*model.QuoteRequest{}
 	for _, item := range res.Items {
-		quote := v1.QuoteRequest{}
+		quote := model.QuoteRequest{}
 		quoteData, ok := item["quotes"]
 		if !ok {
 			return nil, err

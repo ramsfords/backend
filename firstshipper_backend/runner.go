@@ -13,6 +13,7 @@ import (
 	"github.com/ramsfords/backend/firstshipper_backend/services"
 	"github.com/ramsfords/backend/firstshipper_backend/utils"
 	"github.com/ramsfords/backend/foundations/S3"
+	"github.com/ramsfords/backend/foundations/adobe"
 	cloundflareCLI "github.com/ramsfords/backend/foundations/cloudflare"
 	"github.com/ramsfords/backend/foundations/cloudinery"
 	"github.com/ramsfords/backend/foundations/dynamo"
@@ -20,7 +21,7 @@ import (
 	"github.com/ramsfords/backend/foundations/zohomail"
 )
 
-func FirstShipperRunner(conf *configs.Config, s3 S3.S3Client, logger logger.Logger, dbClient dynamo.DB, echoRouter *echo.Echo, app *pocketbase.PocketBase) {
+func FirstShipperRunner(conf *configs.Config, s3 S3.S3Client, logger logger.Logger, dbClient dynamo.DB, echoRouter *echo.Echo, app *pocketbase.PocketBase, adob *adobe.Adobe) {
 	repo := db.New(dbClient, conf)
 	email := zohomail.New(conf.SitesSettings.FirstShipper.Email)
 	rapid := rapid.New()
@@ -39,7 +40,7 @@ func FirstShipperRunner(conf *configs.Config, s3 S3.S3Client, logger logger.Logg
 		return nil
 	}()
 
-	api.SetUpAPi(echoRouter, services, rapid)
+	api.SetUpAPi(echoRouter, services, rapid, adob)
 	// OR send a completely different email template
 	app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(email, conf, services))
 	// OR send a completely different email template

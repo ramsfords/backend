@@ -5,6 +5,7 @@ import (
 
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/models"
+	v1 "github.com/ramsfords/types_gen/v1"
 )
 
 // missing or mismatched
@@ -34,7 +35,7 @@ import (
 // "quoteId": 0,
 // "totalCost": 0,
 // "totalShipmentWeight": 0,
-func newConfirmAndDispatch(quoteRequest *model.QuoteRequest) error {
+func newConfirmAndDispatch(quoteRequest *model.QuoteRequest, bid *v1.Bid) error {
 	billingAddress := getBillingAddress()
 	var handlingUnitVolume float32
 	var totalShipmentWeight float32
@@ -49,13 +50,13 @@ func newConfirmAndDispatch(quoteRequest *model.QuoteRequest) error {
 
 	}
 	handlingUnitDensity := totalShipmentWeight / handlingUnitVolume
-	rateDetails := getRateDetails(quoteRequest)
+	rateDetails := getRateDetails(quoteRequest, bid)
 
 	bol := "BOL" + quoteRequest.QuoteRequest.QuoteId
 	poNumber := "PO" + quoteRequest.QuoteRequest.QuoteId
 	bookedDate := time.Now().Format("01/02/2006")
 	confirmAndDispatch := &models.ConfirmAndDispatch{
-		CapacityProviderAccountGroup: GetCapacityProviderAccountGroup(quoteRequest.Bid),
+		CapacityProviderAccountGroup: GetCapacityProviderAccountGroup(bid),
 		CapacityProviderQuoteNumber:  rateDetails.CapacityProviderQuoteNumber,
 		CarrierCode:                  rateDetails.CarrierCode,
 		CarrierCodeAdditional:        rateDetails.CarrierCode,
@@ -64,7 +65,7 @@ func newConfirmAndDispatch(quoteRequest *model.QuoteRequest) error {
 		BillingAddress:               billingAddress,
 		ReferenceNumberInfo: models.ReferenceNumberInfo{
 			CustomerBOL:     &bol,
-			ReferenceNumber: &quoteRequest.Bid.BidId,
+			ReferenceNumber: &bid.BidId,
 			PoNumber:        &poNumber,
 			PickupNumber:    &poNumber,
 		},
@@ -96,11 +97,11 @@ func newConfirmAndDispatch(quoteRequest *model.QuoteRequest) error {
 	return nil
 }
 
-func getRateDetails(quoteReq *model.QuoteRequest) models.Standard {
+func getRateDetails(quoteReq *model.QuoteRequest, bid *v1.Bid) models.Standard {
 	var standard models.Standard
 	for _, j := range quoteReq.RapidSaveQuote.QuoteRate.DayDeliveries {
 		for _, k := range j.Standart {
-			if *k.CarrierName == quoteReq.Bid.CarrierName {
+			if *k.CarrierName == bid.CarrierName {
 				standard = k
 				break
 			}

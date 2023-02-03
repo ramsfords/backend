@@ -9,30 +9,19 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
-	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/models"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
-
-type QuoteRequest struct {
-	Bids              []*v1.Bid                 `json:"bids" dynamodbav:"bids"`
-	Bid               *v1.Bid                   `json:"bid" dynamodbav:"bid"`
-	QuoteRequest      *v1.QuoteRequest          `json:"quoteRequest" dynamodbav:"quoteRequest"`
-	RapidSaveQuote    *models.SaveQuote         `json:"SaveQuote" dynamodbav:"rapidSaveQuote"`
-	SaveQuoteResponse *models.SaveQuoteResponse `json:"saveQuoteResponse" dynamodbav:"saveQuoteResponse"`
-	RapidBooking      *models.DispatchResponse  `json:"Booking" dynamodbav:"rapidBooking"`
-	BookingInfo       *v1.BookingInfo           `json:"bookingInfo" dynamodbav:"bookingInfo"`
-}
 
 func (bookingdb BookingDb) GetBooking(ctx context.Context, quoteId string) (*v1.BookingResponse, error) {
 	res, err := bookingdb.Client.Query(context.Background(), &dynamodb.QueryInput{
 		TableName:              aws.String(bookingdb.GetFirstShipperTableName()),
-		IndexName:              aws.String("quote_index"),
-		KeyConditionExpression: aws.String("#quote_pk = :quote_pk"),
+		IndexName:              aws.String("booking_index"),
+		KeyConditionExpression: aws.String("#booking_pk = :booking_pk"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":quote_pk": &types.AttributeValueMemberS{Value: quoteId},
+			":booking_pk": &types.AttributeValueMemberS{Value: quoteId},
 		},
 		ExpressionAttributeNames: map[string]string{
-			"#quote_pk": "quote_pk",
+			"#booking_pk": "booking_pk",
 		},
 	})
 	if err != nil {
