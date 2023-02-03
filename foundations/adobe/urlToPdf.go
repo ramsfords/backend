@@ -55,11 +55,11 @@ func NewAdobe(s3Client S3.S3Client) *Adobe {
 
 	return adobe
 }
-func (adobe *Adobe) UrlToPdf(bolId string, poNumber string, businessId string) (string, error) {
+func (adobe *Adobe) UrlToPdf(bolId string, businessId string) (string, error) {
 	tryAgain := true
 	for tryAgain {
 		url := "https://pdf-services-ue1.adobe.io/operation/htmltopdf"
-		firstShipperBolUrl := strings.ReplaceAll("https://firstshipper.com/bol/{BOLID}", "{BOLID}", bolId)
+		firstShipperBolUrl := strings.ReplaceAll("https://firstshipper.com/bol/{BOLID}", "{BOLID}", "30009-1")
 		req, _ := http.NewRequest("POST", url, nil)
 
 		req.Header.Add("Authorization", adobe.TokenRes.AccessToken)
@@ -99,7 +99,7 @@ func (adobe *Adobe) UrlToPdf(bolId string, poNumber string, businessId string) (
 			// }
 			location := res.Header.Get("Location")
 			pullObjectId := strings.Split(strings.Split(location, "htmltopdf/")[1], "/")[0]
-			adobe.PullObjectResult(pullObjectId, poNumber, businessId)
+			adobe.PullObjectResult(pullObjectId, bolId, businessId)
 			fmt.Println(location)
 			fmt.Println(string(body))
 			return "", nil
@@ -108,10 +108,10 @@ func (adobe *Adobe) UrlToPdf(bolId string, poNumber string, businessId string) (
 	}
 	return "", nil
 }
-func (adobe *Adobe) PullObjectResult(jobId string, poNumber string, businessId string) (adobeResourceURL string, err error) {
+func (adobe *Adobe) PullObjectResult(pullObjectId string, bolId string, businessId string) (adobeResourceURL string, err error) {
 	time.Sleep(5 * time.Second)
-	url := "https://pdf-services-ue1.adobe.io/operation/htmltopdf/{JOBID}/status"
-	url = strings.Replace(url, "{JOBID}", jobId, 1)
+	url := "https://pdf-services-ue1.adobe.io/operation/htmltopdf/{PULLOBJECTID}/status"
+	url = strings.Replace(url, "{PULLOBJECTID}", pullObjectId, 1)
 	req, _ := http.NewRequest("GET", url, nil)
 
 	req.Header.Add("Authorization", adobe.TokenRes.AccessToken)
@@ -133,10 +133,10 @@ func (adobe *Adobe) PullObjectResult(jobId string, poNumber string, businessId s
 	if err != nil {
 		fmt.Println(err)
 	}
-	adobe.UploadBOlTOS3(resData.Aseets.DownloadUri, poNumber, businessId)
+	adobe.UploadBOlTOS3(resData.Aseets.DownloadUri, bolId, businessId)
 	return "", nil
 }
-func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, poNumber string, businessId string) (string, error) {
+func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bolId string, businessId string) (string, error) {
 	// gets pdf from provided url
 	reqs, err := http.Get(adobeResourceURl)
 	if err != nil {
@@ -147,9 +147,10 @@ func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, poNumber string, busi
 		return "", errs.ErrInternal
 	}
 	reqs.Body.Close()
+	quoteId := strings.Split(bolId, "-")[0]
 	s3Input := &s3.PutObjectInput{
 		Bucket:             aws.String("firstshipperbol"),
-		Key:                aws.String("BOL" + poNumber + ".pdf"),
+		Key:                aws.String("BOL" + quoteId + ".pdf"),
 		CacheControl:       aws.String(""),
 		ContentType:        aws.String("application/pdf"),
 		ContentDisposition: aws.String("inline"),

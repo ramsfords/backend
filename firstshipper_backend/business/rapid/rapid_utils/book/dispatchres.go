@@ -12,7 +12,7 @@ func ToV1DispatchResponse(model models.DispatchResponse) v1.DispatchResponse {
 		PickupNumber:         model.PickupNumber,
 		CarrierName:          model.CarrierName,
 		CarrierPhone:         model.CarrierPhone,
-		CarrierPRONumber:     model.CarrierPRONumber,
+		CarrierProNumber:     model.CarrierProNumber,
 		HandlingUnitTotal:    model.HandlingUnitTotal,
 		IsShipmentEdit:       model.IsShipmentEdit,
 		IsShipmentManual:     model.IsShipmentManual,

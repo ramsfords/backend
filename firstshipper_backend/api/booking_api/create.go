@@ -3,7 +3,6 @@ package booking_api
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -74,7 +73,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	bolNumber := "BOL" + oldQuote.QuoteRequest.QuoteId
 	bolUrl := "https://firstshipperbol.s3.us-west-1.amazonaws.com/" + bolNumber + ".pdf"
 	url := "https://bwipjs-api.metafloor.com/?bcid=code128&text={poNumber}"
-	url = strings.ReplaceAll(url, "{poNumber}", disPatchResponse.CarrierPRONumber)
+	url = strings.ReplaceAll(url, "{poNumber}", oldQuote.BookingInfo.CarrierProNumber)
 	oldQuote.BookingInfo = &v1.BookingInfo{
 		ShipmentId:            int32(disPatchResponse.ShipmentID),
 		FirstShipperBolNumber: bolNumber,
@@ -82,22 +81,25 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		CarrierName:           disPatchResponse.CarrierName,
 		CarrierPhone:          disPatchResponse.CarrierPhone,
 		CarrierEmail:          "",
-		CarrierProNumber:      disPatchResponse.CarrierPRONumber,
+		CarrierProNumber:      disPatchResponse.CarrierProNumber,
 		CarrierLogoUrl:        bid.VendorLogo,
 		CarrierBolNumber:      disPatchResponse.CustomerBOLNumber,
-		CarrierReference:      disPatchResponse.CarrierPRONumber,
-		PickupNumber:          disPatchResponse.CarrierPRONumber,
+		CarrierReference:      disPatchResponse.CarrierProNumber,
+		PickupNumber:          disPatchResponse.CarrierProNumber,
 		ServiceType:           serviceType,
-		BolUrl:                bolUrl + shipmentId,
+		BolUrl:                bolUrl,
 	}
+
 	oldQuote.BookingInfo.SvgData = url
-	bookingApi.adobe.UrlToPdf(bid.BidId, disPatchResponse.CarrierPRONumber, oldQuote.QuoteRequest.BusinessId)
+	go bookingApi.adobe.UrlToPdf(bid.BidId, oldQuote.QuoteRequest.BusinessId)
 	err = bookingApi.services.SaveBooking(ctxx, oldQuote)
 	if err != nil {
 		// just log the error not Need to return error
 		bookingApi.services.Logger.Error(err)
 		return nil, err
 	}
+	oldQuote.BookingInfo.SvgData = url
+	oldQuote.BookingInfo.BolUrl = bolUrl
 	outRes := &v1.BookingResponse{
 		QuoteRequest: oldQuote.QuoteRequest,
 		BookingInfo:  oldQuote.BookingInfo,
@@ -112,22 +114,4 @@ func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
 		}
 	}
 	return nil
-}
-func getSvgForPO(poNumber string) string {
-	url := "https://bwipjs-api.metafloor.com/?bcid=code128&text={poNumber}"
-	url = strings.ReplaceAll(url, "{poNumber}", poNumber)
-	req, _ := http.NewRequest("GET", url, nil)
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		fmt.Println(err.Error())
-		return ""
-	}
-
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println(err.Error())
-		return ""
-	}
-	return string(body)
 }

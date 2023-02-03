@@ -14,7 +14,7 @@ type DispatchResponse struct {
 	PickupNumber         string  `json:"pickupNumber" dynamodbav:"pickupNumber"`
 	CarrierName          string  `json:"carrierName" dynamodbav:"carrierName"`
 	CarrierPhone         string  `json:"carrierPhone" dynamodbav:"carrierPhone"`
-	CarrierPRONumber     string  `json:"carrierPRONumber" dynamodbav:"carrierPRONumber"`
+	CarrierProNumber     string  `json:"carrierPRONumber" dynamodbav:"carrierPRONumber"`
 	HandlingUnitTotal    float64 `json:"handlingUnitTotal" dynamodbav:"handlingUnitTotal"`
 	IsShipmentEdit       bool    `json:"isShipmentEdit" dynamodbav:"isShipmentEdit"`
 	IsShipmentManual     bool    `json:"isShipmentManual" dynamodbav:"isShipmentManual"`
