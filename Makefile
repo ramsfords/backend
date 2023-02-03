@@ -21,7 +21,7 @@ prod:
 local:
 	git add .
 	git commit -m "update"
-	git push origin main
+	git push origin main --force
 
 run:
 	go run main.go
