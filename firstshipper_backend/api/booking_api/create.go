@@ -72,8 +72,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	oldQuote.RapidBooking = disPatchResponse
 	bolNumber := "BOL" + oldQuote.QuoteRequest.QuoteId
 	bolUrl := "https://firstshipperbol.s3.us-west-1.amazonaws.com/" + bolNumber + ".pdf"
-	url := "https://bwipjs-api.metafloor.com/?bcid=code128&text={poNumber}"
-	url = strings.ReplaceAll(url, "{poNumber}", oldQuote.BookingInfo.CarrierProNumber)
+
 	oldQuote.BookingInfo = &v1.BookingInfo{
 		ShipmentId:            int32(disPatchResponse.ShipmentID),
 		FirstShipperBolNumber: bolNumber,
@@ -89,9 +88,10 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		ServiceType:           serviceType,
 		BolUrl:                bolUrl,
 	}
-
+	url := "https://bwipjs-api.metafloor.com/?bcid=code128&text={poNumber}"
+	url = strings.ReplaceAll(url, "{poNumber}", oldQuote.BookingInfo.CarrierProNumber)
 	oldQuote.BookingInfo.SvgData = url
-	go bookingApi.adobe.UrlToPdf(bid.BidId, oldQuote.QuoteRequest.BusinessId)
+	go bookingApi.adobe.UrlToPdf(bid)
 	err = bookingApi.services.SaveBooking(ctxx, oldQuote)
 	if err != nil {
 		// just log the error not Need to return error

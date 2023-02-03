@@ -36,7 +36,7 @@ func main() {
 	dynamodDb := dynamo.New(conf)
 	logger := logger.New("backend")
 	app := pocketbase.New()
-	adobe := adobe.NewAdobe(s3)
+	adobe := adobe.NewAdobe(s3, &logger)
 	var publicDirFlag string
 
 	// add "--publicDir" option flag
