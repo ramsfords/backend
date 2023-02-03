@@ -1,9 +1,7 @@
 package S3
 
 import (
-	"context"
-
-	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/ramsfords/backend/configs"
@@ -17,11 +15,12 @@ type S3Client struct {
 
 // config satisfies the CredentialsProvider interface
 func New(conf *configs.Config) S3Client {
-	sdkConfig, err := config.LoadDefaultConfig(context.TODO())
-	if err != nil {
-		return S3Client{}
+	confs := aws.Config{
+		Region:           "us-west-1",
+		Credentials:      conf,
+		RetryMaxAttempts: 10,
 	}
-	s3Client := s3.NewFromConfig(sdkConfig)
+	s3Client := s3.NewFromConfig(confs)
 	uploader := manager.NewUploader(s3Client)
 	return S3Client{
 		Client:   s3Client,

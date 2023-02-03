@@ -53,7 +53,6 @@ func NewAdobe(s3Client S3.S3Client, logger *logger.Logger) *Adobe {
 	if err != nil {
 		logger.Errorf("Error in exchange token %v", err)
 	} else {
-		logger.Info("Done in exchange token")
 		adobe.TokenRes.ApiKey = "1a0995378e964e85a260ce3e98f5e6b7"
 	}
 
