@@ -198,3 +198,36 @@ func (adobe *Adobe) ExchangeToken() error {
 	adobe.logger.Infof("done exchange token form adobe %v", time.Now().Local())
 	return nil
 }
+
+func (adobe *Adobe) GetToken() (string, error) {
+	jsonData := `{
+		"variables": {
+			"privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDe8gfsF8VspKsucFKY91dWvoEu\nVpQNhBiKmM3fRe9ig6nrhBEfg3LcNDyVYfUo9ZR9WVg3gocL3bQnn7EyqeAYZhN+2meB1k7w4Nhx\nQwtvWX73Cwim+ICBoL1Aq8n0WMog8DIMuGwFKpucynCu9AF9xa51zXthY24BVEs+/eowe93HLvad\nU+38PL9mTU0x/z3rJlHDo9ROsRFN/Pdku6dgKqBRDMbMX5zqxErEXhnhZ4OuVLCFB74kMrqJy1+w\nzKMHfYDgzDWaP8rNvYzD0kmeN+LJvWvpuvBjkiMoeubr2Kh0gH7IgUdEncoyJGQnTAM7V3MSjaUs\nyqrPnWmgGh1JAgMBAAECggEAEQYJqVMyWcakJJZilDgUxPSkgBGP2g1bY1/iHnmkWxEjLS7nMNEU\nePCLLLvvYKqJ5V1oYUq3/aW27yygNvZmPG607+OE8lLXMcj1dgaQzbaXfY0r4rYId/16XgEQGXab\nLpMwuyxs4SMdAUaq/oz2vTAWT3v6fxf8yyCw4zU3x+5U2ZNLJMS4pCV5S9r5u7v0VOLE7DsawNgW\ndfG/e+t676KZfFTlRMNip9jAdHcl9qh/wi1KbtUkj/m5jG551EUZ2tmBm3Nngzn675sy/0uUNDtq\nP3BkLxAbaUIbBqoYigdO+0WH4j59uqgiQ0GPCnyXIOF8kllaoZ6MhG5C1w8oRQKBgQDiIa0+2Z9P\nb9snsA2qVGemzgyxCIJ9OiBmRMpEIl9JINkl3G6nOZwgQuwzxJnAXM/V0fVQ5twBPmtGpv7UIrPn\naL+s4I6vuu8KZjW7DGr3bnZS3kzf0DCf7gg06XLqboTleUAfGrCRgleBxo6yZdHuda0/Y8MMs2sg\nctzNI6mvbQKBgQD8ZJ7AMHihUU1myhif86TPlfpRK3fy7mkVPDdLkbTWgqn8WG++rLr/xU1dD0Mb\nO2OyEn5eZYYfwGG9UChYTyo1kSQXm0G7gNRoSGujs5AeT4s1nD4C2WNPC+MObDI35sgG8FQzpQxf\nZiybP4+XbvRnPOehaLyAw7HEgLOAWK5PzQKBgQCubh3OIl5SD0100sfnwI3nzH9bu920LTc6zAtd\n/UmVBkKaguvUEItPE3BSCnAzQySKohdiHYJNb1GewUhGaLJvaYyZFOrbwQ2M7wS5UT3duRaKm7Ge\n31/yrdEkx4L+NNxMingcxiC3TVyk3X3LPOFv2NQX1qNpU6jp8dBCaSUGDQKBgHqOJWPvZXP3tZz2\n/1QUC/BcxCrL77e/urj7/2Grg+MxmXcWPlSZLUhrNvC8K3q6sONUBZayt5kNYqh5ls2iyz0tmBf6\nZMW2fe2RVOstkwqU12UV1CqwAn/sprlnIk9wuapc4pYdS8+7HmfYSlJfJ0BGG7eN0xK3c8eWMxNc\nfG/1AoGAVzzIUOXgnM487aiBR91i60RnybiAbTJJiJ+PFHTuw0PvSux58LwLDKasieVJ/YQJlhqt\ni7xnX9MsRsaE3BY8J+Bfyz/JVT5xlGC9NdpkgReWXb7z+ppCh+UGryH+3BenAyrSP1K0FgDjI9Pv\n1p9dEDWZOlDOoPIHeOEe5Fxv1UE=\n-----END PRIVATE KEY-----",
+			"orgId": "971322",
+			"intId": "394004",
+			"clientId": "1a0995378e964e85a260ce3e98f5e6b7",
+			"clientSecret": "p8e-PG3RgfPMq_b3t_KT9ZhLbPJJ1LASyPMA"
+		},
+		"query": "query ($privateKey: String!, $orgId: String!, $intId: String!, $clientId: String, $clientSecret: String) {\n  getJwt(orgId: $orgId, intId: $intId) {\n    jwtToken(privateKey: $privateKey, clientId: $clientId, clientSecret: $clientSecret) {\n      token\n      command\n      __typename\n    }\n    __typename\n  }\n}"
+		}`
+
+	jsonValue, _ := json.Marshal(jsonData)
+	request, err := http.NewRequest("POST", "https://developer.adobe.com/console/graphql", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		adobe.logger.Errorf("Error in exchanging token from adobe %v", err)
+		return "", err
+	}
+	client := &http.Client{Timeout: time.Second * 10}
+	response, err := client.Do(request)
+	if err != nil && response.StatusCode == 200 {
+		adobe.logger.Errorf("Error in exchanging token from adobe %v", err)
+		return "", err
+	}
+	defer response.Body.Close()
+	if err != nil {
+		fmt.Printf("The HTTP request failed with error %s\n", err)
+	}
+	data, _ := ioutil.ReadAll(response.Body)
+	fmt.Println(string(data))
+	return string(data), nil
+}

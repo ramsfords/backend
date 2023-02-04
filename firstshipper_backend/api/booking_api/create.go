@@ -3,10 +3,12 @@ package booking_api
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/firstshipper_backend/api/utils"
 	rapid "github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils/book"
 	v1 "github.com/ramsfords/types_gen/v1"
@@ -74,7 +76,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 
 	// hash the user password
 
-	fileName := oldQuote.QuoteRequest.QuoteId + "-" + utils.GenerateString(4)
+	fileName := bid.BidId + "-" + utils.GenerateString(4)
 	if err != nil {
 		bookingApi.services.Logger.Errorf("Error in created hashed bol %v", err)
 	}
@@ -98,12 +100,17 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	url := "https://bwipjs-api.metafloor.com/?bcid=code128&text={poNumber}"
 	url = strings.ReplaceAll(url, "{poNumber}", oldQuote.BookingInfo.CarrierProNumber)
 	oldQuote.BookingInfo.SvgData = url
-	go bookingApi.adobe.UrlToPdf(bid, fileName)
+	// go bookingApi.adobe.UrlToPdf(bid, fileName)
 	err = bookingApi.services.SaveBooking(ctxx, oldQuote)
 	if err != nil {
 		// just log the error not Need to return error
 		bookingApi.services.Logger.Error(err)
 		return nil, err
+	}
+	err = makeBOlGenGetRequest(bookingApi.services.Conf, fileName)
+	if err != nil {
+		// just log the error not Need to return error
+		bookingApi.services.Logger.Error(err)
 	}
 	oldQuote.BookingInfo.SvgData = url
 	oldQuote.BookingInfo.BolUrl = bolUrl
@@ -120,5 +127,20 @@ func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
 			return bid
 		}
 	}
+	return nil
+}
+func makeBOlGenGetRequest(conf *configs.Config, fileName string) error {
+	url := "https://firstshipper.com/api/bol?fileName=" + fileName
+	resp, err := http.Get(url)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		return err
+	}
+	// marshall the response
+	defer resp.Body.Close()
+	res, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(res))
 	return nil
 }

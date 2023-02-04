@@ -22,6 +22,7 @@ func init() {
 	seClient := S3.New(conf)
 	logger := logger.New("debug")
 	adobes = adobe.NewAdobe(seClient, &logger)
+	adobes.GetToken()
 }
 func TestBolGen(t *testing.T) {
 	// adobe.UrlToPdf("30007-0")
