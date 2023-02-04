@@ -12,3 +12,6 @@ var passwordResetEmailTemplate string
 
 //go:embed templates/welcome.html
 var welcomeEmailTemplate string
+
+//go:embed templates/booking-confirmation.html
+var bookingConfirmationEmailTemplate string

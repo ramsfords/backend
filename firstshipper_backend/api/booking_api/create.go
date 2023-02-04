@@ -11,6 +11,7 @@ import (
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/firstshipper_backend/api/utils"
 	rapid "github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils/book"
+	"github.com/ramsfords/backend/foundations/zohomail"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -119,6 +120,15 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		BookingInfo:  oldQuote.BookingInfo,
 		SvgData:      oldQuote.BookingInfo.SvgData,
 	}
+	emailSubject := "FirstShipper: Booking Confirmation " + "Pickup Number: " + oldQuote.BookingInfo.CarrierProNumber + " " + "BOL Number: " + oldQuote.BookingInfo.FirstShipperBolNumber
+	data := zohomail.EmailData{
+		ReceiverEmail: oldQuote.QuoteRequest.Pickup.Contact.EmailAddress,
+		ReceiverName:  oldQuote.QuoteRequest.Pickup.Contact.Name,
+		EmailSubject:  emailSubject,
+		SenderEmail:   "quotes@firstshipper.com",
+		SenderName:    "FirstShipper Booking",
+	}
+	go bookingApi.services.Email.SendBookingConfirmationEmail(data, outRes)
 	return outRes, nil
 }
 func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
