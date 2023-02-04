@@ -10,7 +10,6 @@ import (
 	"github.com/ramsfords/backend/firstshipper_backend/api/utils"
 	rapid "github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils/book"
 	v1 "github.com/ramsfords/types_gen/v1"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func (bookApi BookingApi) EchoCreateBooking(ctx echo.Context) error {
@@ -72,15 +71,14 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	oldQuote.RapidSaveQuote.ConfirmAndDispatch.ShipmentID = &shipmentId
 	oldQuote.RapidBooking = disPatchResponse
 	bolNumber := "BOL" + oldQuote.QuoteRequest.QuoteId
+
 	// hash the user password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(bid.QuoteId), bcrypt.DefaultCost)
+
+	fileName := oldQuote.QuoteRequest.QuoteId + "-" + utils.GenerateString(4)
 	if err != nil {
 		bookingApi.services.Logger.Errorf("Error in created hashed bol %v", err)
 	}
-	if err != nil {
-		bookingApi.services.Logger.Errorf("Error in created hashed bol %v", err)
-	}
-	bolUrl := "https://firstshipperbol.s3.us-west-1.amazonaws.com/" + string(hashedPassword) + ".pdf"
+	bolUrl := "https://firstshipperbol.s3.us-west-1.amazonaws.com/" + fileName + ".pdf"
 
 	oldQuote.BookingInfo = &v1.BookingInfo{
 		ShipmentId:            int32(disPatchResponse.ShipmentID),
@@ -100,7 +98,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	url := "https://bwipjs-api.metafloor.com/?bcid=code128&text={poNumber}"
 	url = strings.ReplaceAll(url, "{poNumber}", oldQuote.BookingInfo.CarrierProNumber)
 	oldQuote.BookingInfo.SvgData = url
-	go bookingApi.adobe.UrlToPdf(bid)
+	go bookingApi.adobe.UrlToPdf(bid, fileName)
 	err = bookingApi.services.SaveBooking(ctxx, oldQuote)
 	if err != nil {
 		// just log the error not Need to return error

@@ -17,7 +17,6 @@ import (
 	"github.com/ramsfords/backend/foundations/S3"
 	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type TokenRes struct {
@@ -59,7 +58,7 @@ func NewAdobe(s3Client S3.S3Client, logger *logger.Logger) *Adobe {
 
 	return adobe
 }
-func (adobe *Adobe) UrlToPdf(bid *v1.Bid) (string, error) {
+func (adobe *Adobe) UrlToPdf(bid *v1.Bid, fileName string) (string, error) {
 	adobe.logger.Infof("starting url to pdf %v", time.Now().Local())
 	tryAgain := true
 	for tryAgain {
@@ -98,7 +97,7 @@ func (adobe *Adobe) UrlToPdf(bid *v1.Bid) (string, error) {
 			}
 			location := res.Header.Get("Location")
 			pullObjectId := strings.Split(strings.Split(location, "htmltopdf/")[1], "/")[0]
-			adobe.PullObjectResult(pullObjectId, bid)
+			adobe.PullObjectResult(pullObjectId, bid, fileName)
 			fmt.Println(location)
 			fmt.Println(string(body))
 			return "", nil
@@ -108,7 +107,7 @@ func (adobe *Adobe) UrlToPdf(bid *v1.Bid) (string, error) {
 	adobe.logger.Infof("finished url to pdf %v", time.Now().Local())
 	return "", nil
 }
-func (adobe *Adobe) PullObjectResult(pullObjectId string, bid *v1.Bid) (adobeResourceURL string, err error) {
+func (adobe *Adobe) PullObjectResult(pullObjectId string, bid *v1.Bid, fileName string) (adobeResourceURL string, err error) {
 	adobe.logger.Infof("starint pull object from adobe %v", time.Now().Local())
 	time.Sleep(10 * time.Second)
 	url := "https://pdf-services-ue1.adobe.io/operation/htmltopdf/{PULLOBJECTID}/status"
@@ -134,11 +133,11 @@ func (adobe *Adobe) PullObjectResult(pullObjectId string, bid *v1.Bid) (adobeRes
 	if err != nil {
 		adobe.logger.Errorf("Error in pull object from adobe %v", err)
 	}
-	adobe.UploadBOlTOS3(resData.Aseets.DownloadUri, bid)
+	adobe.UploadBOlTOS3(resData.Aseets.DownloadUri, bid, fileName)
 	adobe.logger.Info("finised PullObjectResult from adobe")
 	return "", nil
 }
-func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bid *v1.Bid) (string, error) {
+func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bid *v1.Bid, fileName string) (string, error) {
 	adobe.logger.Infof("starting upload bol to s3", time.Now().Local())
 	// gets pdf from provided url
 	reqs, err := http.Get(adobeResourceURl)
@@ -150,13 +149,9 @@ func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bid *v1.Bid) (string,
 		adobe.logger.Errorf("Error in pull object from adobe %v", err)
 	}
 	reqs.Body.Close()
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(bid.QuoteId), bcrypt.DefaultCost)
-	if err != nil {
-		adobe.logger.Errorf("Error in created hashed bol %v", err)
-	}
 	s3Input := &s3.PutObjectInput{
 		Bucket:             aws.String("firstshipperbol"),
-		Key:                aws.String("BOL" + string(hashedPassword) + ".pdf"),
+		Key:                aws.String("BOL" + fileName + ".pdf"),
 		CacheControl:       aws.String(""),
 		ContentType:        aws.String("application/pdf"),
 		ContentDisposition: aws.String("inline"),
