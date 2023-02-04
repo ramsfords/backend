@@ -17,6 +17,7 @@ import (
 	"github.com/ramsfords/backend/foundations/S3"
 	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type TokenRes struct {
@@ -149,9 +150,13 @@ func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bid *v1.Bid) (string,
 		adobe.logger.Errorf("Error in pull object from adobe %v", err)
 	}
 	reqs.Body.Close()
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(bid.QuoteId), bcrypt.DefaultCost)
+	if err != nil {
+		adobe.logger.Errorf("Error in created hashed bol %v", err)
+	}
 	s3Input := &s3.PutObjectInput{
 		Bucket:             aws.String("firstshipperbol"),
-		Key:                aws.String("BOL" + bid.QuoteId + ".pdf"),
+		Key:                aws.String("BOL" + string(hashedPassword) + ".pdf"),
 		CacheControl:       aws.String(""),
 		ContentType:        aws.String("application/pdf"),
 		ContentDisposition: aws.String("inline"),

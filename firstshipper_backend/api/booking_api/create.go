@@ -10,6 +10,7 @@ import (
 	"github.com/ramsfords/backend/firstshipper_backend/api/utils"
 	rapid "github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils/book"
 	v1 "github.com/ramsfords/types_gen/v1"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (bookApi BookingApi) EchoCreateBooking(ctx echo.Context) error {
@@ -71,7 +72,15 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	oldQuote.RapidSaveQuote.ConfirmAndDispatch.ShipmentID = &shipmentId
 	oldQuote.RapidBooking = disPatchResponse
 	bolNumber := "BOL" + oldQuote.QuoteRequest.QuoteId
-	bolUrl := "https://firstshipperbol.s3.us-west-1.amazonaws.com/" + bolNumber + ".pdf"
+	// hash the user password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(bid.QuoteId), bcrypt.DefaultCost)
+	if err != nil {
+		bookingApi.services.Logger.Errorf("Error in created hashed bol %v", err)
+	}
+	if err != nil {
+		bookingApi.services.Logger.Errorf("Error in created hashed bol %v", err)
+	}
+	bolUrl := "https://firstshipperbol.s3.us-west-1.amazonaws.com/" + string(hashedPassword) + ".pdf"
 
 	oldQuote.BookingInfo = &v1.BookingInfo{
 		ShipmentId:            int32(disPatchResponse.ShipmentID),
