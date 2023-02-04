@@ -32,8 +32,8 @@ func (email Email) getBookingConfirmationTempalte(data EmailData, bookingRes *v1
 	return template
 }
 func intToString(i int) string {
-	return fmt.Sprintf("%d", i)
+	return strings.Split(fmt.Sprintf("%d", i), ".")[0]
 }
 func floatToString(f float32) string {
-	return fmt.Sprintf("%f", f)
+	return strings.Split(fmt.Sprintf("%f", f), ".")[0]
 }
