@@ -13,7 +13,9 @@ import (
 func MakeQuoteDetails(quoteRequest *v1.QuoteRequest) (*models.QuoteDetails, error) {
 	totalWeight := fmt.Sprintf("%f", quoteRequest.Commodities[0].Weight)
 	totalWeight = strings.Split(totalWeight, ".")[0] + ".00"
-	pickupDate, err := time.Parse(time.RFC3339, quoteRequest.PickupDate)
+	quoteRequest.PickupDate = quoteRequest.PickupDate[:len(quoteRequest.PickupDate)-4] + ".000-01:00"
+	layout := "2006-01-02T15:04:05.000-03:00"
+	pickupDate, err := time.Parse(layout, quoteRequest.PickupDate)
 	if err != nil {
 		return nil, errors.New("can not convert pick up date to rapid pickup date")
 	}

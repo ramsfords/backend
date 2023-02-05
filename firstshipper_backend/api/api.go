@@ -11,10 +11,9 @@ import (
 	"github.com/ramsfords/backend/firstshipper_backend/api/user_api"
 	"github.com/ramsfords/backend/firstshipper_backend/business/rapid"
 	"github.com/ramsfords/backend/firstshipper_backend/services"
-	"github.com/ramsfords/backend/foundations/adobe"
 )
 
-func SetUpAPi(firstShipperGrp *echo.Echo, services *services.Services, rapid *rapid.Rapid, adob *adobe.Adobe) {
+func SetUpAPi(firstShipperGrp *echo.Echo, services *services.Services, rapid *rapid.Rapid) {
 	// grp.Use(apis.RequireAdminOrRecordAuth())
 	firstShipperGrp.GET("/ping", func(ctx echo.Context) error {
 		return ctx.JSON(200, echo.Map{
@@ -30,5 +29,5 @@ func SetUpAPi(firstShipperGrp *echo.Echo, services *services.Services, rapid *ra
 	tracking_api.New(services, firstShipperGrp, rapid)
 	user_api.New(services, firstShipperGrp)
 	business_api.New(services, rapid, firstShipperGrp)
-	booking_api.New(services, firstShipperGrp, rapid, adob)
+	booking_api.New(services, firstShipperGrp, rapid)
 }

@@ -38,7 +38,7 @@ type DB interface {
 	UpdateBooking(ctx context.Context, booking *v1.BookingResponse, businessId string) error
 	DeleteBooking(ctx context.Context, BookingId string, businessId string) error
 	GetBooking(ctx context.Context, bookingId string) (*v1.BookingResponse, error)
-	GetAllBookingsByBusinessId(ctx context.Context, businessId string) ([]*v1.BookingResponse, error)
+	GetAllBookingsByBusinessId(ctx context.Context, businessId string) ([]*model.QuoteRequest, error)
 	GetAllBookings(ctx context.Context) ([]*v1.BookingResponse, error)
 
 	//LTL Location DB

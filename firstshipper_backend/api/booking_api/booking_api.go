@@ -25,10 +25,9 @@ type BookingApi struct {
 	rapid    *rapid.Rapid
 }
 
-func New(services *services.Services, echoClient *echo.Echo, rapid *rapid.Rapid, adob *adobe.Adobe) {
+func New(services *services.Services, echoClient *echo.Echo, rapid *rapid.Rapid) {
 	book := BookingApi{
 		services: services,
-		adobe:    adob,
 		rapid:    rapid,
 	}
 	protectedBolGroup := echoClient.Group("/booking")

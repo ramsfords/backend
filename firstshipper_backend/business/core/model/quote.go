@@ -34,4 +34,5 @@ type FrontEndBusinessData struct {
 	Business      *v1.Business       `json:"business" dynamodbav:"business"`
 	Users         []*v1.FrontEndUser `json:"users" dynamodbav:"users"`
 	QuoteRequests []*QuoteRequest    `json:"quoteRequest" dynamodbav:"quoteRequest"`
+	Shipments     []*QuoteRequest    `json:"shipments" dynamodbav:"shipments"`
 }

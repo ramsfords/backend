@@ -33,11 +33,16 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
+	shipments, err := business.services.GetAllBookingsByBusinessId(ctx.Request().Context(), businessID)
+	if err != nil {
+		business.services.Logger.Errorf("error getting shipments: %v", err)
+	}
 	removeSaltedPassword(data.Users)
 	resdata := model.FrontEndBusinessData{
 		Business:      data.Business,
 		Users:         sanitizeUserToFrontEnd(data.Users),
 		QuoteRequests: data.QuoteRequests,
+		Shipments:     shipments,
 	}
 	return ctx.JSON(http.StatusOK, resdata)
 }

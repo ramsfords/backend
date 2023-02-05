@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	v1 "github.com/ramsfords/types_gen/v1"
+	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 )
 
 // "TableName": "first-shipper-dev",
@@ -15,34 +15,35 @@ import (
 // "FilterExpression": "attribute_exists(#booking_sk)",
 // "ExpressionAttributeNames": {"#pk":"pk","#sk":"sk","#booking_sk":"booking_sk"},
 // "ExpressionAttributeValues": {":pk": {"S":"business#7e3da8"},":sk": {"S":"quote#"}}
-func (bookingdb BookingDb) GetAllBookingsByBusinessId(ctx context.Context, businessId string) ([]*v1.BookingResponse, error) {
+func (bookingdb BookingDb) GetAllBookingsByBusinessId(ctx context.Context, businessId string) ([]*model.QuoteRequest, error) {
 	qryInput := &dynamodb.QueryInput{
-		TableName:              aws.String(bookingdb.Config.GetFirstShipperTableName()),
+		TableName:              aws.String(bookingdb.GetFirstShipperTableName()),
 		KeyConditionExpression: aws.String("#pk = :pk And begins_with(#sk, :sk)"),
-		FilterExpression:       aws.String("attribute_exists(#booking_sk)"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":pk": &types.AttributeValueMemberS{Value: "business#" + businessId},
-			":sk": &types.AttributeValueMemberS{Value: "quote#"},
+			":pk": &types.AttributeValueMemberS{Value: "pk#" + businessId},
+			":sk": &types.AttributeValueMemberS{Value: "quote"},
 		},
+
+		FilterExpression: aws.String("attribute_exists(booking_pk)"),
 		ExpressionAttributeNames: map[string]string{
-			"#booking_sk": "booking_sk",
-			"#pk":         "pk",
-			"#sk":         "sk",
+			"#pk": "pk",
+			"#sk": "sk",
 		},
-		ScanIndexForward: aws.Bool(true),
+
+		ScanIndexForward: aws.Bool(false),
 	}
 
 	res, err := bookingdb.Client.Query(ctx, qryInput)
 	if err != nil {
-		return []*v1.BookingResponse{}, err
+		return []*model.QuoteRequest{}, err
 	}
 	if len(res.Items) == 0 {
-		return []*v1.BookingResponse{}, nil
+		return []*model.QuoteRequest{}, nil
 	}
-	bookingsData := []*v1.BookingResponse{}
+	bookingsData := []*model.QuoteRequest{}
 	err = attributevalue.UnmarshalListOfMaps(res.Items, &bookingsData)
 	if err != nil {
-		return []*v1.BookingResponse{}, err
+		return []*model.QuoteRequest{}, err
 	}
 	return bookingsData, nil
 }
