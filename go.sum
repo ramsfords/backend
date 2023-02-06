@@ -1715,8 +1715,8 @@ github.com/ramsfords/foundations v0.0.0-20230112221324-93568d22d73a h1:kZViEpAao
 github.com/ramsfords/foundations v0.0.0-20230112221324-93568d22d73a/go.mod h1:0VS+hbvGgiwUrwEizGyBn4CzZIDzH1D8/Nvn9sU8nZk=
 github.com/ramsfords/services v0.0.0-20230112221629-5d9830cc80b7 h1:GBc7kLUEX8Lir8CHzQr/hvzElI0szVhVYZfgTmbWdAw=
 github.com/ramsfords/services v0.0.0-20230112221629-5d9830cc80b7/go.mod h1:UHLrgR8/dVqMd03UYfTEeN7VoVhq6ucL0RcuREaz1eg=
-github.com/ramsfords/types_gen v0.0.0-20230203190453-f2f04f9bcf3e h1:JpqeLYeZkOKyEXUTsXd28VC3wF7K5N31CieNtvodTM8=
-github.com/ramsfords/types_gen v0.0.0-20230203190453-f2f04f9bcf3e/go.mod h1:+Gmwq7K2nI1U2WdCt3hEdIRmZKD4zbhK+4ZbikvDMbY=
+github.com/ramsfords/types_gen v0.0.0-20230206021955-7452531c10d7 h1:FYXIk8pch8auLKIf+EN2yQOj/88T1sjKiiFolIgUv+8=
+github.com/ramsfords/types_gen v0.0.0-20230206021955-7452531c10d7/go.mod h1:+Gmwq7K2nI1U2WdCt3hEdIRmZKD4zbhK+4ZbikvDMbY=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 github.com/remyoudompheng/bigfft v0.0.0-20220927061507-ef77025ab5aa h1:tEkEyxYeZ43TR55QU/hsIt9aRGBxbgGuz9CGykjvogY=

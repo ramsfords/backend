@@ -6,8 +6,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/pocketbase/pocketbase/apis"
-	"github.com/pocketbase/pocketbase/models"
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -22,12 +20,14 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 	if businessID == "" {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	user, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
+	email := ctx.QueryParam("email")
 
-	if user == nil {
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-	email := user.GetString("email")
+	// user, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
+
+	// if user == nil {
+	// 	return ctx.NoContent(http.StatusBadRequest)
+	// }
+	// email := user.GetString("email")
 	fmt.Println(email)
 	data, err := business.services.GetAllDataByBusinessId(ctx.Request().Context(), businessID)
 	if err != nil {
@@ -42,8 +42,10 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 		Business:      data.Business,
 		Users:         sanitizeUserToFrontEnd(data.Users),
 		QuoteRequests: data.QuoteRequests,
+		User:          &v1.FrontEndUser{},
 		Shipments:     shipments,
 	}
+	resdata.User = getCurrentSanitizedUser(resdata.Users, email)
 	return ctx.JSON(http.StatusOK, resdata)
 }
 func getUserFromUsers(email string, users []*v1.User) *v1.User {
@@ -55,10 +57,10 @@ func getUserFromUsers(email string, users []*v1.User) *v1.User {
 	return &v1.User{}
 }
 
-func getCurrentUser(users []v1.User, email string) *v1.User {
+func getCurrentUser(users []*v1.User, email string) *v1.User {
 	for _, j := range users {
 		if j.Email == email {
-			return &j
+			return j
 		}
 	}
 	return nil
@@ -82,4 +84,21 @@ func sanitizeUserToFrontEnd(users []*v1.User) []*v1.FrontEndUser {
 		return nil
 	}
 	return userData
+}
+func getCurrentSanitizedUser(users []*v1.FrontEndUser, email string) *v1.FrontEndUser {
+	for _, j := range users {
+		if j.Email == email {
+			userData := &v1.FrontEndUser{}
+			jsonBytes, err := json.Marshal(j)
+			if err != nil {
+				return nil
+			}
+			err = json.Unmarshal(jsonBytes, &userData)
+			if err != nil {
+				return nil
+			}
+			return userData
+		}
+	}
+	return nil
 }

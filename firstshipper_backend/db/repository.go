@@ -84,6 +84,7 @@ type DB interface {
 	AddPhoneNumber(ctx context.Context, businessId string, phoneNumber *v1.PhoneNumber) (*v1.PhoneNumber, error)
 	UpdateBusinessName(ctx context.Context, businessId string, businessName string) error
 	GetAllDataByBusinessId(ctx context.Context, businessId string) (*model.BusinessData, error)
+	UpdateAllowBooking(ctx context.Context, businessId string, allow bool) (bool, error)
 	// Incraase quote Count
 	IncreateQuoteCount()
 	// Get Quote Count

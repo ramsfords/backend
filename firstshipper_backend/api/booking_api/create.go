@@ -17,6 +17,7 @@ import (
 
 func (bookApi BookingApi) EchoCreateBooking(ctx echo.Context) error {
 	quote := &v1.BookRequest{}
+
 	err := ctx.Bind(quote)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
@@ -25,8 +26,16 @@ func (bookApi BookingApi) EchoCreateBooking(ctx echo.Context) error {
 	// 	QuoteId:    "23122",
 	// 	BusinessId: "kandelsuren@gmail.com",
 	// }
-	ctx.Request().Header.Set("Cache-Control", "no-cache")
 	newCtx := ctx.Request().Context()
+	business, err := bookApi.services.GetBusiness(newCtx, quote.QuoteRequest.BusinessId)
+	if err != nil {
+		return ctx.NoContent(http.StatusBadRequest)
+	}
+	if !business.AllowBooking {
+		return ctx.NoContent(http.StatusBadRequest)
+	}
+	ctx.Request().Header.Set("Cache-Control", "no-cache")
+
 	res, err := bookApi.CreateNewBook(newCtx, quote)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
