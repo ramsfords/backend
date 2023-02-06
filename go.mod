@@ -15,7 +15,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.0
 	github.com/cloudflare/cloudflare-go v0.58.1
 	github.com/cloudinary/cloudinary-go/v2 v2.2.0
-	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/goccy/go-json v0.10.0
 	github.com/golang-jwt/jwt/v4 v4.4.3
@@ -23,18 +22,15 @@ require (
 	github.com/labstack/echo/v5 v5.0.0-20220201181537-ed2888cfa198
 	github.com/newrelic/go-agent/v3 v3.20.2
 	github.com/pkg/errors v0.9.1
-	github.com/pocketbase/dbx v1.8.0
 	github.com/pocketbase/pocketbase v0.11.2
 	github.com/ramsfords/services v0.0.0-20230112221629-5d9830cc80b7
 	github.com/ramsfords/types_gen v0.0.0-20230206021955-7452531c10d7
 	github.com/scylladb/gocqlx/v2 v2.8.0
-	github.com/spf13/cast v1.5.0
 	github.com/spf13/viper v1.14.0
 	github.com/valyala/fasthttp v1.44.0
 	go.opentelemetry.io/otel/trace v1.11.2
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.5.0
-	golang.org/x/oauth2 v0.4.0
 )
 
 require (
@@ -69,6 +65,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.1 // indirect
 	github.com/ganigeorgiev/fexpr v0.3.0 // indirect
+	github.com/go-ozzo/ozzo-validation/v4 v4.3.0 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/gocql/gocql v1.3.1 // indirect
 	github.com/gogs/chardet v0.0.0-20191104214054-4b6791f73a28 // indirect
@@ -99,12 +96,14 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
+	github.com/pocketbase/dbx v1.8.0 // indirect
 	github.com/ramsfords/configs v0.0.0-20230112211815-0538a531f5be // indirect
 	github.com/ramsfords/foundations v0.0.0-20230112221324-93568d22d73a // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20220927061507-ef77025ab5aa // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/scylladb/go-reflectx v1.0.1 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
+	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/cobra v1.6.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
@@ -120,6 +119,7 @@ require (
 	golang.org/x/image v0.3.0 // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/net v0.5.0 // indirect
+	golang.org/x/oauth2 v0.4.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/term v0.4.0 // indirect

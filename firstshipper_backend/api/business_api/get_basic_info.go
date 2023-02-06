@@ -2,10 +2,11 @@ package business_api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/pocketbase/pocketbase/apis"
+	"github.com/pocketbase/pocketbase/models"
 	"github.com/ramsfords/backend/firstshipper_backend/business/core/model"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -22,13 +23,12 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 	}
 	email := ctx.QueryParam("email")
 
-	// user, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
-
-	// if user == nil {
-	// 	return ctx.NoContent(http.StatusBadRequest)
-	// }
-	// email := user.GetString("email")
-	fmt.Println(email)
+	user, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
+	if user == nil {
+		return ctx.NoContent(http.StatusBadRequest)
+	}
+	// emails := user.GetString("email")
+	// fmt.Println(email, emails)
 	data, err := business.services.GetAllDataByBusinessId(ctx.Request().Context(), businessID)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
