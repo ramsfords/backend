@@ -10,26 +10,15 @@ import (
 )
 
 func (business Business) GinGetAllBusiness(ctx echo.Context) error {
-	req := v1.Id{}
-	err := ctx.Bind(&req)
-	if err != nil {
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	res, err := business.GetBusinesses(ctx.Request().Context(), &req)
+	res, err := business.GetBusinesses(ctx.Request().Context())
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	return ctx.JSON(http.StatusCreated, res)
 }
 
-func (business Business) GetBusinesses(ctx context.Context, req *v1.Id) (*v1.Business, error) {
-	err := req.Validate()
-	if err != nil {
-		business.services.Logger.Errorf("GetBusinesses Validate : req data validation failed: %s", err)
-		return nil, errs.ErrInputDataNotValid
-	}
-	res, err := business.services.GetBusiness(ctx, req.Id)
+func (business Business) GetBusinesses(ctx context.Context) (*v1.Business, error) {
+	res, err := business.services.GetBusiness(ctx, "req.Id")
 	if err != nil {
 		business.services.Logger.Errorf("GetAllBusinesses : error in getting all businesses: %s", err)
 		return nil, errs.ErrStoreInternal

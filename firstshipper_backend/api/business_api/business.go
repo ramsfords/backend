@@ -28,7 +28,7 @@ func New(services *services.Services, rapid *rapid.Rapid, app *echo.Echo) Busine
 	businessGrp.GET("", bis.GinGetAllBusinesses)
 	businessGrp.GET("/:id", bis.GinGetAllBusiness)
 	businessGrp.POST("", bis.GinCreateBusiness)
-	businessGrp.DELETE("", bis.GinCloseBusiness)
+	businessGrp.DELETE("", bis.EchoCloseBusiness)
 	businessGrp.PATCH("", bis.GinUpdateBusiness)
 	businessGrp.PATCH("/update_staff_role", bis.GinUpdateStaffRole)
 	businessGrp.POST("/add_staff", bis.GinAddStaff)
@@ -45,7 +45,7 @@ func New(services *services.Services, rapid *rapid.Rapid, app *echo.Echo) Busine
 
 	return bis
 }
-func (business Business) GetBusinessById(ctx context.Context, req *v1.Id) (*v1.Business, error) {
+func (business Business) GetBusinessById(ctx context.Context, req string) (*v1.Business, error) {
 	return nil, nil
 }
 

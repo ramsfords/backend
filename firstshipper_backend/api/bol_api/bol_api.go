@@ -15,6 +15,5 @@ func New(services *services.Services, echo *echo.Echo) {
 	}
 	protectedBolGroup := echo.Group("/bol")
 	protectedBolGroup.GET("", bol.EchoGetBOL)
-	protectedBolGroup.POST("", bol.EchoCreateBOL)
 
 }

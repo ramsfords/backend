@@ -4,16 +4,10 @@
 			"path": "."
 		},
 		{
-			"path": "../firstshipper_cloudflare"
-		},
-		{
 			"path": "../firstshipper"
 		},
 		{
 			"path": "../protos"
-		},
-		{
-			"path": "../../projects/carriers"
 		}
 	],
 	"settings": {

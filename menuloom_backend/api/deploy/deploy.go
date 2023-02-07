@@ -2,7 +2,7 @@ package deploy
 
 import (
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/services"
+	"github.com/ramsfords/backend/menuloom_backend/services"
 )
 
 type Deploy interface {

@@ -9,8 +9,8 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (trac Tracking) GinGetTracking(ctx echo.Context) error {
-	req := &v1.Id{}
+func (trac Tracking) EchoGetTracking(ctx echo.Context) error {
+	req := ctx.PathParam("shipmentId")
 	err := ctx.Bind(req)
 	if err != nil {
 		return errs.ErrInvalidInputs
@@ -25,7 +25,7 @@ func (trac Tracking) GinGetTracking(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, res)
 
 }
-func (trac Tracking) TrackAShipment(ctx context.Context, id *v1.Id) (*v1.ShipmentStatus, error) {
+func (trac Tracking) TrackAShipment(ctx context.Context, id string) (*v1.ShipmentTracking, error) {
 	return nil, nil
 
 }

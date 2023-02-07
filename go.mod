@@ -5,12 +5,13 @@ go 1.19
 require (
 	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.8.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
-	github.com/aws/aws-sdk-go v1.44.180
-	github.com/aws/aws-sdk-go-v2 v1.17.3
+	github.com/aws/aws-sdk-go v1.44.195
+	github.com/aws/aws-sdk-go-v2 v1.17.4
 	github.com/aws/aws-sdk-go-v2/config v1.18.8
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.10.9
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.10.11
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.4.38
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.47
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.18.0
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.18.2
 	github.com/aws/aws-sdk-go-v2/service/lambda v1.28.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.0
 	github.com/cloudflare/cloudflare-go v0.58.1
@@ -23,8 +24,7 @@ require (
 	github.com/newrelic/go-agent/v3 v3.20.2
 	github.com/pkg/errors v0.9.1
 	github.com/pocketbase/pocketbase v0.11.2
-	github.com/ramsfords/services v0.0.0-20230112221629-5d9830cc80b7
-	github.com/ramsfords/types_gen v0.0.0-20230206021955-7452531c10d7
+	github.com/ramsfords/types_gen v0.0.0-20230207000204-f58749ab4f6f
 	github.com/scylladb/gocqlx/v2 v2.8.0
 	github.com/spf13/viper v1.14.0
 	github.com/valyala/fasthttp v1.44.0
@@ -39,14 +39,14 @@ require (
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.8 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.21 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.27 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.21 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.28 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.22 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.28 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.18 // indirect
-	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.14.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.14.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.11 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.22 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.21 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.22 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.21 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.21 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.12.0 // indirect
@@ -97,8 +97,6 @@ require (
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/pocketbase/dbx v1.8.0 // indirect
-	github.com/ramsfords/configs v0.0.0-20230112211815-0538a531f5be // indirect
-	github.com/ramsfords/foundations v0.0.0-20230112221324-93568d22d73a // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20220927061507-ef77025ab5aa // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/scylladb/go-reflectx v1.0.1 // indirect

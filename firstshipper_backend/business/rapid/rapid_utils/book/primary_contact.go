@@ -11,7 +11,7 @@ func getShipperPrimaryContact(quoteReq *v1.QuoteRequest) *models.Contact {
 	return &models.Contact{
 		Name:      quoteReq.Pickup.Contact.Name,
 		Phone:     quoteReq.Pickup.Contact.PhoneNumber,
-		Email:     quoteReq.Pickup.Contact.EmailAddress,
+		Email:     "kandelsuren@gmail.com",
 		FirstName: getNameArray(quoteReq.Pickup.Contact.Name)[0],
 		LastName:  getNameArray(quoteReq.Pickup.Contact.Name)[1],
 		IsPrimary: true,

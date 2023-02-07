@@ -11,8 +11,6 @@ import (
 )
 
 type QuoteContract interface {
-	DeleteQuote(context.Context, *v1.Id) (*v1.Ok, error)
-	DeleteQuotes(context.Context, *v1.Ids) (*v1.Ok, error)
 	GetAllQuotes(ctx context.Context, qtReq *v1.Empty) (*v1.QuotesResponse, error)
 	GetNewQuotes(ctx context.Context, qtReq []*v1.QuoteRequest) (*v1.QuotesResponse, error)
 	UpdateQuote(context.Context, *v1.QuoteRequest) (*v1.QuoteRequest, error)
@@ -41,9 +39,6 @@ func New(services *services.Services, echo *echo.Echo, rapid *rapid.Rapid) {
 	protectedQuoteGroup.GET("/business/:businessId", qt.EchoGetQuotesByBusinessId)
 	//POST
 	protectedQuoteGroup.POST("", qt.EchoCreateQuote)
-	//DELETE
-	protectedQuoteGroup.DELETE("/:quoteId", qt.EchoDeleteQuote)
-	protectedQuoteGroup.DELETE("", qt.EchoDeleteAllQuotes)
 	//PATCH
 	protectedQuoteGroup.PATCH("", qt.EchoUpdateQuote)
 
