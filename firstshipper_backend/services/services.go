@@ -11,7 +11,7 @@ import (
 	"github.com/ramsfords/backend/foundations/cloudinery"
 	"github.com/ramsfords/backend/foundations/email"
 	"github.com/ramsfords/backend/foundations/logger"
-	"github.com/ramsfords/backend/foundations/zoho"
+	"github.com/ramsfords/backend/foundations/zoho/auth"
 	"go.uber.org/zap"
 )
 
@@ -21,7 +21,7 @@ type Services struct {
 	Logger     logger.Logger
 	Cloudinery *cloudinery.Cloudinery
 	Rapid      *rapid.Rapid
-	Zoho       *zoho.Zoho
+	Zoho       *auth.Zoho
 	Db         db.DB
 }
 
@@ -31,7 +31,7 @@ func New(conf *configs.Config) *Services {
 	email.New(conf)
 	db := db.New(conf)
 	cloudinery := cloudinery.New(conf.SitesSettings.FirstShipper.CloudinaryConfig)
-	zohoClient := zoho.New(conf)
+	zohoClient := auth.New(conf)
 	// z.AuthorizationCodeRequest("1000.MC1OXITE0VDZA0E996T3VQKKQKTEFM", "7700f6385a550ec7fc38d451da76e1147877e315e9", []ScopeString{"ZohoBooks.fullaccess.all"}, "https://www.google.Com")
 	// to start oAuth2 flow
 	// scopes := []zoho.ScopeString{
