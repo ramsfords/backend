@@ -3,7 +3,7 @@ package booking_api
 import (
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/firstshipper_backend/services"
-	"github.com/ramsfords/backend/foundations/zoho/books"
+	books "github.com/ramsfords/backend/foundations/zoho/books"
 )
 
 type BookingApi struct {

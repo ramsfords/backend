@@ -12,7 +12,7 @@ import (
 	"github.com/ramsfords/backend/firstshipper_backend/api/utils"
 	rapid "github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils/book"
 	"github.com/ramsfords/backend/foundations/email"
-	"github.com/ramsfords/backend/foundations/zoho/books"
+	books "github.com/ramsfords/backend/foundations/zoho/books"
 	"github.com/ramsfords/backend/menuloom_backend/api/errs"
 
 	v1 "github.com/ramsfords/types_gen/v1"

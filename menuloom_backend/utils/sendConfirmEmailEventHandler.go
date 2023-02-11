@@ -6,7 +6,7 @@ import (
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/ramsfords/backend/foundations/zoho/email"
+	email "github.com/ramsfords/backend/foundations/zoho/email"
 	"github.com/ramsfords/backend/menuloom_backend/services"
 )
 

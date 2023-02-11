@@ -6,7 +6,7 @@ import (
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/ramsfords/backend/foundations/zoho/email"
+	email "github.com/ramsfords/backend/foundations/zoho/email"
 )
 
 func SendResetPasswordLinkEventHandler(emailClient *email.Email, senderName string, senderEmail string) func(e *core.MailerRecordEvent) error {
