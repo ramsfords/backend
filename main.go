@@ -14,10 +14,10 @@ import (
 	"github.com/pocketbase/pocketbase/plugins/jsvm"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/ramsfords/backend/configs"
-	"github.com/ramsfords/backend/firstshipper_backend"
-	firstShipperServices "github.com/ramsfords/backend/firstshipper_backend/services"
-	"github.com/ramsfords/backend/menuloom_backend"
-	menuLoomServices "github.com/ramsfords/backend/menuloom_backend/services"
+	menuloom_backend "github.com/ramsfords/backend/menuloom"
+	menuLoomServices "github.com/ramsfords/backend/menuloom/services"
+	firstshipper_backend "github.com/ramsfords/backend/shipper"
+	firstShipperServices "github.com/ramsfords/backend/shipper/services"
 )
 
 func defaultPublicDir() string {
