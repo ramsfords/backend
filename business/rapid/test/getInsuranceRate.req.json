@@ -1,0 +1,17 @@
+{   
+    "getInsurananceRateURL": "https://mycarriertms.com/MyCarrierAPI//api/CustomerCargoInsurance/GetCargoInsuranceRate",
+    "isInsureFreightCharges": true,
+    "shippingMerchandiseDescription": "novelties",
+    "customerId": 39336,
+    "shipmentId": 4644391,
+    "shipmentTypeId": 139015,
+    "customerCompanyName": "everlooms",
+    "carrierName": "XPO LTL",
+    "freightCharge": 238.4,
+    "pickupDate": "2/1/2023",
+    "customerBOLNumber": "firstshipperBOL",
+    "isInsuranceInvoiceEnabled": false,
+    "customerIntegrationFee": 0,
+    "insuredAmount": 10238.4,
+    "cargoValue": 10000
+  }

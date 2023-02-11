@@ -1,0 +1,17 @@
+{
+  "ShipmentID": 4653301,
+  "SecurityKey": "940ca960-4179-43cc-81bf-7971c07847e1",
+  "PickupNumber": "97344",
+  "CarrierName": "Clear Lane Freight Systems",
+  "CarrierPhone": "",
+  "CarrierPRONumber": "1096132",
+  "HandlingUnitTotal": 1,
+  "IsShipmentEdit": false,
+  "IsShipmentManual": false,
+  "ServiceType": 0,
+  "IsTrackingEmailSend": true,
+  "IsTrackingAPIEnabled": true,
+  "CustomerBOLNumber": "BOLfVsjGhygNT",
+  "ShipperEmail": "kandelsuren@gmail.com",
+  "ConsigneeEmail": "rakeshneupane2045@gmail.com"
+}

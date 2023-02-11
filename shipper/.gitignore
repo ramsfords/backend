@@ -1,4 +1,0 @@
-vendor
-.env
-go.sum
-configs/*.yaml

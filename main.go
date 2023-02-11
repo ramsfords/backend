@@ -13,10 +13,34 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/jsvm"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
+	"github.com/ramsfords/backend/api"
+	"github.com/ramsfords/backend/business/rapid/models"
 	"github.com/ramsfords/backend/configs"
-	firstshipper_backend "github.com/ramsfords/backend/shipper"
-	firstShipperServices "github.com/ramsfords/backend/shipper/services"
+	"github.com/ramsfords/backend/services"
+	"github.com/ramsfords/backend/utils"
 )
+
+func Runner(services *services.Services, echoRouter *echo.Echo, app *pocketbase.PocketBase) {
+
+	go func() error {
+		err := services.Rapid.Login(&models.AuthRequestPayload{
+			Username: services.Conf.SitesSettings.FirstShipper.RapidShipLTL.UserName,
+			Password: services.Conf.SitesSettings.FirstShipper.RapidShipLTL.Password,
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		return nil
+	}()
+
+	api.SetUpAPi(echoRouter, services)
+	// OR send a completely different email template
+	app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(services))
+	// OR send a completely different email template
+	app.OnMailerBeforeRecordResetPasswordSend().Add(utils.SendResetPasswordLinkEventHandler(services.Conf))
+	// this sets auth token to cloudflare KV on every login
+
+}
 
 func defaultPublicDir() string {
 	if strings.HasPrefix(os.Args[0], os.TempDir()) {
@@ -31,7 +55,7 @@ func main() {
 	// s3 := S3.New(conf)
 	// dynamodDb := dynamo.New(conf)
 	// logger := logger.New("backend")
-	firstShipperServices := firstShipperServices.New(conf)
+	servicesInstance := services.New(conf)
 	app := pocketbase.New()
 	var publicDirFlag string
 
@@ -72,7 +96,7 @@ func main() {
 		e.Router.OPTIONS("/*", func(c echo.Context) error {
 			return c.NoContent(http.StatusOK)
 		})
-		firstshipper_backend.FirstShipperRunner(firstShipperServices, e.Router, app)
+		Runner(servicesInstance, e.Router, app)
 		// serves static files from the provided public dir (if exists)
 		e.Router.AddRoute(echo.Route{
 			Method: http.MethodGet,
