@@ -11,7 +11,7 @@ import (
 	"github.com/ramsfords/backend/configs"
 	template "github.com/ramsfords/backend/email"
 	books "github.com/ramsfords/backend/foundations/books"
-	"github.com/ramsfords/backend/menuloom/api/errs"
+	errs "github.com/ramsfords/backend/foundations/error"
 	"github.com/ramsfords/backend/shipper/api/utils"
 	rapid "github.com/ramsfords/backend/shipper/business/rapid/rapid_utils/book"
 	v1 "github.com/ramsfords/types_gen/v1"

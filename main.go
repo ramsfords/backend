@@ -14,8 +14,6 @@ import (
 	"github.com/pocketbase/pocketbase/plugins/jsvm"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/ramsfords/backend/configs"
-	menuloom_backend "github.com/ramsfords/backend/menuloom"
-	menuLoomServices "github.com/ramsfords/backend/menuloom/services"
 	firstshipper_backend "github.com/ramsfords/backend/shipper"
 	firstShipperServices "github.com/ramsfords/backend/shipper/services"
 )
@@ -34,7 +32,6 @@ func main() {
 	// dynamodDb := dynamo.New(conf)
 	// logger := logger.New("backend")
 	firstShipperServices := firstShipperServices.New(conf)
-	menuloomeServices := menuLoomServices.New(conf)
 	app := pocketbase.New()
 	var publicDirFlag string
 
@@ -76,7 +73,6 @@ func main() {
 			return c.NoContent(http.StatusOK)
 		})
 		firstshipper_backend.FirstShipperRunner(firstShipperServices, e.Router, app)
-		menuloom_backend.MenuloomRunner(menuloomeServices, e.Router, app)
 		// serves static files from the provided public dir (if exists)
 		e.Router.AddRoute(echo.Route{
 			Method: http.MethodGet,

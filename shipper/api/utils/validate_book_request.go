@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/ramsfords/backend/menuloom/api/errs"
+	errs "github.com/ramsfords/backend/foundations/error"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
