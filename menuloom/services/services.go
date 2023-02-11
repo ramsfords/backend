@@ -4,8 +4,8 @@ import (
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/foundations/S3"
 	"github.com/ramsfords/backend/foundations/cloudinery"
+	email "github.com/ramsfords/backend/foundations/email"
 	"github.com/ramsfords/backend/foundations/logger"
-	email "github.com/ramsfords/backend/foundations/zoho/email"
 	"github.com/ramsfords/backend/menuloom/db"
 	"go.uber.org/zap"
 )

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/ramsfords/backend/configs"
-	"github.com/ramsfords/backend/foundations/email"
+	"github.com/ramsfords/backend/email"
 )
 
 func TestSendEmailBol(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 func MenuloomRunner(services *services.Services, echoRouter *echo.Echo, app *pocketbase.PocketBase) {
 	api.SetUpAPi(echoRouter, services)
 	// OR send a completely different email template
-	app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(services, services.Conf.SitesSettings.Menuloom.Email.FromName, services.Conf.SitesSettings.Menuloom.Email.FromEmail))
+	// app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(services, services.Conf.SitesSettings.Menuloom.Email.FromName, services.Conf.SitesSettings.Menuloom.Email.FromEmail))
 	// OR send a completely different email template
 	app.OnMailerBeforeRecordResetPasswordSend().Add(utils.SendResetPasswordLinkEventHandler(services.Email, services.Conf.SitesSettings.Menuloom.Email.FromName, services.Conf.SitesSettings.Menuloom.Email.FromEmail))
 

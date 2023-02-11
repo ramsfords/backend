@@ -9,12 +9,11 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/configs"
-	"github.com/ramsfords/backend/foundations/email"
-	books "github.com/ramsfords/backend/foundations/zoho/books"
+	template "github.com/ramsfords/backend/email"
+	books "github.com/ramsfords/backend/foundations/books"
 	"github.com/ramsfords/backend/menuloom/api/errs"
 	"github.com/ramsfords/backend/shipper/api/utils"
 	rapid "github.com/ramsfords/backend/shipper/business/rapid/rapid_utils/book"
-
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -157,21 +156,21 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		SvgData:      oldQuote.BookingInfo.SvgData,
 	}
 	emailSubject := "FirstShipper: Booking Confirmation " + "Pickup Number: " + oldQuote.BookingInfo.CarrierProNumber + " " + "BOL Number: " + oldQuote.BookingInfo.FirstShipperBolNumber
-	data := email.Data{
+	data := template.Data{
 		To:          []string{oldQuote.QuoteRequest.Pickup.Contact.EmailAddress},
 		Subject:     emailSubject,
 		From:        "quotes@firstshipper.com",
 		ContentType: "text/html",
 		Body:        "Please find your BOL attached",
-		Attachments: []email.Attachment{
+		Attachments: []template.Attachment{
 			{
 				Path: "firstshipperbol/" + fileName,
-				Type: email.AttachmentTypeS3,
+				Type: template.AttachmentTypeS3,
 			},
 		},
 	}
 	// go func() {
-	bolSentRes, err := email.Send(context.Background(), data)
+	bolSentRes, err := template.Send(context.Background(), data)
 	if err != nil {
 		bookingApi.services.Logger.Errorf("error sending bol to user ", err, outRes)
 	}

@@ -8,8 +8,8 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/hook"
 	"github.com/ramsfords/backend/configs"
-	"github.com/ramsfords/backend/foundations/email"
-	template "github.com/ramsfords/backend/foundations/zoho/email"
+	"github.com/ramsfords/backend/email"
+	template "github.com/ramsfords/backend/foundations/email"
 )
 
 func SendResetPasswordLinkEventHandler(conf *configs.Config) func(e *core.MailerRecordEvent) error {

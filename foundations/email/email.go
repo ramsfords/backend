@@ -1,32 +1,37 @@
 package email
 
 import (
-	"net/http"
+	"net/smtp"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/ses"
+	"github.com/jhillyerd/enmime"
 	"github.com/ramsfords/backend/configs"
 )
 
-var (
-	S3Client   *s3.Client
-	SESClient  *ses.Client
-	HTTPClient httpClient
-	Conf       *configs.Config
-)
-
-type httpClient interface {
-	Do(req *http.Request) (*http.Response, error)
+type EmailData struct {
+	RedirectLink  string `json:"redirect_link"`
+	ReceiverEmail string `json:"receiver_email"`
+	ReceiverName  string `json:"receiver_first_name"`
+	SenderEmail   string `json:"sender_email"`
+	SenderName    string `json:"sender_name"`
+	EmailSubject  string `json:"email_subject"`
 }
 
-func New(conf *configs.Config) {
-	cfg := aws.Config{
-		Region:           "us-west-1",
-		Credentials:      conf,
-		RetryMaxAttempts: 10,
-	}
-	SESClient = ses.NewFromConfig(cfg)
-	S3Client = s3.NewFromConfig(cfg)
+type EmailSender interface {
+	SendConfirmEmail(data EmailData) error
+	SendPasswordReset(data EmailData) error
+	SendWelcomeEmail(data EmailData) error
+}
+type Email struct {
+	conf   configs.Email
+	Sender *enmime.SMTPSender
+}
 
+func New(conf configs.Email) *Email {
+	smtpHost := "smtp.zoho.com:587"
+	smtpAuth := smtp.PlainAuth("", conf.UserName, conf.Password, conf.SmtpHost)
+	sender := enmime.NewSMTP(smtpHost, smtpAuth)
+	return &Email{
+		conf:   conf,
+		Sender: sender,
+	}
 }

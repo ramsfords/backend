@@ -8,8 +8,8 @@ import (
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/hook"
+	template "github.com/ramsfords/backend/email"
 	"github.com/ramsfords/backend/foundations/email"
-	template "github.com/ramsfords/backend/foundations/zoho/email"
 	"github.com/ramsfords/backend/shipper/services"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -28,16 +28,16 @@ func SendConfrimEmailEventHandler(services *services.Services) func(e *core.Mail
 		name := e.Record.GetString("name")
 
 		redirectLink := fmt.Sprintf(services.Conf.GetFirstShipperFontEndURL()+"/confirm-email?token=%s&email=%s", token, emailID)
-		templeHtml := template.GetConfirmEmailHtml(name, redirectLink)
-		data := email.Data{
+		templeHtml := email.GetConfirmEmailHtml(name, redirectLink)
+		data := template.Data{
 			To:          []string{emailID},
 			Subject:     "FirstShipper: Please Confirm your email!",
 			From:        services.Conf.SitesSettings.FirstShipper.Prod.EmailId,
-			ContentType: email.ContentTypeTextHTML,
+			ContentType: template.ContentTypeTextHTML,
 			Body:        templeHtml,
 		}
 		// Send the email.
-		if _, err := email.Send(context.Background(), data); err != nil {
+		if _, err := template.Send(context.Background(), data); err != nil {
 			panic(err)
 		}
 		originData := e.Record.OriginalCopy()

@@ -2,7 +2,7 @@ package booking_api
 
 import (
 	"github.com/labstack/echo/v5"
-	books "github.com/ramsfords/backend/foundations/zoho/books"
+	"github.com/ramsfords/backend/foundations/books"
 	"github.com/ramsfords/backend/shipper/services"
 )
 

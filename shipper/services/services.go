@@ -5,11 +5,11 @@ import (
 	"log"
 
 	"github.com/ramsfords/backend/configs"
+	email "github.com/ramsfords/backend/email"
 	"github.com/ramsfords/backend/foundations/S3"
+	"github.com/ramsfords/backend/foundations/auth"
 	"github.com/ramsfords/backend/foundations/cloudinery"
-	"github.com/ramsfords/backend/foundations/email"
 	"github.com/ramsfords/backend/foundations/logger"
-	"github.com/ramsfords/backend/foundations/zoho/auth"
 	"github.com/ramsfords/backend/shipper/business/rapid"
 	"github.com/ramsfords/backend/shipper/db"
 	"go.uber.org/zap"

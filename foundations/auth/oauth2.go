@@ -1,0 +1,507 @@
+package auth
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+)
+
+func (z *Zoho) SetRefreshToken(refreshToken string) {
+	z.Oauth.Token.RefreshToken = refreshToken
+}
+
+// GetRefreshToken is used to obtain the oAuth2 refresh token
+func (z *Zoho) GetRefreshToken() string {
+	return z.Oauth.Token.RefreshToken
+}
+
+func (z *Zoho) SetClientID(clientID string) {
+	z.Oauth.ClientID = clientID
+}
+
+func (z *Zoho) SetClientSecret(clientSecret string) {
+	z.Oauth.ClientSecret = clientSecret
+}
+
+func (z *Zoho) RefreshTokenURL() string {
+	q := url.Values{}
+	q.Set("client_id", z.Oauth.ClientID)
+	q.Set("client_secret", z.Oauth.ClientSecret)
+	q.Set("refresh_token", z.Oauth.Token.RefreshToken)
+	q.Set("grant_type", "refresh_token")
+
+	return fmt.Sprintf("%s%s?%s", z.Oauth.BaseURL, oauthGenerateTokenRequestSlug, q.Encode())
+}
+
+// RefreshTokenRequest is used to refresh the oAuth2 access token
+func (z *Zoho) RefreshTokenRequest() (err error) {
+	tokenURL := z.RefreshTokenURL()
+	resp, err := z.Client.Post(tokenURL, "application/x-www-form-urlencoded", nil)
+	if err != nil {
+		return fmt.Errorf("Failed while requesting refresh token: %s", err)
+	}
+
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			fmt.Printf("Failed to close request body: %s\n", err)
+		}
+	}()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf(
+			"Failed to read request body on request to %s%s: %s",
+			z.Oauth.BaseURL,
+			oauthGenerateTokenRequestSlug,
+			err,
+		)
+	}
+
+	if resp.StatusCode != 200 {
+		return fmt.Errorf(
+			"Got non-200 status code from request to refresh token: %s\n%s",
+			resp.Status,
+			string(body),
+		)
+	}
+
+	tokenResponse := AccessTokenResponse{}
+	err = json.Unmarshal(body, &tokenResponse)
+	if err != nil {
+		return fmt.Errorf(
+			"Failed to unmarshal access token response from request to refresh token: %s",
+			err,
+		)
+	}
+	//If the tokenResponse is not valid it should not update local tokens
+	if tokenResponse.Error == "invalid_code" {
+		return ErrTokenInvalidCode
+	}
+
+	//If the tokenResponse is not obtained from proper client secret it should not update local tokens
+	if tokenResponse.Error == "invalid_client_secret" {
+		return ErrClientSecretInvalidCode
+	}
+
+	z.Oauth.Token.AccessToken = tokenResponse.AccessToken
+	z.Oauth.Token.APIDomain = tokenResponse.APIDomain
+	z.Oauth.Token.ExpiresIn = tokenResponse.ExpiresIn
+	z.Oauth.Token.TokenType = tokenResponse.TokenType
+
+	err = z.SaveTokens(z.Oauth.Token)
+	if err != nil {
+		return fmt.Errorf("Failed to save access tokens: %s", err)
+	}
+
+	return nil
+}
+
+func (z *Zoho) GenerateTokenURL(code, clientID, clientSecret string) string {
+	q := url.Values{}
+	q.Set("client_id", clientID)
+	q.Set("client_secret", clientSecret)
+	q.Set("code", code)
+	q.Set("redirect_uri", z.Oauth.RedirectURI)
+	q.Set("grant_type", "authorization_code")
+
+	return fmt.Sprintf("%s%s?%s", z.Oauth.BaseURL, oauthGenerateTokenRequestSlug, q.Encode())
+}
+
+// GenerateTokenRequest will get the Access token and Refresh token and hold them in the Zoho struct. This function can be used rather than
+// AuthorizationCodeRequest is you do not want to click on a link and redirect to a consent screen. Instead you can go to, https://accounts.zoho.Com/developerconsole
+// and click the kebab icon beside your clientID, and click 'Self-Client'; then you can define you scopes and an expiry, then provide the generated authorization code
+// to this function which will generate your access token and refresh tokens.
+func (z *Zoho) GenerateTokenRequest(clientID, clientSecret, code, redirectURI string) (err error) {
+
+	z.Oauth.ClientID = clientID
+	z.Oauth.ClientSecret = clientSecret
+	z.Oauth.RedirectURI = redirectURI
+
+	err = z.CheckForSavedTokens()
+	if err == ErrTokenExpired {
+		return z.RefreshTokenRequest()
+	}
+
+	// q := url.Values{}
+	// q.Set("client_id", clientID)
+	// q.Set("client_secret", clientSecret)
+	// q.Set("code", code)
+	// q.Set("redirect_uri", redirectURI)
+	// q.Set("grant_type", "authorization_code")
+
+	// tokenURL := fmt.Sprintf("%s%s?%s", z.Oauth.baseURL, oauthGenerateTokenRequestSlug, q.Encode())
+	tokenURL := z.GenerateTokenURL(code, clientID, clientSecret)
+	resp, err := z.Client.Post(tokenURL, "application/x-www-form-urlencoded", nil)
+	if err != nil {
+		return fmt.Errorf("Failed while requesting generate token: %s", err)
+	}
+
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			fmt.Printf("Failed to close request body: %s\n", err)
+		}
+	}()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf(
+			"Failed to read request body on request to %s%s: %s",
+			z.Oauth.BaseURL,
+			oauthGenerateTokenRequestSlug,
+			err,
+		)
+	}
+
+	if resp.StatusCode != 200 {
+		return fmt.Errorf(
+			"Got non-200 status code from request to generate token: %s\n%s",
+			resp.Status,
+			string(body),
+		)
+	}
+
+	tokenResponse := AccessTokenResponse{}
+	err = json.Unmarshal(body, &tokenResponse)
+	if err != nil {
+		return fmt.Errorf(
+			"Failed to unmarshal access token response from request to generate token: %s",
+			err,
+		)
+	}
+
+	//If the tokenResponse is not valid it should not update local tokens
+	if tokenResponse.Error == "invalid_code" {
+		return ErrTokenInvalidCode
+	}
+
+	//If the tokenResponse is not obtained from proper client secret it should not update local tokens
+	if tokenResponse.Error == "invalid_client_secret" {
+		return ErrClientSecretInvalidCode
+	}
+
+	z.Oauth.ClientID = clientID
+	z.Oauth.ClientSecret = clientSecret
+	z.Oauth.RedirectURI = redirectURI
+	z.Oauth.Token = tokenResponse
+
+	err = z.SaveTokens(z.Oauth.Token)
+	if err != nil {
+		return fmt.Errorf("Failed to save access tokens: %s", err)
+	}
+
+	return nil
+}
+
+func (z *Zoho) AuthorizationCodeURL(scopes, clientID, redirectURI string, consent bool) string {
+	q := url.Values{}
+	q.Set("scope", scopes)
+	q.Set("client_id", clientID)
+	q.Set("redirect_uri", redirectURI)
+	q.Set("response_type", "code")
+	q.Set("access_type", "offline")
+
+	if consent {
+		q.Set("prompt", "consent")
+	}
+
+	return fmt.Sprintf("%s%s?%s", z.Oauth.BaseURL, oauthAuthorizationRequestSlug, q.Encode())
+}
+
+// AuthorizationCodeRequest will request an authorization code from Zoho. This authorization code is then used to generate access and refresh tokens.
+// This function will print a link that needs to be pasted into a browser to continue the oAuth2 flow. Then it will redirect to the redirectURL, it
+// must be the same as the redirect URL that was provided to Zoho when generating your client ID and client secret. If the redirect URL was a localhost
+// domain, the function will start a server that will get the code from the URL when the browser redirects.
+// If the domain is not a localhost, you will be prompted to paste the code from the URL back into the terminal window,
+// eg. https://domain.Com/redirect-url?code=xxxxxxxxxx
+func (z *Zoho) AuthorizationCodeRequest(
+	clientID, clientSecret string,
+	scopes []ScopeString,
+	redirectURI string,
+) (err error) {
+	// check for existing tokens
+	err = z.CheckForSavedTokens()
+	if err == nil {
+		z.Oauth.ClientID = clientID
+		z.Oauth.ClientSecret = clientSecret
+		z.Oauth.RedirectURI = redirectURI
+		z.Oauth.Scopes = scopes
+		return nil
+	}
+
+	// user may be able to issue a refresh if they have a refresh token, but maybe they are trying to get a new token.
+	// a breaking change could be to provide a bool: consent - where the user forces the consent screen otherwise we will try to refresh
+	requiresConsentPrompt := false
+	if err == ErrTokenExpired {
+		// currently we will simply check if the token is expired and if it is we will "prompt=consent"
+		requiresConsentPrompt = true
+	}
+
+	scopeStr := ""
+	for i, a := range scopes {
+		scopeStr += string(a)
+		if i < len(scopes)-1 {
+			scopeStr += ","
+		}
+	}
+
+	z.Oauth.Scopes = scopes
+
+	// q := url.Values{}
+	// q.Set("scope", scopeStr)
+	// q.Set("client_id", clientID)
+	// q.Set("redirect_uri", redirectURI)
+	// q.Set("response_type", "code")
+	// q.Set("access_type", "offline")
+
+	// authURL := fmt.Sprintf("%s%s?%s", z.Oauth.baseURL, oauthAuthorizationRequestSlug, q.Encode())
+	authURL := z.AuthorizationCodeURL(scopeStr, clientID, redirectURI, requiresConsentPrompt)
+
+	srvChan := make(chan int)
+	codeChan := make(chan string)
+	var srv *http.Server
+
+	localRedirect := strings.Contains(redirectURI, "localhost")
+	if localRedirect {
+		// start a localhost server that will handle the redirect url
+		u, err := url.Parse(redirectURI)
+		if err != nil {
+			return fmt.Errorf("Failed to parse redirect URI: %s", err)
+		}
+		_, port, err := net.SplitHostPort(u.Host)
+		if err != nil {
+			return fmt.Errorf("Failed to split redirect URI into host and port segments: %s", err)
+		}
+		srv = &http.Server{Addr: ":" + port}
+
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("Code retrieved, you can close this window to continue"))
+
+			codeChan <- r.URL.Query().Get("code")
+		})
+
+		go func() {
+			srvChan <- 1
+			err := srv.ListenAndServe()
+			if err != nil && err != http.ErrServerClosed {
+				fmt.Printf("Error while serving locally: %s\n", err)
+			}
+		}()
+
+		<-srvChan
+	}
+
+	fmt.Printf("Go to the following authentication URL to begin oAuth2 flow:\n %s\n\n", authURL)
+
+	code := ""
+
+	if localRedirect {
+		// wait for code to be returned by the server
+		code = <-codeChan
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer func() {
+			cancel()
+		}()
+		if err := srv.Shutdown(ctx); err != nil {
+			fmt.Printf("Error while shutting down local server: %s\n", err)
+		}
+	} else {
+		fmt.Printf("Paste code and press enter:\n")
+		_, err := fmt.Scan(&code)
+		if err != nil {
+			return fmt.Errorf("Failed to read code from input: %s", err)
+		}
+	}
+
+	if code == "" {
+		return fmt.Errorf("No code was recieved from oAuth2 flow")
+	}
+
+	err = z.GenerateTokenRequest(clientID, clientSecret, code, redirectURI)
+	if err != nil {
+		return fmt.Errorf("Failed to retrieve oAuth2 token: %s", err)
+	}
+
+	return nil
+}
+
+// AccessTokenResponse is the data returned when generating AccessTokens, or Refreshing the token
+type AccessTokenResponse struct {
+	AccessToken  string `json:"access_token,omitempty"`
+	RefreshToken string `json:"refresh_token,omitempty"`
+	ExpiresIn    int    `json:"expires_in,omitempty"`
+	APIDomain    string `json:"api_domain,omitempty"`
+	TokenType    string `json:"token_type,omitempty"`
+	Error        string `json:"error,omitempty"`
+}
+
+const (
+	oauthAuthorizationRequestSlug = "auth"
+	oauthGenerateTokenRequestSlug = "token"
+	oauthRevokeTokenRequestSlug   = "revoke"
+)
+
+// ScopeString is a type for defining scopes for oAuth2 flow
+type ScopeString string
+
+// BuildScope is used to generate a scope string for oAuth2 flow
+func BuildScope(service Service, scope Scope, method Method, operation Operation) ScopeString {
+	built := fmt.Sprintf("%s.%s", service, scope)
+	if method != "" {
+		built += fmt.Sprintf(".%s", method)
+	}
+	if operation != "" {
+		built += fmt.Sprintf(".%s", operation)
+	}
+	return ScopeString(built)
+}
+
+// Service is a type for building scopes
+type Service string
+
+const (
+	// Crm is the Service portion of the scope string
+	Crm Service = "ZohoCRM"
+	// Expense is the Service portion of the scope string
+	Expense Service = "ZohoExpense"
+	// Bookings is the Service portion of the scope string
+	Bookings Service = "zohobookings"
+)
+
+// Scope is a type for building scopes
+type Scope string
+
+const (
+	// UsersScope is a possible Scope portion of the scope string
+	UsersScope Scope = "users"
+	// OrgScope is a possible Scope portion of the scope string
+	OrgScope Scope = "org"
+	// SettingsScope is a possible Scope portion of the scope string
+	SettingsScope Scope = "settings"
+	// ModulesScope is a possible Scope portion of the scope string
+	ModulesScope Scope = "modules"
+
+	// Additional Scopes related to expense APIs
+
+	// FullAccessScope is a possible Method portion of the scope string
+	FullAccessScope Scope = "fullaccess"
+	// ExpenseReportScope is a possible Method portion of the scope string
+	ExpenseReportScope Scope = "expensereport"
+	// ApprovalScope is a possible Method portion of the scope string
+	ApprovalScope Scope = "approval"
+	// ReimbursementScope is a possible Method portion of the scope string
+	ReimbursementScope Scope = "reimbursement"
+	// AdvanceScope is a possible Method portion of the scope string
+	AdvanceScope Scope = "advance"
+	// DataScope is a possible Method portion of the scope string
+	DataScope Scope = "data"
+)
+
+// Method is a type for building scopes
+type Method string
+
+// SettingsMethod is a type for building scopes
+type SettingsMethod = Method
+
+// ModulesMethod is a type for building scopes
+type ModulesMethod = Method
+
+const (
+	// AllMethod is a possible Method portion of the scope string
+	AllMethod Method = "ALL"
+
+	// Territories is a possible Method portion of the scope string
+	Territories SettingsMethod = "territories"
+	// CustomViews is a possible Method portion of the scope string
+	CustomViews SettingsMethod = "custom_views"
+	// RelatedLists is a possible Method portion of the scope string
+	RelatedLists SettingsMethod = "related_lists"
+	// Modules is a possible Method portion of the scope string
+	Modules SettingsMethod = "modules"
+	// TabGroups is a possible Method portion of the scope string
+	TabGroups SettingsMethod = "tab_groups"
+	// Fields is a possible Method portion of the scope string
+	Fields SettingsMethod = "fields"
+	// Layouts is a possible Method portion of the scope string
+	Layouts SettingsMethod = "layouts"
+	// Macros is a possible Method portion of the scope string
+	Macros SettingsMethod = "macros"
+	// CustomLinks is a possible Method portion of the scope string
+	CustomLinks SettingsMethod = "custom_links"
+	// CustomButtons is a possible Method portion of the scope string
+	CustomButtons SettingsMethod = "custom_buttons"
+	// Roles is a possible Method portion of the scope string
+	Roles SettingsMethod = "roles"
+	// Profiles is a possible Method portion of the scope string
+	Profiles SettingsMethod = "profiles"
+
+	// Approvals is a possible Method portion of the scope string
+	Approvals ModulesMethod = "approvals"
+	// Leads is a possible Method portion of the scope string
+	Leads ModulesMethod = "leads"
+	// Accounts is a possible Method portion of the scope string
+	Accounts ModulesMethod = "accounts"
+	// Contacts is a possible Method portion of the scope string
+	Contacts ModulesMethod = "contacts"
+	// Deals is a possible Method portion of the scope string
+	Deals ModulesMethod = "deals"
+	// Campaigns is a possible Method portion of the scope string
+	Campaigns ModulesMethod = "campaigns"
+	// Tasks is a possible Method portion of the scope string
+	Tasks ModulesMethod = "tasks"
+	// Cases is a possible Method portion of the scope string
+	Cases ModulesMethod = "cases"
+	// Events is a possible Method portion of the scope string
+	Events ModulesMethod = "events"
+	// Calls is a possible Method portion of the scope string
+	Calls ModulesMethod = "calls"
+	// Solutions is a possible Method portion of the scope string
+	Solutions ModulesMethod = "solutions"
+	// Products is a possible Method portion of the scope string
+	Products ModulesMethod = "products"
+	// Vendors is a possible Method portion of the scope string
+	Vendors ModulesMethod = "vendors"
+	// PriceBooks is a possible Method portion of the scope string
+	PriceBooks ModulesMethod = "pricebooks"
+	// Quotes is a possible Method portion of the scope string
+	Quotes ModulesMethod = "quotes"
+	// SalesOrders is a possible Method portion of the scope string
+	SalesOrders ModulesMethod = "salesorders"
+	// PurchaseOrders is a possible Method portion of the scope string
+	PurchaseOrders ModulesMethod = "purchaseorders"
+	// Invoices is a possible Method portion of the scope string
+	Invoices ModulesMethod = "invoices"
+	// Custom is a possible Method portion of the scope string
+	Custom ModulesMethod = "custom"
+	// Dashboards is a possible Method portion of the scope string
+	Dashboards ModulesMethod = "dashboards"
+	// Notes is a possible Method portion of the scope string
+	Notes ModulesMethod = "notes"
+	// Activities is a possible Method portion of the scope string
+	Activities ModulesMethod = "activities"
+	// Search is a possible Method portion of the scope string
+	Search ModulesMethod = "search"
+)
+
+// Operation is a type for building scopes
+type Operation string
+
+const (
+	// NoOp is a possible Operation portion of the scope string
+	NoOp Operation = ""
+	// All is a possible Operation portion of the scope string
+	All Operation = "ALL"
+	// Read is a possible Operation portion of the scope string
+	Read Operation = "READ"
+	// Create is a possible Operation portion of the scope string
+	Create Operation = "CREATE"
+	// Update is a possible Operation portion of the scope string
+	Update Operation = "UPDATE"
+	// Delete is a possible Operation portion of the scope string
+	Delete Operation = "DELETE"
+)
