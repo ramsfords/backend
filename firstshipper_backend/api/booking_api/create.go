@@ -11,7 +11,10 @@ import (
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/firstshipper_backend/api/utils"
 	rapid "github.com/ramsfords/backend/firstshipper_backend/business/rapid/rapid_utils/book"
-	"github.com/ramsfords/backend/foundations/zohomail"
+	"github.com/ramsfords/backend/foundations/email"
+	"github.com/ramsfords/backend/foundations/zoho/books"
+	"github.com/ramsfords/backend/menuloom_backend/api/errs"
+
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -27,13 +30,7 @@ func (bookApi BookingApi) EchoCreateBooking(ctx echo.Context) error {
 	// 	BusinessId: "kandelsuren@gmail.com",
 	// }
 	newCtx := ctx.Request().Context()
-	business, err := bookApi.services.GetBusiness(newCtx, quote.QuoteRequest.BusinessId)
-	if err != nil {
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-	if !business.AllowBooking {
-		return ctx.NoContent(http.StatusBadRequest)
-	}
+
 	ctx.Request().Header.Set("Cache-Control", "no-cache")
 
 	res, err := bookApi.CreateNewBook(newCtx, quote)
@@ -44,10 +41,41 @@ func (bookApi BookingApi) EchoCreateBooking(ctx echo.Context) error {
 }
 
 func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookRequest) (*v1.BookingResponse, error) {
-	oldQuote, err := bookingApi.services.GetQuoteByQuoteId(ctxx, bkReq.QuoteRequest.QuoteId)
+	business, err := bookingApi.services.Db.GetBusiness(ctxx, bkReq.QuoteRequest.BusinessId)
+	if err != nil {
+		return nil, fmt.Errorf("business not found")
+	}
+	oldQuote, err := bookingApi.services.Db.GetQuoteByQuoteId(ctxx, bkReq.QuoteRequest.QuoteId)
 	if err != nil {
 		return nil, fmt.Errorf("bid not found")
 	}
+	//updates oldQuote with new quoteRequest which is only updated value coming from frontend
+	oldQuote.QuoteRequest = bkReq.QuoteRequest
+	oldQuote.Business = business
+	if !business.AllowBooking {
+		return nil, errs.ErrNotAllowed
+	}
+	if !business.BooksOpened {
+		// business, err := bookingApi.services.Db.GetBusiness(ctxx, bkReq.QuoteRequest.BusinessId)
+		// if err != nil {
+		// 	return nil, errors.New("user not found")
+		// }
+		contact := books.NewContact(oldQuote.QuoteRequest.Business)
+		contact, err = bookingApi.books.CreateContact(contact)
+		if err != nil {
+			bookingApi.services.Logger.Errorf("could not create zoho books for user: ", oldQuote.Business.AdminUser)
+		} else {
+			business.BooksOpened = true
+			business.BooksContactId = contact.ContactID
+			business.ContactPersonsIds = GetContactPersonsIds(contact.ContactPersons)
+			err = bookingApi.services.Db.UpdateBusiness(ctxx, business.BusinessId, *business)
+			if err != nil {
+				bookingApi.services.Logger.Errorf("could not update busiess with books contact id", oldQuote.Business)
+			}
+		}
+		fmt.Println(contact)
+	}
+	books.InsertProspects(oldQuote.QuoteRequest.Delivery, *bookingApi.books)
 	bid := getBidFormBids(oldQuote.Bids, bkReq.BidId)
 	if bid.BidId == "" {
 		return nil, fmt.Errorf("bid not found")
@@ -57,22 +85,21 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	if err != nil {
 		return nil, err
 	}
-	//updates oldQuote with new quoteRequest which is only updated value coming from frontend
-	oldQuote.QuoteRequest = bkReq.QuoteRequest
+
 	// make saveQuoteStep3 Data
 	err = rapid.SaveQuoteStep3(oldQuote, bid)
 	if err != nil {
 		// just log the error not Need to return error
 		bookingApi.services.Logger.Error(err)
 	}
-	saveQuoteRes, err := bookingApi.rapid.SaveQuoteStep(oldQuote.RapidSaveQuote)
+	saveQuoteRes, err := bookingApi.services.Rapid.SaveQuoteStep(oldQuote.RapidSaveQuote)
 	if err != nil {
 		// just log the error not Need to return error
 		bookingApi.services.Logger.Error(err)
 	}
 	oldQuote.RapidSaveQuote.SavedQuoteID = saveQuoteRes.SavedQuoteID
 	oldQuote.RapidSaveQuote.ConfirmAndDispatch.SavedQuoteID = &saveQuoteRes.SavedQuoteID
-	disPatchResponse, err := bookingApi.rapid.Dispatch(oldQuote.RapidSaveQuote.ConfirmAndDispatch)
+	disPatchResponse, err := bookingApi.services.Rapid.Dispatch(oldQuote.RapidSaveQuote.ConfirmAndDispatch)
 	if err != nil {
 		// just log the error not Need to return error
 		bookingApi.services.Logger.Error(err)
@@ -86,11 +113,11 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 
 	// hash the user password
 
-	fileName := bid.BidId + "-" + utils.GenerateString(4)
+	fileName := bid.BidId + "-" + utils.GenerateString(4) + ".pdf"
 	if err != nil {
 		bookingApi.services.Logger.Errorf("Error in created hashed bol %v", err)
 	}
-	bolUrl := "https://firstshipperbol.s3.us-west-1.amazonaws.com/" + fileName + ".pdf"
+	bolUrl := "https://firstshipperbol.s3.us-west-1.amazonaws.com/" + fileName
 
 	oldQuote.BookingInfo = &v1.BookingInfo{
 		ShipmentId:            int32(disPatchResponse.ShipmentID),
@@ -111,7 +138,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	url = strings.ReplaceAll(url, "{poNumber}", oldQuote.BookingInfo.CarrierProNumber)
 	oldQuote.BookingInfo.SvgData = url
 	// go bookingApi.adobe.UrlToPdf(bid, fileName)
-	err = bookingApi.services.SaveBooking(ctxx, oldQuote)
+	err = bookingApi.services.Db.SaveBooking(ctxx, oldQuote)
 	if err != nil {
 		// just log the error not Need to return error
 		bookingApi.services.Logger.Error(err)
@@ -130,14 +157,26 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		SvgData:      oldQuote.BookingInfo.SvgData,
 	}
 	emailSubject := "FirstShipper: Booking Confirmation " + "Pickup Number: " + oldQuote.BookingInfo.CarrierProNumber + " " + "BOL Number: " + oldQuote.BookingInfo.FirstShipperBolNumber
-	data := zohomail.EmailData{
-		ReceiverEmail: oldQuote.QuoteRequest.Pickup.Contact.EmailAddress,
-		ReceiverName:  oldQuote.QuoteRequest.Pickup.Contact.Name,
-		EmailSubject:  emailSubject,
-		SenderEmail:   "quotes@firstshipper.com",
-		SenderName:    "FirstShipper Booking",
+	data := email.Data{
+		To:          []string{oldQuote.QuoteRequest.Pickup.Contact.EmailAddress},
+		Subject:     emailSubject,
+		From:        "quotes@firstshipper.com",
+		ContentType: "text/html",
+		Body:        "Please find your BOL attached",
+		Attachments: []email.Attachment{
+			{
+				Path: "firstshipperbol/" + fileName,
+				Type: email.AttachmentTypeS3,
+			},
+		},
 	}
-	go bookingApi.services.Email.SendBookingConfirmationEmail(data, outRes)
+	// go func() {
+	bolSentRes, err := email.Send(context.Background(), data)
+	if err != nil {
+		bookingApi.services.Logger.Errorf("error sending bol to user ", err, outRes)
+	}
+	bookingApi.services.Logger.Infof("bol sent", bolSentRes, outRes)
+	// }()
 	return outRes, nil
 }
 func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
@@ -162,4 +201,11 @@ func makeBOlGenGetRequest(conf *configs.Config, fileName string) error {
 	}
 	fmt.Println(string(res))
 	return nil
+}
+func GetContactPersonsIds(contactPerson []books.ContactPerson) []string {
+	ids := []string{}
+	for _, j := range contactPerson {
+		ids = append(ids, j.ContactPersonID)
+	}
+	return ids
 }

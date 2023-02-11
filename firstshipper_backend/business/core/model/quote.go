@@ -15,6 +15,7 @@ type QuoteRequest struct {
 	RapidBooking      *models.DispatchResponse  `json:"Booking" dynamodbav:"rapidBooking"`
 	BookingInfo       *v1.BookingInfo           `json:"bookingInfo" dynamodbav:"bookingInfo"`
 	Business          *v1.Business              `json:"business" dynamodbav:"business"`
+	User              []*v1.User                `json:"users"`
 }
 
 type BidsWithQuote struct {

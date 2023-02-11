@@ -19,10 +19,8 @@ func (businessDb BusinessDb) UpdateBusiness(ctx context.Context, businessId stri
 	qryInput := &dynamodb.UpdateItemInput{
 		TableName: aws.String(businessDb.GetFirstShipperTableName()),
 		Key: map[string]types.AttributeValue{
-			"pk":          &types.AttributeValueMemberS{Value: "business#" + business.BusinessId},
-			"sk":          &types.AttributeValueMemberS{Value: "business#" + business.BusinessId},
-			"business_pk": &types.AttributeValueMemberS{Value: "business"},
-			"business_sk": &types.AttributeValueMemberS{Value: business.BusinessId},
+			"pk": &types.AttributeValueMemberS{Value: "pk#" + business.BusinessId},
+			"sk": &types.AttributeValueMemberS{Value: "business#" + business.BusinessId},
 		},
 		UpdateExpression: aws.String("SET #business = :business"),
 		ExpressionAttributeNames: map[string]string{

@@ -30,11 +30,11 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 	}
 	// emails := user.GetString("email")
 	// fmt.Println(email, emails)
-	data, err := business.services.GetAllDataByBusinessId(ctx.Request().Context(), businessID)
+	data, err := business.services.Db.GetAllDataByBusinessId(ctx.Request().Context(), businessID)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	shipments, err := business.services.GetAllBookingsByBusinessId(ctx.Request().Context(), businessID)
+	shipments, err := business.services.Db.GetAllBookingsByBusinessId(ctx.Request().Context(), businessID)
 	if err != nil {
 		business.services.Logger.Errorf("error getting shipments: %v", err)
 	}

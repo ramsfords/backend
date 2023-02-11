@@ -1,15 +1,18 @@
 package utils
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/ramsfords/backend/foundations/zohomail"
+	"github.com/ramsfords/backend/configs"
+	"github.com/ramsfords/backend/foundations/email"
+	template "github.com/ramsfords/backend/foundations/zoho/email"
 )
 
-func SendResetPasswordLinkEventHandler(email *zohomail.Email, senderEmail string, senderName string) func(e *core.MailerRecordEvent) error {
+func SendResetPasswordLinkEventHandler(conf *configs.Config) func(e *core.MailerRecordEvent) error {
 	return func(e *core.MailerRecordEvent) error {
 		token, ok := e.Meta["token"].(string)
 		if !ok {
@@ -18,15 +21,20 @@ func SendResetPasswordLinkEventHandler(email *zohomail.Email, senderEmail string
 		userName := e.Record.GetString("username")
 		id := e.Record.Id
 		redirectLink := fmt.Sprintf("http://localhost:3000/forgot-password?token=%s&id=%s", token, id)
-		data := zohomail.EmailData{
-			ReceiverEmail: e.Record.Email(),
-			ReceiverName:  userName,
-			EmailSubject:  "Menuloom: Reset Your Password",
-			RedirectLink:  redirectLink,
-			SenderEmail:   senderEmail,
-			SenderName:    senderName,
+		emailID := e.Record.GetString("email")
+		if emailID == "" {
+			return errors.New("could not find email for confirm email")
 		}
-		err := email.SendPasswordReset(data)
+		resetEmailTemplate := template.GetResetPasswordTemplate(userName, redirectLink)
+		data := email.Data{
+			To:          []string{emailID},
+			Subject:     "FirstShipper: Please Confirm your email!",
+			From:        conf.SitesSettings.FirstShipper.Prod.EmailId,
+			ContentType: email.ContentTypeTextHTML,
+			Body:        resetEmailTemplate,
+		}
+		sentRes, err := email.Send(context.Background(), data)
+		fmt.Println("email sent res", sentRes)
 		if err != nil {
 			return err
 		}

@@ -11,10 +11,10 @@ import (
 )
 
 type Validate struct {
-	services services.Services
+	services *services.Services
 }
 
-func New(echo *echo.Group, services services.Services) {
+func New(echo *echo.Group, services *services.Services) {
 	validate := &Validate{services}
 	api := echo.Group("/validate")
 	api.GET("/validate/:id", validate.getValid)
@@ -25,7 +25,7 @@ func (api Validate) getValid(ctx echo.Context) error {
 	id := "pk#" + ctx.PathParam("id")
 	record, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
 	fmt.Println(record)
-	res, err := api.services.Repository.GetValidate(ctx.Request().Context(), id)
+	res, err := api.services.Db.GetValidate(ctx.Request().Context(), id)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
@@ -39,7 +39,7 @@ func (api Validate) updateValid(ctx echo.Context) error {
 	}
 	record, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
 	fmt.Println(record)
-	err := api.services.Repository.UpdateValidate(ctx.Request().Context(), id, data)
+	err := api.services.Db.UpdateValidate(ctx.Request().Context(), id, data)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}

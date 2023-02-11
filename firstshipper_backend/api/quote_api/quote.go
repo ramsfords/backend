@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/firstshipper_backend/business/rapid"
 	"github.com/ramsfords/backend/firstshipper_backend/services"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -17,14 +16,12 @@ type QuoteContract interface {
 }
 type Quote struct {
 	services *services.Services
-	rapid    *rapid.Rapid
 	*sync.Mutex
 }
 
-func New(services *services.Services, echo *echo.Echo, rapid *rapid.Rapid) {
+func New(services *services.Services, echo *echo.Echo) {
 	qt := Quote{
 		services: services,
-		rapid:    rapid,
 		Mutex:    &sync.Mutex{},
 	}
 	// quote api

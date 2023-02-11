@@ -18,7 +18,7 @@ func (business Business) UpdateDefaultPickupAddress(ctx echo.Context) error {
 	if businessId == "" {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	err = business.services.UpdateLocation(ctx.Request().Context(), businessId, address)
+	err = business.services.Db.UpdateLocation(ctx.Request().Context(), businessId, address)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

@@ -31,7 +31,7 @@ func (business Business) UpdateBusiness(ctx context.Context, businessReq *v1.Bus
 		return nil, errs.ErrInputDataNotValid
 	}
 
-	err = business.services.UpdateBusiness(ctx, businessReq.BusinessId, *businessReq)
+	err = business.services.Db.UpdateBusiness(ctx, businessReq.BusinessId, *businessReq)
 	if err != nil {
 		business.services.Logger.Errorf("UpdateBusiness : error in updating business into the database: %s", err)
 		return nil, errs.ErrBusinessUpdationFailed

@@ -10,7 +10,7 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (db UserDb) CreateUser(ctx context.Context, input v1.User) error {
+func (db UserDb) CreateUser(ctx context.Context, input *v1.User) error {
 	data, err := attributevalue.Marshal(input)
 	if err != nil {
 		return err

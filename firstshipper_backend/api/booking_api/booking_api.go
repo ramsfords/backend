@@ -2,22 +2,20 @@ package booking_api
 
 import (
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/firstshipper_backend/business/rapid"
 	"github.com/ramsfords/backend/firstshipper_backend/services"
-	"github.com/ramsfords/backend/foundations/adobe"
+	"github.com/ramsfords/backend/foundations/zoho/books"
 )
 
 type BookingApi struct {
 	services *services.Services
-	adobe    *adobe.Adobe
-	rapid    *rapid.Rapid
+	books    *books.API
 }
 
-func New(services *services.Services, echoClient *echo.Echo, rapid *rapid.Rapid) {
+func New(services *services.Services, echoClient *echo.Echo) {
 	book := BookingApi{
 		services: services,
-		rapid:    rapid,
 	}
+	book.books = books.New(services.Zoho, services.Conf)
 	protectedBolGroup := echoClient.Group("/booking")
 	protectedBolGroup.GET("/:bookingId", book.EchoGetBooking)
 	protectedBolGroup.POST("", book.EchoCreateBooking)

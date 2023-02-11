@@ -14,7 +14,7 @@ func (qt Quote) EchoGetBidByBidId(ctx echo.Context) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	newCtx := ctx.Request().Context()
-	res, err := qt.services.GetBidByBidID(newCtx, businessID, quoteID, bidId)
+	res, err := qt.services.Db.GetBidByBidID(newCtx, businessID, quoteID, bidId)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

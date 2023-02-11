@@ -23,7 +23,7 @@ func (qt Quote) EchoGetQuotesByBusinessId(ctx echo.Context) error {
 }
 
 func (qt Quote) GetQuotesByBusinessId(ctx context.Context, businessId string) ([]*model.QuoteRequest, error) {
-	qts, err := qt.services.GetAllQuotesByBusinessId(ctx, businessId)
+	qts, err := qt.services.Db.GetAllQuotesByBusinessId(ctx, businessId)
 	if err != nil {
 		return nil, errs.ErrInvalidInputs
 	}

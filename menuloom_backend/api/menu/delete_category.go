@@ -38,7 +38,7 @@ func (api menuApi) DeleteCategory(ctx context.Context, data *v1.Categories) (*v1
 	if valid != nil {
 		return nil, errs.ErrMissingData
 	}
-	err := api.services.Repository.CreateCategories(ctx, data.Categories[0].RestaurantId, data.Categories)
+	err := api.services.Db.CreateCategories(ctx, data.Categories[0].RestaurantId, data.Categories)
 	if err != nil {
 		return nil, err
 	}

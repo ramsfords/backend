@@ -23,7 +23,7 @@ func (business Business) UpdateBusinessPhoneNumber(ctx echo.Context) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	newContext := ctx.Request().Context()
-	phoneNumber, err = business.services.AddPhoneNumber(newContext, businessId, phoneNumber)
+	phoneNumber, err = business.services.Db.AddPhoneNumber(newContext, businessId, phoneNumber)
 	if err != nil {
 		business.services.Logger.Errorf("adding address to database failded: %s", err)
 		return ctx.NoContent(http.StatusInternalServerError)

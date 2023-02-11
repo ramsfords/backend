@@ -40,12 +40,12 @@ func (api restaurantApi) CreateRestaurant(ctx context.Context, data *v1.CreateRe
 	// 	return nil, err
 	// }
 	// data.S3StaticImagesUrl = s3Location + "/images"
-	err := api.services.Repository.CreateRestaurant(ctx, data)
+	err := api.services.Db.CreateRestaurant(ctx, data)
 	if err != nil {
 		return nil, err
 	}
 
-	// api.services.Repository.CreateUser(ctx, newUser)
+	// api.services.Db.CreateUser(ctx, newUser)
 
 	return &v1.RestaurantResponse{
 		Id:      data.Id,

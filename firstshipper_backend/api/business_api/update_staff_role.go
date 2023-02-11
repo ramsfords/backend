@@ -35,7 +35,7 @@ func (business Business) UpdateStaffRole(ctx context.Context, req *v1.UpdateUser
 		business.services.Logger.Errorf("user trying to update role without valid role", req.Token)
 		return &v1.Ok{}, errs.ErrNotAllowed
 	}
-	err = business.services.UpdateStaffRole(ctx, businessId, req.StaffEmail, req.NewRole)
+	err = business.services.Db.UpdateStaffRole(ctx, businessId, req.StaffEmail, req.NewRole)
 	if err != nil {
 		business.services.Logger.Info("could not update staff role ", err)
 		return &v1.Ok{

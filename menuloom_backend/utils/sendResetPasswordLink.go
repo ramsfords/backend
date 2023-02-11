@@ -6,10 +6,10 @@ import (
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/ramsfords/backend/foundations/zohomail"
+	"github.com/ramsfords/backend/foundations/zoho/email"
 )
 
-func SendResetPasswordLinkEventHandler(email *zohomail.Email, senderName string, senderEmail string) func(e *core.MailerRecordEvent) error {
+func SendResetPasswordLinkEventHandler(emailClient *email.Email, senderName string, senderEmail string) func(e *core.MailerRecordEvent) error {
 	return func(e *core.MailerRecordEvent) error {
 		token, ok := e.Meta["token"].(string)
 		if !ok {
@@ -18,7 +18,7 @@ func SendResetPasswordLinkEventHandler(email *zohomail.Email, senderName string,
 		userName := e.Record.GetString("username")
 		id := e.Record.Id
 		redirectLink := fmt.Sprintf("http://localhost:3000/forgot-password?token=%s&id=%s", token, id)
-		data := zohomail.EmailData{
+		data := email.EmailData{
 			ReceiverEmail: e.Record.Email(),
 			ReceiverName:  userName,
 			EmailSubject:  "Menuloom: Reset Your Password",
@@ -26,7 +26,7 @@ func SendResetPasswordLinkEventHandler(email *zohomail.Email, senderName string,
 			SenderEmail:   senderEmail,
 			SenderName:    senderName,
 		}
-		err := email.SendPasswordReset(data)
+		err := emailClient.SendPasswordReset(data)
 		if err != nil {
 			return err
 		}

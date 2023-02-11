@@ -15,7 +15,7 @@ func (bookingApi *BookingApi) EchoGetBooking(ctx echo.Context) error {
 	}
 	bookingId = strings.Split(bookingId, "-")[0]
 	ctxx := ctx.Request().Context()
-	qtReq, err := bookingApi.services.GetBooking(ctxx, bookingId)
+	qtReq, err := bookingApi.services.Db.GetBooking(ctxx, bookingId)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}

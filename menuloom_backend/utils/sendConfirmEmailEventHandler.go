@@ -6,11 +6,11 @@ import (
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/ramsfords/backend/foundations/zohomail"
-	"github.com/ramsfords/backend/menuloom_backend/db"
+	"github.com/ramsfords/backend/foundations/zoho/email"
+	"github.com/ramsfords/backend/menuloom_backend/services"
 )
 
-func SendConfrimEmailEventHandler(email *zohomail.Email, senderName string, senderEmail string, businessDb db.Repository) func(e *core.MailerRecordEvent) error {
+func SendConfrimEmailEventHandler(services *services.Services, senderName string, senderEmail string) func(e *core.MailerRecordEvent) error {
 	return func(e *core.MailerRecordEvent) error {
 		token, ok := e.Meta["token"].(string)
 		if !ok {
@@ -24,7 +24,7 @@ func SendConfrimEmailEventHandler(email *zohomail.Email, senderName string, send
 		name := e.Record.GetString("name")
 
 		redirectLink := fmt.Sprintf("http://127.0.0.1:3000/confirm-email?email=%s&token=%s", token, emailID)
-		data := zohomail.EmailData{
+		data := email.EmailData{
 			ReceiverEmail: emailID,
 			ReceiverName:  name,
 			EmailSubject:  "FirstShipper: Please Confirm your email!",
@@ -33,7 +33,7 @@ func SendConfrimEmailEventHandler(email *zohomail.Email, senderName string, send
 			SenderName:    "FirstShipper",
 		}
 
-		err := email.SendConfirmEmail(data)
+		err := services.Email.SendConfirmEmail(data)
 		if err != nil {
 			return err
 		}

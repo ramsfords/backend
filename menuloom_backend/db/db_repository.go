@@ -13,8 +13,7 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-type IDBContract interface {
-	// Categories
+type Db interface {
 	// Restaurant
 	CreateRestaurant(ctx context.Context, data *v1.CreateRestaurantData) error
 	GetRestaurant(ctx context.Context, id string) (*models.Restaurant, error)
@@ -57,15 +56,15 @@ type IDBContract interface {
 }
 
 type Repository struct {
-	dynamo.DB
 	menu_db.MenuDb
 	restaurant_db.RestaurantDb
 	user_db.UserDb
 	validatedb.ValidateDb
 }
 
-func New(configs *configs.Config, db dynamo.DB) Repository {
-	return Repository{
+func New(configs *configs.Config) Db {
+	db := dynamo.New(configs)
+	var repo Db = Repository{
 		MenuDb: menu_db.MenuDb{
 			DB:     db,
 			Config: configs,
@@ -75,7 +74,13 @@ func New(configs *configs.Config, db dynamo.DB) Repository {
 			Config: configs,
 		},
 		ValidateDb: validatedb.ValidateDb{
-			DB: db,
+			DB:     db,
+			Config: configs,
+		},
+		UserDb: user_db.UserDb{
+			DB:     db,
+			Config: configs,
 		},
 	}
+	return repo
 }

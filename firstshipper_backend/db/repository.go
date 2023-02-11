@@ -24,7 +24,6 @@ import (
 )
 
 type DB interface {
-
 	// Users
 	SaveUser(ctx context.Context, usr v1.User, businessId string) error
 	UpdateUser(ctx context.Context, businessId string, user v1.User) error
@@ -89,6 +88,7 @@ type DB interface {
 	IncreateQuoteCount()
 	// Get Quote Count
 	GetQuoteCount() int64
+	AddContact(ctx context.Context, businessId string, contact *v1.Location) error
 }
 
 type Repository struct {
@@ -112,7 +112,8 @@ type Repository struct {
 // 	validatedb.ValidateDb
 // }
 
-func New(db dynamo.DB, configs *configs.Config) DB {
+func New(configs *configs.Config) DB {
+	db := dynamo.New(configs)
 	getCountInput := &dynamodb.GetItemInput{
 		TableName: aws.String(configs.GetFirstShipperTableName()),
 		Key: map[string]types.AttributeValue{

@@ -9,7 +9,7 @@ import (
 
 func (menu restaurantApi) get(ctx echo.Context) error {
 	id := ctx.PathParam("id")
-	data, err := menu.services.Repository.GetRestaurant(context.Background(), id)
+	data, err := menu.services.Db.GetRestaurant(context.Background(), id)
 	if err != nil {
 		ctx.NoContent(http.StatusBadRequest)
 

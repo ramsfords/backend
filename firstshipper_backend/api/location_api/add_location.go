@@ -30,7 +30,7 @@ func (loc Location) AddLocation(ctx context.Context, locationReq *v1.Location) (
 		loc.services.Logger.Error("AddLocation Validate : req data validation failed: %s", err)
 		return nil, errs.ErrInvalidInputs
 	}
-	err = loc.services.SaveLocation(ctx, locationReq.BusinessId, locationReq)
+	err = loc.services.Db.SaveLocation(ctx, locationReq.BusinessId, locationReq)
 	if err != nil {
 		loc.services.Logger.Error("AddLocation InsertLocation : error in inserting location into the database: %s", err)
 		return nil, errs.ErrLocationCreationFailed

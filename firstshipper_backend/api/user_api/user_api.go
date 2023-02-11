@@ -5,7 +5,6 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/firstshipper_backend/services"
-	"github.com/ramsfords/backend/firstshipper_backend/utils"
 )
 
 type UserApi struct {
@@ -20,11 +19,7 @@ func (user UserApi) EchoLogout(ctx echo.Context) error {
 	if err := ctx.Bind(&auth); err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	err := utils.RemoveTokenFormCloudflareKv(user.services.Conf, user.services.Logger, user.services.CloudFlareClient, auth.AuthToken)
-	if err != nil {
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-	return nil
+	return ctx.NoContent(http.StatusOK)
 }
 
 func New(services *services.Services, echo *echo.Echo) {

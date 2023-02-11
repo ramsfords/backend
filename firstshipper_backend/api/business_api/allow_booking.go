@@ -22,7 +22,7 @@ func (business Business) AllowBooking(ctx echo.Context) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	newContext := ctx.Request().Context()
-	_, err = business.services.UpdateAllowBooking(newContext, allowBooking.BusinessId, allowBooking.Allow)
+	_, err = business.services.Db.UpdateAllowBooking(newContext, allowBooking.BusinessId, allowBooking.Allow)
 	if err != nil {
 		business.services.Logger.Errorf("adding address to database failded: %s", err)
 		return ctx.NoContent(http.StatusInternalServerError)

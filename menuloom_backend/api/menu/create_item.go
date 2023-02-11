@@ -43,7 +43,7 @@ func (api menuApi) CreateItem(ctx context.Context, data *v1.Item) (*v1.ItemRespo
 		url.PublicId = res.PublicID
 	}
 
-	err := api.services.Repository.CreateItem(ctx, data, data.RestaurantId)
+	err := api.services.Db.CreateItem(ctx, data, data.RestaurantId)
 	if err != nil {
 		return nil, err
 	}

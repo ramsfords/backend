@@ -8,13 +8,13 @@ import (
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/firstshipper_backend/services"
-	"github.com/ramsfords/backend/foundations/zohomail"
+	"github.com/ramsfords/backend/foundations/email"
+	template "github.com/ramsfords/backend/foundations/zoho/email"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func SendConfrimEmailEventHandler(email *zohomail.Email, conf *configs.Config, services *services.Services) func(e *core.MailerRecordEvent) error {
+func SendConfrimEmailEventHandler(services *services.Services) func(e *core.MailerRecordEvent) error {
 	return func(e *core.MailerRecordEvent) error {
 		token, ok := e.Meta["token"].(string)
 		if !ok {
@@ -27,41 +27,18 @@ func SendConfrimEmailEventHandler(email *zohomail.Email, conf *configs.Config, s
 
 		name := e.Record.GetString("name")
 
-		redirectLink := fmt.Sprintf(conf.GetFirstShipperFontEndURL()+"/confirm-email?token=%s&email=%s", token, emailID)
-		data := zohomail.EmailData{
-			ReceiverEmail: emailID,
-			ReceiverName:  name,
-			EmailSubject:  "FirstShipper: Please Confirm your email!",
-			RedirectLink:  redirectLink,
-			SenderEmail:   "quotes@firstshipper.com",
-			SenderName:    "FirstShipper",
+		redirectLink := fmt.Sprintf(services.Conf.GetFirstShipperFontEndURL()+"/confirm-email?token=%s&email=%s", token, emailID)
+		templeHtml := template.GetConfirmEmailHtml(name, redirectLink)
+		data := email.Data{
+			To:          []string{emailID},
+			Subject:     "FirstShipper: Please Confirm your email!",
+			From:        services.Conf.SitesSettings.FirstShipper.Prod.EmailId,
+			ContentType: email.ContentTypeTextHTML,
+			Body:        templeHtml,
 		}
-
-		err := email.SendConfirmEmail(data)
-		if err != nil {
-			return err
-		}
-		createdAt := e.Record.GetString("createAt")
-		if emailID == "" {
-			return errors.New("could not find email for confirm email")
-		}
-		recordData := e.Record.Get("passwordHash")
-		fmt.Print(recordData)
-		businessData := v1.Business{
-			BusinessId:                        emailID,
-			AccountingEmail:                   emailID,
-			CustomerServiceEmail:              emailID,
-			AdminEmail:                        emailID,
-			CreateAt:                          createdAt,
-			NeedsAddressUpdate:                true,
-			NeedsDefaultPickupAddressUpdate:   true,
-			NeedsDefaultDeliveryAddressUpdate: true,
-			Address:                           &v1.Address{},
-		}
-
-		err = services.SaveBusiness(context.Background(), businessData, emailID)
-		if err != nil {
-			return err
+		// Send the email.
+		if _, err := email.Send(context.Background(), data); err != nil {
+			panic(err)
 		}
 		originData := e.Record.OriginalCopy()
 		userBytes, err := originData.MarshalJSON()
@@ -78,7 +55,34 @@ func SendConfrimEmailEventHandler(email *zohomail.Email, conf *configs.Config, s
 		userData.PasswordHash = e.Record.GetString("passwordHash")
 		userData.Token = token
 		userData.Type = "user"
-		err = services.SaveUser(context.Background(), userData, emailID)
+		err = services.Db.SaveUser(context.Background(), userData, emailID)
+		if err != nil {
+			return err
+		}
+		// err = services.Email.SendConfirmEmail(data)
+		// if err != nil {
+		// 	return err
+		// }
+		createdAt := e.Record.GetString("createAt")
+		if emailID == "" {
+			return errors.New("could not find email for confirm email")
+		}
+		recordData := e.Record.Get("passwordHash")
+		fmt.Print(recordData)
+		businessData := v1.Business{
+			BusinessId:                        emailID,
+			AccountingEmail:                   emailID,
+			CustomerServiceEmail:              emailID,
+			AdminEmail:                        emailID,
+			CreateAt:                          createdAt,
+			NeedsAddressUpdate:                true,
+			NeedsDefaultPickupAddressUpdate:   true,
+			NeedsDefaultDeliveryAddressUpdate: true,
+			Address:                           &v1.Address{},
+			AdminUser:                         &userData,
+		}
+
+		err = services.Db.SaveBusiness(context.Background(), businessData, emailID)
 		if err != nil {
 			return err
 		}

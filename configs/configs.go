@@ -106,3 +106,9 @@ func (config *Config) GetFirstShipperSKPrefix() string {
 func (config *Config) GetMenuloomSKPrefix() string {
 	return config.SitesSettings.Menuloom.DynamoDb.SkPrefix
 }
+func (config *Config) GetMenuloomServiceName() string {
+	return "menuloom"
+}
+func (config *Config) GetFirstShipperServiceName() string {
+	return "firstshipper"
+}

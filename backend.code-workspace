@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../protos"
+		},
+		{
+			"path": "../../projects/chatgpt-google-extension"
 		}
 	],
 	"settings": {

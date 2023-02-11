@@ -28,7 +28,7 @@ func (quote Quote) EchoGetQuoteWithBidsByQuoteId(ctx echo.Context) error {
 	// }
 
 	ctxs := ctx.Request().Context()
-	bids, err := quote.services.GetBidsWithQuoteByQuoteId(ctxs, quoteId)
+	bids, err := quote.services.Db.GetBidsWithQuoteByQuoteId(ctxs, quoteId)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

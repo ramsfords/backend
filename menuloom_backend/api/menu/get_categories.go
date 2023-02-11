@@ -17,7 +17,7 @@ func (api menuApi) getCategories(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, res)
 }
 func (api menuApi) GetCategories(ctx context.Context, id string) (data []*v1.Category, err error) {
-	categories, err := api.services.Repository.GetCategories(ctx, id)
+	categories, err := api.services.Db.GetCategories(ctx, id)
 	if err != nil {
 		return nil, err
 	}

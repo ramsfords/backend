@@ -19,7 +19,7 @@ func (business Business) GinGetAllBusinesses(ctx echo.Context) error {
 }
 
 func (business Business) GetBusiness(ctx context.Context, req string) (*v1.Business, error) {
-	businessData, err := business.services.GetBusiness(ctx, req)
+	businessData, err := business.services.Db.GetBusiness(ctx, req)
 	if err != nil {
 		business.services.Logger.Errorf("GetAllBusinesses : error in getting all businesses: %s", err)
 		return nil, errs.ErrStoreInternal

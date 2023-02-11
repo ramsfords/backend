@@ -7,7 +7,6 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase/apis"
-	"github.com/ramsfords/backend/firstshipper_backend/business/rapid"
 	"github.com/ramsfords/backend/firstshipper_backend/services"
 
 	errs "github.com/ramsfords/backend/foundations/error"
@@ -16,13 +15,11 @@ import (
 
 type Business struct {
 	services *services.Services
-	rapid    *rapid.Rapid
 }
 
-func New(services *services.Services, rapid *rapid.Rapid, app *echo.Echo) Business {
+func New(services *services.Services, app *echo.Echo) Business {
 	bis := Business{
 		services: services,
-		rapid:    rapid,
 	}
 	businessGrp := app.Group("/business")
 	businessGrp.GET("", bis.GinGetAllBusinesses)

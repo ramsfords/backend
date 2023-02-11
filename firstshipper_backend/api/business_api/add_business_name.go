@@ -21,7 +21,7 @@ func (business Business) UpdateBusinessName(ctx echo.Context) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	newContext := ctx.Request().Context()
-	err = business.services.UpdateBusinessName(newContext, businessId, businessName.BusinessName)
+	err = business.services.Db.UpdateBusinessName(newContext, businessId, businessName.BusinessName)
 	if err != nil {
 		business.services.Logger.Errorf("adding address to database failded: %s", err)
 		return ctx.NoContent(http.StatusInternalServerError)

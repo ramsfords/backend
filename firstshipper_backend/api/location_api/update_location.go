@@ -30,7 +30,7 @@ func (loc Location) UpdateLocation(ctx context.Context, addressReq *v1.Address) 
 		loc.services.Logger.Error("UpdateLocation Validate : req data validation failed: %s", err)
 		return nil, errs.ErrInputDataNotValid
 	}
-	err = loc.services.UpdateLocation(ctx, addressReq.BusinessId, addressReq)
+	err = loc.services.Db.UpdateLocation(ctx, addressReq.BusinessId, addressReq)
 	if err != nil {
 		loc.services.Logger.Error("UpdateLocation : error in updating location into the database: %s", err)
 		return nil, errs.ErrLocationUpdationFailed

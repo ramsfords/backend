@@ -12,8 +12,14 @@ type Config struct {
 	Scylladb      Scylladb      `json:"scylladb"`
 	PdfRenderer   PdfRenderer   `json:"pdfRender"`
 	Initiated     bool          `json:"initiated"`
+	Zoho          Zoho          `json:"zoho"`
 }
-
+type Zoho struct {
+	ZohoCode         string `json:"code"`
+	ZohoOrgId        string `json:"orgId"`
+	ZohoClientSecret string `json:"zohoSecret"`
+	ZohoClientId     string `json:"zohoClientId"`
+}
 type Menuloom struct {
 	Dev              SiteSetting      `json:"dev"`
 	Prod             SiteSetting      `json:"prod"`
@@ -26,13 +32,17 @@ type FirstShipper struct {
 	Dev              SiteSetting      `json:"dev"`
 	Prod             SiteSetting      `json:"prod"`
 	DynamoDb         DynamoDb         `json:"dynamodb"`
-	Email            Email            `json:"email"`
+	EmailConf        EmailConf        `json:"email"`
 	RapidShipLTL     RapidShipLTL     `json:"rapidShipLtl"`
 	Schneider        RapidShipLTL     `json:"schneider"`
 	CloudFlareConfig CloudFlareConfig `json:"cloudflare"`
 	CloudinaryConfig CloudinaryConfig `json:"cloudinary_config,omitempty"`
 }
-
+type EmailConf struct {
+	SenderName   string
+	SenderEmail  string
+	RedirectLink string
+}
 type SiteSetting struct {
 	ServiceName     string
 	ServiceFullName string

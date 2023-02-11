@@ -33,7 +33,7 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 	if err != nil {
 		return nil, err
 	}
-	qtReq.QuoteId = fmt.Sprint(qt.services.GetQuoteCount())
+	qtReq.QuoteId = fmt.Sprint(qt.services.Db.GetQuoteCount())
 
 	// make compatible rapid quote to send to rapid for quote rates
 	rapidQuoteRequest, err := rapid.MakeQuoteDetails(qtReq)
@@ -42,14 +42,14 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 	}
 
 	// get quote from rapid
-	res, err := qt.rapid.GetQuote(rapidQuoteRequest)
+	res, err := qt.services.Rapid.GetQuote(rapidQuoteRequest)
 	if err != nil {
 		qt.services.Logger.Error(err)
 		return nil, errs.ErrInternal
 	}
 
 	saveQuote := rapid.SaveQuoteStep2(rapidQuoteRequest, res)
-	saveQuoteRes, err := qt.rapid.SaveQuoteStep(saveQuote)
+	saveQuoteRes, err := qt.services.Rapid.SaveQuoteStep(saveQuote)
 	if err != nil {
 		// just log the error not Need to return error
 		qt.services.Logger.Error(err)
@@ -68,8 +68,8 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 		RapidBooking:      nil,
 		Bid:               nil,
 	}
-	err = qt.services.SaveQuote(ctxx, quoteRate)
-	go qt.services.IncreateQuoteCount()
+	err = qt.services.Db.SaveQuote(ctxx, quoteRate)
+	go qt.services.Db.IncreateQuoteCount()
 	if err != nil {
 		return nil, errs.ErrStoreInternal
 	}

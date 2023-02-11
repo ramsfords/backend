@@ -15,10 +15,9 @@ import (
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/firstshipper_backend"
-	"github.com/ramsfords/backend/foundations/S3"
-	"github.com/ramsfords/backend/foundations/dynamo"
-	"github.com/ramsfords/backend/foundations/logger"
+	firstShipperServices "github.com/ramsfords/backend/firstshipper_backend/services"
 	"github.com/ramsfords/backend/menuloom_backend"
+	menuLoomServices "github.com/ramsfords/backend/menuloom_backend/services"
 )
 
 func defaultPublicDir() string {
@@ -31,9 +30,11 @@ func defaultPublicDir() string {
 
 func main() {
 	conf := configs.GetConfig()
-	s3 := S3.New(conf)
-	dynamodDb := dynamo.New(conf)
-	logger := logger.New("backend")
+	// s3 := S3.New(conf)
+	// dynamodDb := dynamo.New(conf)
+	// logger := logger.New("backend")
+	firstShipperServices := firstShipperServices.New(conf)
+	menuloomeServices := menuLoomServices.New(conf)
 	app := pocketbase.New()
 	var publicDirFlag string
 
@@ -63,11 +64,19 @@ func main() {
 			AllowOrigins: []string{"https://firstshipper.com", "https://www.firstshipper.com", "https://menuloom.com", "http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:8787", "https://api.firstshipper.com"},
 			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "auth-guard", echo.HeaderAccessControlAllowHeaders, echo.HeaderAccessControlRequestHeaders},
 		}))
+		e.Router.Static("/static", "assets")
+		e.Router.AddRoute(echo.Route{
+			Method: http.MethodGet,
+			Path:   "/index/*",
+			Handler: func(c echo.Context) error {
+				return c.File("index.html")
+			},
+		})
 		e.Router.OPTIONS("/*", func(c echo.Context) error {
 			return c.NoContent(http.StatusOK)
 		})
-		firstshipper_backend.FirstShipperRunner(conf, s3, logger, dynamodDb, e.Router, app)
-		menuloom_backend.MenuloomRunner(conf, s3, logger, dynamodDb, e.Router, app)
+		firstshipper_backend.FirstShipperRunner(firstShipperServices, e.Router, app)
+		menuloom_backend.MenuloomRunner(menuloomeServices, e.Router, app)
 		// serves static files from the provided public dir (if exists)
 		e.Router.AddRoute(echo.Route{
 			Method: http.MethodGet,

@@ -78,7 +78,7 @@ func (api menuApi) CreateCategory(ctx context.Context, data *v1.Category) (*v1.I
 	if valid != nil {
 		return nil, errs.ErrMissingData
 	}
-	err := api.services.Repository.CreateCategory(ctx, data, data.RestaurantId)
+	err := api.services.Db.CreateCategory(ctx, data, data.RestaurantId)
 	if err != nil {
 		return nil, err
 	}

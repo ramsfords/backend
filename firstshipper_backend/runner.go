@@ -5,33 +5,18 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase"
-	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/firstshipper_backend/api"
-	"github.com/ramsfords/backend/firstshipper_backend/business/rapid"
 	"github.com/ramsfords/backend/firstshipper_backend/business/rapid/models"
-	"github.com/ramsfords/backend/firstshipper_backend/db"
 	"github.com/ramsfords/backend/firstshipper_backend/services"
 	"github.com/ramsfords/backend/firstshipper_backend/utils"
-	"github.com/ramsfords/backend/foundations/S3"
-	cloundflareCLI "github.com/ramsfords/backend/foundations/cloudflare"
-	"github.com/ramsfords/backend/foundations/cloudinery"
-	"github.com/ramsfords/backend/foundations/dynamo"
-	"github.com/ramsfords/backend/foundations/logger"
-	"github.com/ramsfords/backend/foundations/zohomail"
 )
 
-func FirstShipperRunner(conf *configs.Config, s3 S3.S3Client, logger logger.Logger, dbClient dynamo.DB, echoRouter *echo.Echo, app *pocketbase.PocketBase) {
-	repo := db.New(dbClient, conf)
-	email := zohomail.New(conf.SitesSettings.FirstShipper.Email)
-	rapid := rapid.New()
-	cloudinery := cloudinery.New(conf.SitesSettings.FirstShipper.CloudinaryConfig)
+func FirstShipperRunner(services *services.Services, echoRouter *echo.Echo, app *pocketbase.PocketBase) {
 
-	cloudFlareClient := cloundflareCLI.New(conf.SitesSettings.Menuloom.CloudFlareConfig)
-	services := services.New(conf, s3, logger, email, repo, cloudinery, cloudFlareClient)
 	go func() error {
-		err := rapid.Login(&models.AuthRequestPayload{
-			Username: conf.SitesSettings.FirstShipper.RapidShipLTL.UserName,
-			Password: conf.SitesSettings.FirstShipper.RapidShipLTL.Password,
+		err := services.Rapid.Login(&models.AuthRequestPayload{
+			Username: services.Conf.SitesSettings.FirstShipper.RapidShipLTL.UserName,
+			Password: services.Conf.SitesSettings.FirstShipper.RapidShipLTL.Password,
 		})
 		if err != nil {
 			log.Fatal(err)
@@ -39,12 +24,11 @@ func FirstShipperRunner(conf *configs.Config, s3 S3.S3Client, logger logger.Logg
 		return nil
 	}()
 
-	api.SetUpAPi(echoRouter, services, rapid)
+	api.SetUpAPi(echoRouter, services)
 	// OR send a completely different email template
-	app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(email, conf, services))
+	app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(services))
 	// OR send a completely different email template
-	app.OnMailerBeforeRecordResetPasswordSend().Add(utils.SendResetPasswordLinkEventHandler(email, conf.SitesSettings.Menuloom.Email.FromName, conf.SitesSettings.Menuloom.Email.FromEmail))
+	app.OnMailerBeforeRecordResetPasswordSend().Add(utils.SendResetPasswordLinkEventHandler(services.Conf))
 	// this sets auth token to cloudflare KV on every login
-	app.OnRecordAuthRequest().Add(utils.AddTokenToCloudFlareKV(conf, logger, cloudFlareClient))
 
 }

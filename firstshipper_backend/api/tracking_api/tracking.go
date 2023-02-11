@@ -2,19 +2,16 @@ package tracking_api
 
 import (
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/firstshipper_backend/business/rapid"
 	"github.com/ramsfords/backend/firstshipper_backend/services"
 )
 
 type Tracking struct {
 	services *services.Services
-	radpid   *rapid.Rapid
 }
 
-func New(services *services.Services, echo *echo.Echo, rapid *rapid.Rapid) {
+func New(services *services.Services, echo *echo.Echo) {
 	tracking := Tracking{
 		services: services,
-		radpid:   rapid,
 	}
 	protectedTrackGroup := echo.Group("/tracking")
 	protectedTrackGroup.GET("/:shipmentId", tracking.EchoGetTracking)

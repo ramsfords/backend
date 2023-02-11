@@ -9,7 +9,7 @@ import (
 	"github.com/ramsfords/backend/menuloom_backend/services"
 )
 
-func SetUpAPi(menuLoomGrp *echo.Echo, services services.Services) {
+func SetUpAPi(menuLoomGrp *echo.Echo, services *services.Services) {
 	grp := menuLoomGrp.Group("/menuloom")
 	grp.GET("/ping", func(ctx echo.Context) error {
 		return ctx.JSON(200, echo.Map{

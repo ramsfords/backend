@@ -11,7 +11,7 @@ func (qt Quote) EchoGetQuoteByQuoteId(ctx echo.Context) error {
 	if id == "" {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	res, err := qt.services.GetQuoteByQuoteId(ctx.Request().Context(), id)
+	res, err := qt.services.Db.GetQuoteByQuoteId(ctx.Request().Context(), id)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
