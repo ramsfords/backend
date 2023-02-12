@@ -64,6 +64,7 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 		QuoteRequest:      qtReq,
 		RapidSaveQuote:    saveQuote,
 		Bids:              bidRes,
+		Business:          qtReq.Business,
 		SaveQuoteResponse: saveQuoteRes,
 		RapidBooking:      nil,
 		Bid:               nil,

@@ -63,9 +63,9 @@ func (config *Config) GetMenuloomFontEndURL() string {
 }
 func (config *Config) GetFirstShipperFontEndURL() string {
 	if config.Env == "dev" {
-		return config.SitesSettings.Menuloom.Dev.FrontEndUrl
+		return config.SitesSettings.FirstShipper.Dev.FrontEndUrl
 	}
-	return config.SitesSettings.Menuloom.Prod.FrontEndUrl
+	return config.SitesSettings.FirstShipper.Prod.FrontEndUrl
 }
 
 func (config *Config) GetMenuloomBackEndURL() string {

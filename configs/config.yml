@@ -1,4 +1,4 @@
-env: prod
+env: dev
 sitessettings:
   menuloom:
     dev:
@@ -131,7 +131,7 @@ sitessettings:
       apikey: 965891394982642
       apisecret: Pl6Ff5zJSeL5ROQqQojHjindlAg
 zoho:
-  zohocode: 1000.b3ab46622369d647c627c76535c4cbfc.b11bd50f6eb74d550c03ac7096a79f42
+  zohocode: 1000.e4582e5f47461e90e65c2644fadb0c55.026320c6e374b94ded44b60cd3272567
   zohoorgid: 802796121
   zohoclientid: 1000.KJJO38B48HHUXDBGUEL3H1IC4T9A2G
   zohoclientsecret: fe1f2d13519786aacf4893f4d3d7ff85ed62d9258e
