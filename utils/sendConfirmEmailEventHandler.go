@@ -8,8 +8,8 @@ import (
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/hook"
+	"github.com/ramsfords/backend/email"
 	template "github.com/ramsfords/backend/email"
-	"github.com/ramsfords/backend/foundations/email"
 	"github.com/ramsfords/backend/services"
 	v1 "github.com/ramsfords/types_gen/v1"
 )

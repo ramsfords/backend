@@ -7,7 +7,7 @@ import (
 	"github.com/ramsfords/backend/business/rapid"
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/db"
-	email "github.com/ramsfords/backend/email"
+	"github.com/ramsfords/backend/email"
 	"github.com/ramsfords/backend/foundations/S3"
 	"github.com/ramsfords/backend/foundations/auth"
 	"github.com/ramsfords/backend/foundations/cloudinery"

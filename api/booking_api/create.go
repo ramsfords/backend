@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/api/utils"
@@ -169,13 +170,15 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 			},
 		},
 	}
-	// go func() {
-	bolSentRes, err := template.Send(context.Background(), data)
-	if err != nil {
-		bookingApi.services.Logger.Errorf("error sending bol to user ", err, outRes)
-	}
-	bookingApi.services.Logger.Infof("bol sent", bolSentRes, outRes)
-	// }()
+	go func() {
+		fmt.Println("data to send emaill is", data)
+		time.Sleep(5 * time.Second)
+		bolSentRes, err := template.Send(context.Background(), data)
+		if err != nil {
+			bookingApi.services.Logger.Errorf("error sending bol to user ", err, outRes)
+		}
+		bookingApi.services.Logger.Infof("bol sent", bolSentRes, outRes)
+	}()
 	return outRes, nil
 }
 func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
