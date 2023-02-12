@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -86,7 +85,6 @@ func main() {
 			AllowOrigins: []string{"https://firstshipper.com", "https://www.firstshipper.com", "https://menuloom.com", "http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:8787", "https://api.firstshipper.com"},
 			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "auth-guard", echo.HeaderAccessControlAllowHeaders, echo.HeaderAccessControlRequestHeaders},
 		}))
-		e.Router.Use(firstShipperAuthChecker())
 		e.Router.Static("/static", "assets")
 		e.Router.AddRoute(echo.Route{
 			Method: http.MethodGet,
@@ -116,15 +114,5 @@ func main() {
 
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
-	}
-}
-func firstShipperAuthChecker() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			// eg. inspecting some header value before processing the request
-			someHeaderVal := c.Request().Header.Get("some-header")
-			fmt.Println(someHeaderVal)
-			return next(c)
-		}
 	}
 }
