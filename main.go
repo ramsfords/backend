@@ -94,6 +94,9 @@ func main() {
 			},
 		})
 		e.Router.OPTIONS("/*", func(c echo.Context) error {
+			c.Request().Header.Add("Access-Control-Allow-Origin", "*")
+			c.Request().Header.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			c.Request().Header.Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 			return c.NoContent(http.StatusOK)
 		})
 
