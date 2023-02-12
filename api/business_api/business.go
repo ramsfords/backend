@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/pocketbase/pocketbase/apis"
 	"github.com/ramsfords/backend/services"
 
 	errs "github.com/ramsfords/backend/foundations/error"
@@ -38,7 +37,7 @@ func New(services *services.Services, app *echo.Echo) Business {
 	businessGrp.POST("/phone/:businessId", bis.UpdateBusinessPhoneNumber)
 	// allowGrp := businessGrp.Group("/allow_booking")
 	// allowBookingGrp.Use(apis.RequireAdminAuth())
-	businessGrp.POST("/allow_booking", bis.AllowBooking, apis.RequireAdminAuth())
+	businessGrp.POST("/allow_booking", bis.AllowBooking)
 
 	return bis
 }
