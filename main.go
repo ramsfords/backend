@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -91,6 +93,26 @@ func main() {
 			Path:   "/index/*",
 			Handler: func(c echo.Context) error {
 				return c.File("index.html")
+			},
+		})
+
+		e.Router.AddRoute(echo.Route{
+			Method: http.MethodGet,
+			Path:   "/bol/:bookingId",
+			Handler: func(c echo.Context) error {
+				temp, err := template.ParseFiles("bol.html")
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Println(temp)
+				fmt.Println("in get template page")
+				pathParam := c.PathParam("bookingId")
+				ctx := c.Request().Context()
+				bookingData, err := servicesInstance.Db.GetBooking(ctx, pathParam)
+				if err != nil {
+					c.NoContent(http.StatusNotFound)
+				}
+				return temp.Execute(c.Response(), bookingData)
 			},
 		})
 		e.Router.OPTIONS("/*", func(c echo.Context) error {

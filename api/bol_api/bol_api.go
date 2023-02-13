@@ -14,6 +14,6 @@ func New(services *services.Services, echo *echo.Echo) {
 		services: services,
 	}
 	protectedBolGroup := echo.Group("/bol")
-	protectedBolGroup.GET("", bol.EchoGetBOL)
+	protectedBolGroup.GET("/hello", bol.EchoGetBOL)
 
 }

@@ -10,13 +10,11 @@ import (
 	"github.com/ramsfords/backend/business/core/model"
 )
 
-// type QuoteRequest struct {
-// 	Bids              map[string]v1.Bid         `json:"bids" dynamodbav:"bids"`
-// 	QuoteRequest      *v1.QuoteRequest          `json:"quoteRequest" dynamodbav:"quoteRequest"`
-// 	RapidSaveQuote    *models.SaveQuote         `json:"SaveQuote" dynamodbav:"rapidSaveQuote"`
-// 	SaveQuoteResponse *models.SaveQuoteResponse `json:"saveQuoteResponse" dynamodbav:"saveQuoteResponse"`
-// 	RapidBooking      *models.DispatchResponse  `json:"Booking" dynamodbav:"rapidBooking"`
-// }
+// "TableName": "firstshipper-dev",
+// "IndexName": "quote_index",
+// "KeyConditionExpression": "#83340 = :83340",
+// "ExpressionAttributeNames": {"#83340":"quote_pk"},
+// "ExpressionAttributeValues": {":83340": {"S":"50099"}}
 
 func (quoteDb QuoteDb) GetQuoteByQuoteId(ctx context.Context, quoteId string) (*model.QuoteRequest, error) {
 	res, err := quoteDb.Client.Query(context.Background(), &dynamodb.QueryInput{
@@ -34,6 +32,9 @@ func (quoteDb QuoteDb) GetQuoteByQuoteId(ctx context.Context, quoteId string) (*
 		return nil, err
 	}
 	bidsRequest := &model.QuoteRequest{}
+	if len(res.Items) == 0 {
+		return bidsRequest, nil
+	}
 	err = attributevalue.UnmarshalMap(res.Items[0], bidsRequest)
 	if err != nil {
 		return nil, err
