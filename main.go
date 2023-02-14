@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -87,34 +85,6 @@ func main() {
 			AllowOrigins: []string{"https://firstshipper.com", "https://www.firstshipper.com", "https://menuloom.com", "http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:8787", "https://api.firstshipper.com"},
 			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "auth-guard", echo.HeaderAccessControlAllowHeaders, echo.HeaderAccessControlRequestHeaders},
 		}))
-		e.Router.Static("/static", "assets")
-		e.Router.AddRoute(echo.Route{
-			Method: http.MethodGet,
-			Path:   "/index/*",
-			Handler: func(c echo.Context) error {
-				return c.File("index.html")
-			},
-		})
-
-		e.Router.AddRoute(echo.Route{
-			Method: http.MethodGet,
-			Path:   "/bol/:bookingId",
-			Handler: func(c echo.Context) error {
-				temp, err := template.ParseFiles("bol.html")
-				if err != nil {
-					fmt.Println(err)
-				}
-				fmt.Println(temp)
-				fmt.Println("in get template page")
-				pathParam := c.PathParam("bookingId")
-				ctx := c.Request().Context()
-				bookingData, err := servicesInstance.Db.GetBooking(ctx, pathParam)
-				if err != nil {
-					c.NoContent(http.StatusNotFound)
-				}
-				return temp.Execute(c.Response(), bookingData)
-			},
-		})
 		e.Router.OPTIONS("/*", func(c echo.Context) error {
 			c.Request().Header.Add("Access-Control-Allow-Origin", "*")
 			c.Request().Header.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")

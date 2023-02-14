@@ -6,16 +6,16 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
 	"github.com/go-mail/mail"
 	"github.com/gofor-little/env"
 	"github.com/gofor-little/xerror"
+	"github.com/ramsfords/backend/configs"
 )
 
 // Send loads the attachments, builds the email and sends it.
-func Send(ctx context.Context, data Data) (string, error) {
+func Send(ctx context.Context, data Data, configs *configs.Config) (string, error) {
 	// Check that the package clients have been initialized.
 	if SESClient == nil {
 		return "", xerror.New("SESClient is nil")
@@ -81,7 +81,7 @@ func Send(ctx context.Context, data Data) (string, error) {
 	// Send email.
 	output, err := SESClient.SendRawEmail(ctx, &ses.SendRawEmailInput{
 		Destinations: destinations,
-		FromArn:      aws.String("arn:aws:ses:us-west-1:489071408075:identity/quotes@firstshipper.com"),
+		FromArn:      &configs.AWS.SnsSender,
 		RawMessage: &types.RawMessage{
 			Data: buf.Bytes(),
 		},

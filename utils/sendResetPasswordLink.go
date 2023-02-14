@@ -33,7 +33,7 @@ func SendResetPasswordLinkEventHandler(conf *configs.Config) func(e *core.Mailer
 			ContentType: email.ContentTypeTextHTML,
 			Body:        resetEmailTemplate,
 		}
-		sentRes, err := email.Send(context.Background(), data)
+		sentRes, err := email.Send(context.Background(), data, conf)
 		fmt.Println("email sent res", sentRes)
 		if err != nil {
 			return err

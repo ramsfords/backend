@@ -12,6 +12,7 @@ import (
 	"github.com/ramsfords/backend/api/utils"
 	rapid "github.com/ramsfords/backend/business/rapid/rapid_utils/book"
 	"github.com/ramsfords/backend/configs"
+	"github.com/ramsfords/backend/email"
 	template "github.com/ramsfords/backend/email"
 	books "github.com/ramsfords/backend/foundations/books"
 	errs "github.com/ramsfords/backend/foundations/error"
@@ -113,19 +114,19 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 
 	// hash the user password
 
-	fileName := bid.BidId + "-" + utils.GenerateString(4) + ".pdf"
+	fileName := bid.BidId + "-" + strings.ToLower(utils.GenerateString(4)) + ".pdf"
 	if err != nil {
 		bookingApi.services.Logger.Errorf("Error in created hashed bol %v", err)
 	}
 	bolUrl := "https://firstshipperbol.s3.us-west-1.amazonaws.com/" + fileName
-
+	carrier := utils.GetCarrierContact(disPatchResponse.CarrierName)
 	oldQuote.BookingInfo = &v1.BookingInfo{
 		ShipmentId:            int32(disPatchResponse.ShipmentID),
 		FirstShipperBolNumber: bolNumber,
 		FreightTerm:           1,
 		CarrierName:           disPatchResponse.CarrierName,
-		CarrierPhone:          disPatchResponse.CarrierPhone,
-		CarrierEmail:          "",
+		CarrierPhone:          carrier.Phone,
+		CarrierEmail:          carrier.Email,
 		CarrierProNumber:      disPatchResponse.CarrierProNumber,
 		CarrierLogoUrl:        bid.VendorLogo,
 		CarrierBolNumber:      disPatchResponse.CustomerBOLNumber,
@@ -134,6 +135,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		ServiceType:           serviceType,
 		BolUrl:                bolUrl,
 	}
+
 	url := "https://bwipjs-api.metafloor.com/?bcid=code128&text={poNumber}"
 	url = strings.ReplaceAll(url, "{poNumber}", oldQuote.BookingInfo.CarrierProNumber)
 	oldQuote.BookingInfo.SvgData = url
@@ -157,12 +159,21 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		SvgData:      oldQuote.BookingInfo.SvgData,
 	}
 	emailSubject := "FirstShipper: Booking Confirmation " + "Pickup Number: " + oldQuote.BookingInfo.CarrierProNumber + " " + "BOL Number: " + oldQuote.BookingInfo.FirstShipperBolNumber
+	// case "XPO":
+	// 	return XPO
+	// case "RoadRunner":
+	// 	return RoadRunner
+	// case "ClearLane":
+	// 	return ClearLane
+	// case "R&L":
+
+	bolTemplate := email.GetBookingConfirmationTempalte(outRes)
 	data := template.Data{
 		To:          []string{oldQuote.QuoteRequest.Pickup.Contact.EmailAddress},
 		Subject:     emailSubject,
-		From:        "quotes@firstshipper.com",
+		From:        bookingApi.services.Conf.SitesSettings.FirstShipper.Prod.EmailId,
 		ContentType: "text/html",
-		Body:        "Please find your BOL attached",
+		Body:        bolTemplate,
 		Attachments: []template.Attachment{
 			{
 				Path: "firstshipperbol/" + fileName,
@@ -170,15 +181,15 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 			},
 		},
 	}
-	go func() {
-		fmt.Println("data to send emaill is", data)
-		time.Sleep(5 * time.Second)
-		bolSentRes, err := template.Send(context.Background(), data)
-		if err != nil {
-			bookingApi.services.Logger.Errorf("error sending bol to user ", err, outRes)
-		}
-		bookingApi.services.Logger.Infof("bol sent", bolSentRes, outRes)
-	}()
+	// go func() {
+	fmt.Println("data to send emaill is", data)
+	time.Sleep(10 * time.Second)
+	bolSentRes, err := template.Send(context.Background(), data, bookingApi.services.Conf)
+	if err != nil {
+		bookingApi.services.Logger.Errorf("error sending bol to user ", err, outRes)
+	}
+	bookingApi.services.Logger.Infof("bol sent", bolSentRes, outRes)
+	// }()
 	return outRes, nil
 }
 func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
@@ -190,7 +201,8 @@ func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
 	return nil
 }
 func makeBOlGenGetRequest(conf *configs.Config, fileName string) error {
-	url := "https://firstshipper.com/api/bol?fileName=" + fileName
+	url := conf.GetFirstShipperFontEndURL() + "/api/bol?fileName=" + fileName
+	fmt.Println("calling url to generate bol", url)
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode != http.StatusOK {
 		return err

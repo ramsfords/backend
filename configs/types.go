@@ -96,7 +96,8 @@ type Credentials struct {
 	SecretKey string
 }
 type AWS struct {
-	Credentials
+	Credentials Credentials
+	SnsSender   string
 }
 type Logger struct {
 	OutputPath        string `json:"outputPath,omitempty"`

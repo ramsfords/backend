@@ -37,7 +37,7 @@ func SendConfrimEmailEventHandler(services *services.Services) func(e *core.Mail
 			Body:        templeHtml,
 		}
 		// Send the email.
-		if _, err := template.Send(context.Background(), data); err != nil {
+		if _, err := template.Send(context.Background(), data, services.Conf); err != nil {
 			panic(err)
 		}
 		originData := e.Record.OriginalCopy()
