@@ -33,7 +33,7 @@ func MakeQuoteDetails(quoteRequest *v1.QuoteRequest) (*models.QuoteDetails, erro
 		QuoteDate:                      time.Now().Format("01/02/2006"),
 		OriginShippingDetails: models.OriginShippingDetails{
 			Address: models.Address{
-				// AddressID:  1039341,
+				AddressID:  1039341,
 				PostalCode: quoteRequest.Pickup.Address.ZipCode,
 				CommercialType: &models.CommercialType{
 					AccessorialID: 72,
