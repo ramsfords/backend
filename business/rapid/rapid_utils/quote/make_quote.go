@@ -28,12 +28,12 @@ func MakeQuoteDetails(quoteRequest *v1.QuoteRequest) (*models.QuoteDetails, erro
 		IsAutoEmailTrackingEnabled:     true,
 		IsManualDispatchSettingEnabled: true,
 		IsExistConnectedCarriers:       true,
-		CustomerCarrierID:              1070,
-		TotalWeight:                    totalWeight,
-		QuoteDate:                      time.Now().Format("01/02/2006"),
+		// CustomerCarrierID:              1070,
+		TotalWeight: totalWeight,
+		QuoteDate:   time.Now().Format("01/02/2006"),
 		OriginShippingDetails: models.OriginShippingDetails{
 			Address: models.Address{
-				AddressID:  1039341,
+				// AddressID:  1039341,
 				PostalCode: quoteRequest.Pickup.Address.ZipCode,
 				CommercialType: &models.CommercialType{
 					AccessorialID: 72,

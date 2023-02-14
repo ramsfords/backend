@@ -73,19 +73,18 @@ func FixAddressAccesorial(baseQuoteReq *v1.QuoteRequest, rapidQuote *models.Quot
 			Value:           nil,
 		})
 	}
-	for _, j := range baseQuoteReq.Commodities {
-		if j.CommodityServices.ProtectFromFreeze {
-			pickup_services = append(pickup_services, models.AddressAccessorial{
-				AccessorialID:   30,
-				Name:            "Protect From Freeze",
-				Code:            "PFZ",
-				IsOnlyForCanada: false,
-				IsOnlyForUSA:    false,
-				DataType:        nil,
-				Value:           nil,
-			})
-		}
+	if baseQuoteReq.LocationServices.LiftGatePickup {
+		pickup_services = append(pickup_services, models.AddressAccessorial{
+			AccessorialID:   29,
+			Name:            "Liftgate Pickup",
+			Code:            "LGPU",
+			IsOnlyForCanada: false,
+			IsOnlyForUSA:    false,
+			DataType:        nil,
+			Value:           nil,
+		})
 	}
+
 	rapidQuote.OriginShippingDetails.Address.AddressAccessorials = pickup_services
 	// delivery
 	delivery_services := []models.AddressAccessorial{}
@@ -130,7 +129,7 @@ func FixAddressAccesorial(baseQuoteReq *v1.QuoteRequest, rapidQuote *models.Quot
 	}
 
 	for _, j := range baseQuoteReq.Commodities {
-		if j.CommodityServices.ProtectFromFreeze {
+		if j.CommodityServices.SortAndSegregate {
 			delivery_services = append(delivery_services, models.AddressAccessorial{
 				AccessorialID:   36,
 				Name:            "Sort/Segregate Delivery",
@@ -141,57 +140,18 @@ func FixAddressAccesorial(baseQuoteReq *v1.QuoteRequest, rapidQuote *models.Quot
 		}
 	}
 	rapidQuote.DestinationShippingDetails.Address.AddressAccessorials = delivery_services
-	// [
-	// {
-	//     "accessorialId": 32,
-	//     "name": "Notify Before Delivery",
-	//     "code": null,
-	//     "destinationCode": "NOTIFY",
-	//     "isOnlyForCanada": false,
-	//     "isOnlyForUSA": false,
-	//     "dataType": null,
-	//     "value": null
-	// },
-	// {
-	//     "accessorialId": 35,
-	//     "name": "Liftgate Delivery",
-	//     "code": null,
-	//     "destinationCode": "LGDEL",
-	//     "isOnlyForCanada": false,
-	//     "isOnlyForUSA": false,
-	//     "dataType": null,
-	//     "value": null
-	// },
-	// {
-	//     "accessorialId": 36,
-	//     "name": "Sort/Segregate Delivery",
-	//     "code": null,
-	//     "destinationCode": "SORTDEL",
-	//     "isOnlyForCanada": false,
-	//     "isOnlyForUSA": false,
-	//     "dataType": null,
-	//     "value": null
-	// },
-	// {
-	//     "accessorialId": 38,
-	//     "name": "Inside Delivery",
-	//     "code": null,
-	//     "destinationCode": "INDEL",
-	//     "isOnlyForCanada": false,
-	//     "isOnlyForUSA": false,
-	//     "dataType": null,
-	//     "value": null
-	// },
-	// {
-	//     "accessorialId": 120,
-	//     "name": "Delivery Appointment",
-	//     "code": null,
-	//     "destinationCode": "APPTDEL",
-	//     "isOnlyForCanada": false,
-	//     "isOnlyForUSA": false,
-	//     "dataType": 0,
-	//     "value": null
-	// }
-	// ]
+	for _, j := range baseQuoteReq.Commodities {
+		if j.CommodityServices.ProtectFromFreeze {
+			pickup_services = append(pickup_services, models.AddressAccessorial{
+				AccessorialID:   30,
+				Name:            "Protect From Freeze",
+				Code:            "PFZ",
+				IsOnlyForCanada: false,
+				IsOnlyForUSA:    false,
+				DataType:        nil,
+				Value:           nil,
+			})
+		}
+	}
 
 }

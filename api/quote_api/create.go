@@ -40,21 +40,18 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 	if err != nil {
 		return nil, errs.ErrInvalidInputs
 	}
-
 	// get quote from rapid
 	res, err := qt.services.Rapid.GetQuote(rapidQuoteRequest)
 	if err != nil {
 		qt.services.Logger.Error(err)
 		return nil, errs.ErrInternal
 	}
-
 	saveQuote := rapid.SaveQuoteStep2(rapidQuoteRequest, res)
 	saveQuoteRes, err := qt.services.Rapid.SaveQuoteStep(saveQuote)
 	if err != nil {
 		// just log the error not Need to return error
 		qt.services.Logger.Error(err)
 	}
-
 	bidRes := rapid.MakeBid(qtReq, res.DayDeliveries, qt.Mutex)
 	if bidRes == nil {
 		return nil, errs.ErrInternal
