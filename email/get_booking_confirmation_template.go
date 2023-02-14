@@ -8,7 +8,7 @@ import (
 )
 
 func GetBookingConfirmationTempalte(bookingRes *v1.BookingResponse) string {
-	template := strings.ReplaceAll("bookingConfirmationEmailTemplate", "{DOWNLOADBOL_URL}", bookingRes.BookingInfo.BolUrl)
+	template := strings.ReplaceAll(bookingConfirmationEmailTemplate, "{DOWNLOADBOL_URL}", bookingRes.BookingInfo.BolUrl)
 	template = strings.ReplaceAll(template, "{SHIPMENT_PONUMBER}", bookingRes.BookingInfo.CarrierProNumber)
 	template = strings.ReplaceAll(template, "{FIRSTSHIPPER_BOL_NUMBER}", bookingRes.BookingInfo.FirstShipperBolNumber)
 	template = strings.ReplaceAll(template, "{SHIPMENT_WEIGHT}", floatToString(bookingRes.QuoteRequest.TotalWeight))
