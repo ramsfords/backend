@@ -18,4 +18,4 @@ run:
 makezod:
 	ts-to-zod  ../web/src/types/user/v1.ts ../web/src/types/user/userZod.ts
 awslogin:
-	ssh -i ~/.aws/firstshipper-ssh.pem  ec2-user@ec2-54-183-123-55.us-west-1.compute.amazonaws.com
+	ssh -i ~/.aws/firstshipper-ssh.pem ec2-user@ec2-54-183-231-184.us-west-1.compute.amazonaws.com
