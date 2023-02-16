@@ -1,18 +1,19 @@
 package configs
 
 type Config struct {
-	Env           string        `json:"env"`
-	SitesSettings SitesSettings `json:"siteSettings"`
-	NewRelic      NewRelic      `json:"newRelic"`
-	Server        Server        `json:"server"`
-	AWS           AWS           `json:"aws"`
-	Logger        Logger        `json:"logger"`
-	SendInBlue    SendInBlue    `json:"sendInBlue"`
-	Zipkin        Zipkin        `json:"zipkin"`
-	Scylladb      Scylladb      `json:"scylladb"`
-	PdfRenderer   PdfRenderer   `json:"pdfRender"`
-	Initiated     bool          `json:"initiated"`
-	Zoho          Zoho          `json:"zoho"`
+	Env              string           `json:"env"`
+	SitesSettings    SitesSettings    `json:"siteSettings"`
+	NewRelic         NewRelic         `json:"newRelic"`
+	Server           Server           `json:"server"`
+	AWS              AWS              `json:"aws"`
+	Logger           Logger           `json:"logger"`
+	SendInBlue       SendInBlue       `json:"sendInBlue"`
+	Zipkin           Zipkin           `json:"zipkin"`
+	Scylladb         Scylladb         `json:"scylladb"`
+	PdfRenderer      PdfRenderer      `json:"pdfRender"`
+	Initiated        bool             `json:"initiated"`
+	Zoho             Zoho             `json:"zoho"`
+	CloudFlareConfig CloudFlareConfig `json:"cloudinaryConfig,omitempty"`
 }
 type Zoho struct {
 	ZohoCode         string `json:"code"`
@@ -25,8 +26,7 @@ type Menuloom struct {
 	Prod             SiteSetting      `json:"prod"`
 	DynamoDb         DynamoDb         `json:"dynamodb"`
 	Email            Email            `json:"email"`
-	CloudFlareConfig CloudFlareConfig `json:"cloudflare"`
-	CloudinaryConfig CloudinaryConfig `json:"cloudinary_config,omitempty"`
+	CloudinaryConfig CloudinaryConfig `json:"cloudinaryConfig,omitempty"`
 }
 type FirstShipper struct {
 	Dev              SiteSetting      `json:"dev"`
@@ -35,8 +35,7 @@ type FirstShipper struct {
 	EmailConf        EmailConf        `json:"email"`
 	RapidShipLTL     RapidShipLTL     `json:"rapidShipLtl"`
 	Schneider        RapidShipLTL     `json:"schneider"`
-	CloudFlareConfig CloudFlareConfig `json:"cloudflare"`
-	CloudinaryConfig CloudinaryConfig `json:"cloudinary_config,omitempty"`
+	CloudinaryConfig CloudinaryConfig `json:"cloudinaryConfig,omitempty"`
 }
 type EmailConf struct {
 	SenderName   string
@@ -95,9 +94,22 @@ type Credentials struct {
 	ApiKey    string
 	SecretKey string
 }
+type AwsConfig struct {
+	Credentials         Credentials
+	SnsSender           string
+	CognitoRegion       string
+	CognitoUserPoolID   string
+	CognitoClientID     string
+	CognitoClientSecret string
+	BaseAuthorization   string
+	CognitoRedirectUri  string
+	CognitoUrl          string
+	JWKUrl              string
+	LoginUrl            string
+}
 type AWS struct {
-	Credentials Credentials
-	SnsSender   string
+	Dev  AwsConfig
+	Prod AwsConfig
 }
 type Logger struct {
 	OutputPath        string `json:"outputPath,omitempty"`
@@ -146,8 +158,9 @@ type RapidShipLTL struct {
 	CancelShipmentUrl string `json:"cancelShipmentUrl,omitempty"`
 }
 type CloudFlareConfig struct {
-	ApiKey      string `json:"apikey,omitempty"`
+	ApiKey      string `json:"apiKey,omitempty"`
 	Email       string `json:"email,omitempty"`
 	AccountId   string `json:"accountId,omitempty"`
-	NamespaceID string `json:"namespaceId,omitempty"`
+	NamespaceId string `json:"namespaceId,omitempty"`
+	ZoneId      string `json:"zoneId,omitempty"`
 }

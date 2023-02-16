@@ -43,8 +43,8 @@ func init() {
 
 func (conf *Config) Retrieve(ctx context.Context) (aws.Credentials, error) {
 	return aws.Credentials{
-		AccessKeyID:     conf.AWS.Credentials.ApiKey,
-		SecretAccessKey: conf.AWS.Credentials.SecretKey,
+		AccessKeyID:     conf.AWS.Prod.Credentials.ApiKey,
+		SecretAccessKey: conf.AWS.Prod.Credentials.SecretKey,
 	}, nil
 }
 
@@ -111,4 +111,10 @@ func (config *Config) GetMenuloomServiceName() string {
 }
 func (config *Config) GetFirstShipperServiceName() string {
 	return "firstshipper"
+}
+func (config *Config) GetAwsConfig() AwsConfig {
+	if config.Env == "dev" {
+		return config.AWS.Dev
+	}
+	return config.AWS.Prod
 }

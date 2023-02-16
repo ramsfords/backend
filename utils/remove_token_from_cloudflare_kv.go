@@ -9,8 +9,8 @@ import (
 )
 
 func RemoveTokenFormCloudflareKv(conf *configs.Config, logger logger.Logger, cloudFlareCli *cloudflare.API, tokenKey string) error {
-	res, err := cloudFlareCli.DeleteWorkersKVEntry(context.Background(), cloudflare.AccountIdentifier(conf.SitesSettings.Menuloom.CloudFlareConfig.AccountId), cloudflare.DeleteWorkersKVEntryParams{
-		NamespaceID: conf.SitesSettings.Menuloom.CloudFlareConfig.NamespaceID,
+	res, err := cloudFlareCli.DeleteWorkersKVEntry(context.Background(), cloudflare.AccountIdentifier(conf.CloudFlareConfig.AccountId), cloudflare.DeleteWorkersKVEntryParams{
+		NamespaceID: conf.CloudFlareConfig.NamespaceId,
 		Key:         tokenKey,
 	})
 	if err != nil {

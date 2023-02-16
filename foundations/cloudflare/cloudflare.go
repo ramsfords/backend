@@ -7,10 +7,22 @@ import (
 	"github.com/ramsfords/backend/configs"
 )
 
-func New(conf configs.CloudFlareConfig) *cloudflare.API {
+type Cloudflare struct {
+	*cloudflare.API
+	AccountId   string
+	NamespaceID string
+}
+
+func New(conf configs.CloudFlareConfig) *Cloudflare {
 	api, err := cloudflare.New(conf.ApiKey, conf.Email)
 	if err != nil {
 		panic(fmt.Sprintf("error in cloudflare: %v", err))
 	}
-	return api
+	cloudFlare := &Cloudflare{
+		API:         api,
+		AccountId:   conf.AccountId,
+		NamespaceID: conf.NamespaceId,
+	}
+
+	return cloudFlare
 }

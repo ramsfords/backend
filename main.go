@@ -3,25 +3,16 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
-	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/plugins/jsvm"
-	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/ramsfords/backend/api"
 	"github.com/ramsfords/backend/business/rapid/models"
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/services"
-	"github.com/ramsfords/backend/utils"
 )
 
-func Runner(services *services.Services, echoRouter *echo.Echo, app *pocketbase.PocketBase) {
-
+func Runner(services *services.Services, echoRouter *echo.Echo) {
 	go func() error {
 		err := services.Rapid.Login(&models.AuthRequestPayload{
 			Username: services.Conf.SitesSettings.FirstShipper.RapidShipLTL.UserName,
@@ -33,81 +24,104 @@ func Runner(services *services.Services, echoRouter *echo.Echo, app *pocketbase.
 		return nil
 	}()
 
-	api.SetUpAPi(echoRouter, services)
 	// OR send a completely different email template
-	app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(services))
-	// OR send a completely different email template
-	app.OnMailerBeforeRecordResetPasswordSend().Add(utils.SendResetPasswordLinkEventHandler(services.Conf))
+	// app.OnMailerBeforeRecordVerificationSend().Add(utils.SendConfrimEmailEventHandler(services))
+	// // OR send a completely different email template
+	// app.OnMailerBeforeRecordResetPasswordSend().Add(utils.SendResetPasswordLinkEventHandler(services.Conf))
 	// this sets auth token to cloudflare KV on every login
 
 }
 
-func defaultPublicDir() string {
-	if strings.HasPrefix(os.Args[0], os.TempDir()) {
-		// most likely ran with go run
-		return "./pb_public"
-	}
-	return filepath.Join(os.Args[0], "../pb_public")
-}
-
 func main() {
 	conf := configs.GetConfig()
-	// s3 := S3.New(conf)
-	// dynamodDb := dynamo.New(conf)
-	// logger := logger.New("backend")
 	servicesInstance := services.New(conf)
-	app := pocketbase.New()
-	var publicDirFlag string
+	// app := pocketbase.New()
+	// app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+	// 	// grp.Use(apis.RequireAdminOrRecordAuth())
+	// 	e.Router.GET("/ping", func(ctx echo.Context) error {
+	// 		return ctx.JSON(200, echo.Map{
+	// 			"message": "pong",
+	// 			"status":  "ok",
+	// 			"code":    200,
+	// 		})
+	// 	})
+	// 	e.Router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	// 		AllowOrigins: []string{"https://localhost:3000", "https://firstshipper.com", "https://www.firstshipper.com", "https://menuloom.com", "https://localhost:3001", "https://127.0.0.1:3000", "https://127.0.0.1:8787", "https://api.firstshipper.com"},
+	// 		AllowHeaders: []string{
+	// 			echo.HeaderOrigin,
+	// 			echo.HeaderContentType,
+	// 			echo.HeaderAccept,
+	// 			echo.HeaderAuthorization,
+	// 			"first-access-token",
+	// 			"first-refresh-token",
+	// 			echo.HeaderAccessControlAllowHeaders,
+	// 			echo.HeaderAccessControlRequestHeaders,
+	// 			echo.HeaderAccessControlAllowOrigin,
+	// 			echo.HeaderAccessControlAllowCredentials,
+	// 		},
+	// 		AllowMethods: []string{
+	// 			http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions, http.MethodHead, http.MethodPatch},
+	// 		AllowCredentials: true,
+	// 	}))
+	// 	// e.Router.OPTIONS("/*", func(c echo.Context) error {
+	// 	// 	orgin := c.Request().Header.Get("Origin")
+	// 	// 	fmt.Println(orgin)
+	// 	// 	c.Request().Header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	// 	// 	c.Request().Header.Set("Access-Control-Allow-Credentials", "true")
+	// 	// 	c.Request().Header.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	// 	// 	c.Request().Header.Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+	// 	// 	return c.NoContent(http.StatusOK)
+	// 	// })
 
-	// add "--publicDir" option flag
-	app.RootCmd.PersistentFlags().StringVar(
-		&publicDirFlag,
-		"publicDir",
-		defaultPublicDir(),
-		"the directory to serve static files",
-	)
-	migrationsDir := "" // default to "pb_migrations" (for js) and "migrations" (for go)
+	//
+	// 	return nil
 
-	// load js files to allow loading external JavaScript migrations
-	jsvm.MustRegisterMigrations(app, &jsvm.MigrationsOptions{
-		Dir: migrationsDir,
-	})
+	// })
+	echos := echo.New()
 
-	// register the `migrate` command
-	migratecmd.MustRegister(app, app.RootCmd, &migratecmd.Options{
-		TemplateLang: migratecmd.TemplateLangJS, // or migratecmd.TemplateLangGo (default)
-		Dir:          migrationsDir,
-		Automigrate:  true,
-	})
-
-	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins: []string{"https://firstshipper.com", "https://www.firstshipper.com", "https://menuloom.com", "http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:8787", "https://api.firstshipper.com"},
-			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "auth-guard", echo.HeaderAccessControlAllowHeaders, echo.HeaderAccessControlRequestHeaders},
-		}))
-		e.Router.OPTIONS("/*", func(c echo.Context) error {
-			c.Request().Header.Add("Access-Control-Allow-Origin", "*")
-			c.Request().Header.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-			c.Request().Header.Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-			return c.NoContent(http.StatusOK)
+	echos.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3000", "http://127.0.0.1:3000", "https://localhost:3000", "https://firstshipper.com", "https://www.firstshipper.com", "https://menuloom.com", "https://localhost:3001", "https://127.0.0.1:3000", "https://127.0.0.1:8787", "https://api.firstshipper.com"},
+		AllowHeaders: []string{
+			echo.HeaderOrigin,
+			echo.HeaderContentType,
+			echo.HeaderAccept,
+			echo.HeaderAuthorization,
+			"first-access-token",
+			"first-refresh-token",
+			echo.HeaderAccessControlAllowHeaders,
+			echo.HeaderAccessControlRequestHeaders,
+			echo.HeaderAccessControlAllowOrigin,
+			echo.HeaderAccessControlAllowCredentials,
+		},
+		AllowMethods: []string{
+			http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions, http.MethodHead, http.MethodPatch},
+		AllowCredentials: true,
+	}))
+	echos.GET("/ping", func(ctx echo.Context) error {
+		return ctx.JSON(200, echo.Map{
+			"message": "pong",
+			"status":  "ok",
+			"code":    200,
 		})
-
-		Runner(servicesInstance, e.Router, app)
-		// serves static files from the provided public dir (if exists)
-		e.Router.AddRoute(echo.Route{
-			Method: http.MethodGet,
-			Path:   "/api/ping",
-			Handler: func(c echo.Context) error {
-				obj := map[string]interface{}{"message": "pong"}
-				return c.JSON(http.StatusOK, obj)
-			},
-		})
-
-		return nil
-
 	})
-
-	if err := app.Start(); err != nil {
+	api.SetUpAPi(echos, servicesInstance)
+	if err := echos.Start(":8090"); err != nil {
 		log.Fatal(err)
 	}
 }
+
+// func Process(next echo.HandlerFunc) echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		c.Request().Header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
+// 		c.Request().Header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
+// 		c.Request().Header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
+// 		c.Request().Header.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+// 		c.Request().Header.Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+// 		if err := next(c); err != nil {
+// 			fmt.Println(err)
+// 		}
+// 		status := strconv.Itoa(c.Response().Status)
+// 		fmt.Println(status)
+// 		return nil
+// 	}
+// }

@@ -5,8 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/pocketbase/pocketbase/apis"
-	"github.com/pocketbase/pocketbase/models"
+
 	"github.com/ramsfords/backend/business/core/model"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -23,11 +22,6 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 	}
 	email := ctx.QueryParam("email")
 
-	user, _ := ctx.Get(apis.ContextAuthRecordKey).(*models.Record)
-
-	if user == nil && email != "kandelsuren@gmail.com" {
-		return ctx.NoContent(http.StatusBadRequest)
-	}
 	// emails := user.GetString("email")
 	// fmt.Println(email, emails)
 	data, err := business.services.Db.GetAllDataByBusinessId(ctx.Request().Context(), businessID)

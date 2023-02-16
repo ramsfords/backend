@@ -81,7 +81,7 @@ func Send(ctx context.Context, data Data, configs *configs.Config) (string, erro
 	// Send email.
 	output, err := SESClient.SendRawEmail(ctx, &ses.SendRawEmailInput{
 		Destinations: destinations,
-		FromArn:      &configs.AWS.SnsSender,
+		FromArn:      &configs.AWS.Prod.SnsSender,
 		RawMessage: &types.RawMessage{
 			Data: buf.Bytes(),
 		},
