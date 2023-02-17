@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -59,13 +60,13 @@ func (auth Auth) EchoLogin(ctx echo.Context) error {
 }
 func (auth Auth) ExchageAuthCodeForToken(code string) (Token, error) {
 	client := &http.Client{}
-	encodedBody := fmt.Sprintf("code=%s&grant_type=authorization_code&redirect_uri=%s", code, auth.redirectUrl)
+	encodedBody := fmt.Sprintf("code=%s&grant_type=authorization_code&redirect_uri=%s", code, auth.services.CognitoClient.RedirectUrl)
 	var data = strings.NewReader(encodedBody)
-	req, err := http.NewRequest("POST", auth.authUrl+"/oauth2/token", data)
+	req, err := http.NewRequest("POST", auth.services.CognitoClient.AuthUrl+"/oauth2/token", data)
 	if err != nil {
 		return Token{}, err
 	}
-	req.Header.Set("Authorization", "Basic "+auth.baseAuth)
+	req.Header.Set("Authorization", "Basic "+auth.services.CognitoClient.BaseAuth)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := client.Do(req)
 	if err != nil {
@@ -86,13 +87,13 @@ func (auth Auth) ExchageAuthCodeForToken(code string) (Token, error) {
 }
 func (auth Auth) ExchageRefreshTokenForToken(ctx echo.Context, refreshToken string) error {
 	client := &http.Client{}
-	encodedBody := fmt.Sprintf("refresh_token=%s&grant_type=refresh_token&client_id=%s", refreshToken, auth.cognitoClientID)
+	encodedBody := fmt.Sprintf("refresh_token=%s&grant_type=refresh_token&client_id=%s", refreshToken, auth.services.CognitoClient.CognitoClientID)
 	var data = strings.NewReader(encodedBody)
-	req, err := http.NewRequest("POST", auth.authUrl+"/oauth2/token", data)
+	req, err := http.NewRequest("POST", auth.services.CognitoClient.AuthUrl+"/oauth2/token", data)
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Authorization", "Basic "+auth.baseAuth)
+	req.Header.Set("Authorization", "Basic "+auth.services.CognitoClient.BaseAuth)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := client.Do(req)
 	if err != nil {
@@ -119,29 +120,8 @@ func writeCookie(ctx echo.Context, token Token, auth Auth) error {
 		secure = true
 		url = "https://firstshipper.com"
 	}
-	// access token
-	cookie := new(http.Cookie)
-	cookie.Name = "firstAccessToken"
-	cookie.Value = token.AccessToken
-	cookie.Path = "/"
-	cookie.Domain = url
-	cookie.Secure = secure
-	cookie.Expires = time.Now().Add(60 * time.Minute)
-	fmt.Println("token is ", token.AccessToken)
-	ctx.SetCookie(cookie)
-	// refresh token
-	cookieRefresh := new(http.Cookie)
-	cookieRefresh.Name = "firstRefreshToken"
-	cookieRefresh.Value = token.RefreshToken
-	cookieRefresh.Path = "/"
-	cookie.Domain = url
-	cookie.Secure = secure
-	cookieRefresh.Expires = time.Now().Add(24 * time.Hour * 30)
-	ctx.SetCookie(cookieRefresh)
-	auth.services.CloudFlare.AddTokenToCloudFlareKV(token.AccessToken, token.RefreshToken)
-	// cookie = new(http.Cookie)
 	time.Sleep(1 * time.Second)
-	tokens, err := auth.cognitoClient.Validate(ctx.Request().Context(), token.IdToken)
+	tokens, err := auth.services.CognitoClient.Validate(ctx.Request().Context(), token.IdToken)
 	if err != nil {
 		return err
 	}
@@ -165,5 +145,19 @@ func writeCookie(ctx echo.Context, token Token, auth Auth) error {
 		return ctx.JSON(http.StatusOK, map[string]string{"loggedUser": ""})
 	}
 
+	tokenStr, err := json.Marshal(tokenResponse)
+	if err != nil {
+		return err
+	}
+	baseAuth := base64.RawStdEncoding.EncodeToString(tokenStr)
+	cookie := new(http.Cookie)
+	cookie.Name = "firstAuth"
+	cookie.Value = baseAuth
+	cookie.Path = "/"
+	cookie.Domain = url
+	cookie.Secure = secure
+	cookie.Expires = time.Now().Add(60 * time.Minute)
+	ctx.SetCookie(cookie)
+	auth.services.CloudFlare.AddTokenToCloudFlareKV(token.AccessToken, token.RefreshToken)
 	return ctx.JSON(http.StatusOK, tokenResponse)
 }

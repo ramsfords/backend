@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/foundations/mid"
 	"github.com/ramsfords/backend/services"
 )
 
@@ -22,10 +23,10 @@ func (user UserApi) EchoLogout(ctx echo.Context) error {
 	return ctx.NoContent(http.StatusOK)
 }
 
-func New(services *services.Services, echo *echo.Echo) {
+func New(services *services.Services, echo *echo.Group) {
 	userApi := UserApi{
 		services: services,
 	}
-	grp := echo.Group("/user")
+	grp := echo.Group("/user", mid.Protected(services))
 	grp.POST("/logout", userApi.EchoLogout)
 }

@@ -13,13 +13,15 @@ import (
 	"github.com/ramsfords/backend/services"
 )
 
-func SetUpAPi(firstShipperGrp *echo.Echo, services *services.Services) {
-	bol_api.New(services, firstShipperGrp)
-	location_api.New(services, firstShipperGrp)
-	quote_api.New(services, firstShipperGrp)
-	tracking_api.New(services, firstShipperGrp)
-	user_api.New(services, firstShipperGrp)
-	business_api.New(services, firstShipperGrp)
-	booking_api.New(services, firstShipperGrp)
-	auth.New(services, firstShipperGrp)
+func SetUpAPi(engine *echo.Echo, services *services.Services) {
+	api := engine.Group("/api")
+	auth.New(services, api)
+	bol_api.New(services, api)
+	location_api.New(services, api)
+	quote_api.New(services, api)
+	tracking_api.New(services, api)
+	user_api.New(services, api)
+	business_api.New(services, api)
+	booking_api.New(services, api)
+
 }

@@ -2,6 +2,7 @@ package cognito
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"log"
@@ -14,9 +15,18 @@ import (
 )
 
 type CognitoClient struct {
-	Conf   configs.AwsConfig
-	Client *cip.Client
-	Key    jwk.Set
+	Conf                configs.AwsConfig
+	Client              *cip.Client
+	Key                 jwk.Set
+	JwkURL              string
+	CognitoRegion       string
+	CognitoUserPoolID   string
+	CognitoClientSecret string
+	CognitoClientID     string
+	LoginUrl            string
+	RedirectUrl         string
+	BaseAuth            string
+	AuthUrl             string
 }
 type ConfirmEmailData struct {
 	ClientId         string `json:"client_id"`
@@ -37,18 +47,28 @@ func GetCognitoClient(conf *configs.Config) (CognitoClient, error) {
 	return cc, nil
 }
 
-func NewClient(conf *configs.Config) (CognitoClient, error) {
-	ct := CognitoClient{}
-	awsConf := configs.GetConfig().GetAwsConfig()
-	ct.Conf = awsConf
+func NewClient(conf *configs.Config) (*CognitoClient, error) {
+	awsConf := conf.GetAwsConfig()
+	baseAuth := base64.RawStdEncoding.EncodeToString([]byte(awsConf.CognitoClientID + ":" + awsConf.CognitoClientSecret))
+	ct := &CognitoClient{
+		Conf:                awsConf,
+		BaseAuth:            baseAuth,
+		CognitoRegion:       awsConf.CognitoRegion,
+		CognitoUserPoolID:   awsConf.CognitoUserPoolID,
+		CognitoClientSecret: awsConf.CognitoClientSecret,
+		CognitoClientID:     awsConf.CognitoClientID,
+		RedirectUrl:         awsConf.CognitoRedirectUri,
+		AuthUrl:             awsConf.CognitoUrl,
+		JwkURL:              awsConf.JWKUrl,
+		LoginUrl:            awsConf.LoginUrl,
+	}
 	ct.Key = ct.FetchKeySet(context.Background())
 	confs := aws.Config{
 		Region:           conf.GetAwsConfig().CognitoRegion,
 		Credentials:      conf,
 		RetryMaxAttempts: 10,
 	}
-	cipCLient := cip.NewFromConfig(confs)
-	ct.Client = cipCLient
+	ct.Client = cip.NewFromConfig(confs)
 	return ct, nil
 }
 
@@ -70,7 +90,7 @@ func (cc *CognitoClient) Validate(ctx context.Context, tokenStr string) (jwt.Tok
 		_, ok := token.Method.(*jwt.SigningMethodRSA)
 
 		if !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
 		// Get "kid" value from token header

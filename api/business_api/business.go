@@ -9,6 +9,7 @@ import (
 	"github.com/ramsfords/backend/services"
 
 	errs "github.com/ramsfords/backend/foundations/error"
+	"github.com/ramsfords/backend/foundations/mid"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -16,11 +17,11 @@ type Business struct {
 	services *services.Services
 }
 
-func New(services *services.Services, app *echo.Echo) Business {
+func New(services *services.Services, app *echo.Group) Business {
 	bis := Business{
 		services: services,
 	}
-	businessGrp := app.Group("/business")
+	businessGrp := app.Group("/business", mid.Protected(services))
 	businessGrp.GET("", bis.GinGetAllBusinesses)
 	businessGrp.GET("/:id", bis.GinGetAllBusiness)
 	businessGrp.POST("", bis.GinCreateBusiness)

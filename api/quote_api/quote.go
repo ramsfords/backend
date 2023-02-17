@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/foundations/mid"
 	"github.com/ramsfords/backend/services"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -19,13 +20,13 @@ type Quote struct {
 	*sync.Mutex
 }
 
-func New(services *services.Services, echo *echo.Echo) {
+func New(services *services.Services, echo *echo.Group) {
 	qt := Quote{
 		services: services,
 		Mutex:    &sync.Mutex{},
 	}
 	// quote api
-	protectedQuoteGroup := echo.Group("/quote")
+	protectedQuoteGroup := echo.Group("/quote", mid.Protected(services))
 
 	//GET
 	protectedQuoteGroup.GET("/quotes", qt.EchoGetAllQuotes)

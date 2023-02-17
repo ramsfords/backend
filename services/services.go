@@ -9,19 +9,21 @@ import (
 	"github.com/ramsfords/backend/foundations/auth"
 	"github.com/ramsfords/backend/foundations/cloudflare"
 	"github.com/ramsfords/backend/foundations/cloudinery"
+	"github.com/ramsfords/backend/foundations/cognito"
 	"github.com/ramsfords/backend/foundations/logger"
 	"go.uber.org/zap"
 )
 
 type Services struct {
-	Conf       *configs.Config
-	S3Client   S3.S3Client
-	Logger     logger.Logger
-	Cloudinery *cloudinery.Cloudinery
-	CloudFlare *cloudflare.Cloudflare
-	Rapid      *rapid.Rapid
-	Zoho       *auth.Zoho
-	Db         db.DB
+	Conf          *configs.Config
+	S3Client      S3.S3Client
+	Logger        logger.Logger
+	Cloudinery    *cloudinery.Cloudinery
+	CloudFlare    *cloudflare.Cloudflare
+	CognitoClient *cognito.CognitoClient
+	Rapid         *rapid.Rapid
+	Zoho          *auth.Zoho
+	Db            db.DB
 }
 
 func New(conf *configs.Config) *Services {
@@ -31,6 +33,10 @@ func New(conf *configs.Config) *Services {
 	db := db.New(conf)
 	cloudinery := cloudinery.New(conf.SitesSettings.FirstShipper.CloudinaryConfig)
 	cloudflar := cloudflare.New(conf.CloudFlareConfig)
+	cogClient, err := cognito.NewClient(conf)
+	if err != nil {
+		logger.Fatal(err)
+	}
 	// zohoClient := auth.New(conf)
 	// if err := zohoClient.GenerateTokenRequest(conf.Zoho.ZohoClientId, conf.Zoho.ZohoClientSecret, conf.Zoho.ZohoCode, "https://api.firstshipper.Com"); err != nil {
 	// 	log.Fatal(err)
@@ -38,14 +44,15 @@ func New(conf *configs.Config) *Services {
 	// fmt.Println("access Token \n", zohoClient.Oauth.Token.AccessToken)
 	rapid := rapid.New()
 	newService := &Services{
-		Conf:       conf,
-		S3Client:   S3Client,
-		Logger:     logger,
-		Cloudinery: cloudinery,
-		CloudFlare: cloudflar,
-		Db:         db,
-		Zoho:       &auth.Zoho{},
-		Rapid:      rapid,
+		Conf:          conf,
+		S3Client:      S3Client,
+		Logger:        logger,
+		Cloudinery:    cloudinery,
+		CloudFlare:    cloudflar,
+		CognitoClient: cogClient,
+		Db:            db,
+		Zoho:          &auth.Zoho{},
+		Rapid:         rapid,
 	}
 	return newService
 }
