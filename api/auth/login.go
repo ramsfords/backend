@@ -29,31 +29,11 @@ func (auth Auth) EchoLogin(ctx echo.Context) error {
 	code := ctx.QueryParam("code")
 	tkn := Token{}
 	if code == "" || code == "null" {
-		_, err := ctx.Cookie("firstAccessToken")
-		if err != nil {
-			// get refresh token
-			_, tokenErr := ctx.Cookie("firstAccessToken")
-			refreshToken, refreshErr := ctx.Cookie("firstRefreshToken")
-			if refreshErr != nil && tokenErr != nil {
-				return ctx.NoContent(http.StatusUnauthorized)
-			}
-			return auth.ExchageRefreshTokenForToken(ctx, refreshToken.Value)
-		}
-		// get cookie name firstRefreshToken
-		if _, err := ctx.Cookie("firstRefreshToken"); err == nil {
-			// cookie exists
-			refreshToken, refreshErr := ctx.Cookie("firstRefreshToken")
-			if refreshErr != nil {
-				return ctx.NoContent(http.StatusUnauthorized)
-			}
-			return auth.ExchageRefreshTokenForToken(ctx, refreshToken.Value)
-		}
-	} else {
-		var err error
-		tkn, err = auth.ExchageAuthCodeForToken(code)
-		if err != nil || tkn.AccessToken == "" {
-			return ctx.NoContent(http.StatusUnauthorized)
-		}
+		return ctx.NoContent(http.StatusUnauthorized)
+	}
+	tkn, err := auth.ExchageAuthCodeForToken(code)
+	if err != nil || tkn.AccessToken == "" {
+		return ctx.NoContent(http.StatusUnauthorized)
 	}
 	return writeCookie(ctx, tkn, auth)
 
@@ -85,34 +65,7 @@ func (auth Auth) ExchageAuthCodeForToken(code string) (Token, error) {
 	}
 	return *tkn, nil
 }
-func (auth Auth) ExchageRefreshTokenForToken(ctx echo.Context, refreshToken string) error {
-	client := &http.Client{}
-	encodedBody := fmt.Sprintf("refresh_token=%s&grant_type=refresh_token&client_id=%s", refreshToken, auth.services.CognitoClient.CognitoClientID)
-	var data = strings.NewReader(encodedBody)
-	req, err := http.NewRequest("POST", auth.services.CognitoClient.AuthUrl+"/oauth2/token", data)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Authorization", "Basic "+auth.services.CognitoClient.BaseAuth)
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	bodyText, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	fmt.Print(string(bodyText))
-	tkn := &Token{}
-	err = json.Unmarshal(bodyText, tkn)
-	if err != nil {
-		return err
-	}
-	tkn.RefreshToken = refreshToken
-	return writeCookie(ctx, *tkn, auth)
-}
+
 func writeCookie(ctx echo.Context, token Token, auth Auth) error {
 	secure := false
 	url := "127.0.0.1"

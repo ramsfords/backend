@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/api/auth"
 	"github.com/ramsfords/backend/services"
@@ -36,22 +37,17 @@ func Protected(services *services.Services) echo.MiddlewareFunc {
 			if token.Token.AccessToken == "" && token.Token.RefreshToken == "" {
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
+			var tkn jwt.Token
 			if token.Token.AccessToken != "" {
-				tkn, err := services.CognitoClient.Validate(ctx.Request().Context(), token.Token.AccessToken)
+				tkn, err = services.CognitoClient.Validate(ctx.Request().Context(), token.Token.AccessToken)
 				if tkn.Valid && err == nil {
 					letGo = true
-				} else if token.Token.RefreshToken != "" {
+				} else if token.Token.RefreshToken != "" && !tkn.Valid {
 					err := ExchageRefreshTokenForToken(ctx, token.Token.RefreshToken, services)
 					if err != nil {
 						return ctx.NoContent(http.StatusUnauthorized)
 					}
 					letGo = true
-				}
-				letGo = true
-			} else if token.Token.RefreshToken != "" {
-				err := ExchageRefreshTokenForToken(ctx, token.Token.RefreshToken, services)
-				if err != nil {
-					return ctx.NoContent(http.StatusUnauthorized)
 				}
 			}
 			if !letGo {
