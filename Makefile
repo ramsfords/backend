@@ -7,7 +7,7 @@ prod:
 	go mod tidy
 	go mod vendor
 	go build main.go
-	screen ./main serve --http="0.0.0.0:8090"
+	screen ./main 
 local:
 	git add .
 	git commit -m "update"
