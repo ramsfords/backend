@@ -42,10 +42,17 @@ func init() {
 }
 
 func (conf *Config) Retrieve(ctx context.Context) (aws.Credentials, error) {
+	if conf.Env == "dev" {
+		return aws.Credentials{
+			AccessKeyID:     conf.AWS.Prod.Credentials.ApiKey,
+			SecretAccessKey: conf.AWS.Prod.Credentials.SecretKey,
+		}, nil
+	}
 	return aws.Credentials{
 		AccessKeyID:     conf.AWS.Prod.Credentials.ApiKey,
 		SecretAccessKey: conf.AWS.Prod.Credentials.SecretKey,
 	}, nil
+
 }
 
 func GetConfig() *Config {
