@@ -19,18 +19,16 @@ func Protected(services *services.Services) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			letGo := false
-			cookie, _ := ctx.Cookie("firstAuth")
-			authorizationKey := ctx.Request().Header.Get("authorization")
-			if len(authorizationKey) < 10 {
+			authorizationHeader := ctx.Request().Header.Get("authorization")
+			if authorizationHeader == "" {
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
-			if authorizationKey == "" && cookie.Value != "" {
-				authorizationKey = cookie.Value
-				letGo = true
+			rawDecodedText, err := base64.RawStdEncoding.DecodeString(authorizationHeader)
+			if err != nil {
+				panic(err)
 			}
 			token := &auth.LoginResponse{}
-			authorizationKey = strings.Split(authorizationKey, "Bearer ")[1]
-			err := json.Unmarshal([]byte(authorizationKey), token)
+			err = json.Unmarshal([]byte(rawDecodedText), token)
 			if err != nil {
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
@@ -48,6 +46,9 @@ func Protected(services *services.Services) echo.MiddlewareFunc {
 						return ctx.NoContent(http.StatusUnauthorized)
 					}
 					letGo = true
+				} else {
+					letGo = false
+					return ctx.NoContent(http.StatusUnauthorized)
 				}
 			}
 			if !letGo {

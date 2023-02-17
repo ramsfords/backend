@@ -112,5 +112,5 @@ func writeCookie(ctx echo.Context, token Token, auth Auth) error {
 	cookie.Expires = time.Now().Add(60 * time.Minute)
 	ctx.SetCookie(cookie)
 	auth.services.CloudFlare.AddTokenToCloudFlareKV(token.AccessToken, token.RefreshToken)
-	return ctx.JSON(http.StatusOK, tokenResponse)
+	return ctx.String(http.StatusOK, baseAuth)
 }
