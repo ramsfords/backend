@@ -9,24 +9,29 @@ import (
 	"github.com/ramsfords/backend/configs"
 )
 
-var (
+type Email struct {
 	S3Client   *s3.Client
 	SESClient  *ses.Client
 	HTTPClient httpClient
 	Conf       *configs.Config
-)
+}
 
 type httpClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-func New(conf *configs.Config) {
+func New(conf *configs.Config, S3Client *s3.Client) *Email {
 	cfg := aws.Config{
 		Region:           "us-west-1",
 		Credentials:      conf,
 		RetryMaxAttempts: 10,
 	}
-	SESClient = ses.NewFromConfig(cfg)
-	S3Client = s3.NewFromConfig(cfg)
-
+	SESClient := ses.NewFromConfig(cfg)
+	emailCli := Email{
+		S3Client:   S3Client,
+		SESClient:  SESClient,
+		Conf:       conf,
+		HTTPClient: &http.Client{},
+	}
+	return &emailCli
 }

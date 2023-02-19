@@ -34,10 +34,10 @@ type Attachment struct {
 }
 
 // Load loads an Attachment's data and returns it as a byte slice.
-func (a *Attachment) Load(ctx context.Context) ([]byte, error) {
-	switch a.Type {
+func (email Email) load(ctx context.Context, attachment Attachment) ([]byte, error) {
+	switch attachment.Type {
 	case AttachmentTypeLocal:
-		data, err := os.ReadFile(a.Path)
+		data, err := os.ReadFile(attachment.Path)
 		if err != nil {
 			return nil, xerror.Wrap("failed to read local file", err)
 		}
@@ -45,15 +45,15 @@ func (a *Attachment) Load(ctx context.Context) ([]byte, error) {
 		return data, nil
 	case AttachmentTypeS3:
 		// Split the path up to get the bucket and key.
-		parts := strings.Split(a.Path, "/")
+		parts := strings.Split(attachment.Path, "/")
 		if len(parts) < 2 {
-			return nil, xerror.Newf("invalid path for AttachmentTypeS3: %s, path must be in the following format <bucket>/<key>", a.Path)
+			return nil, xerror.Newf("invalid path for AttachmentTypeS3: %s, path must be in the following format <bucket>/<key>", attachment.Path)
 		}
 
 		// Get the object from S3 and read it into a bytes.Buffer.
-		output, err := S3Client.GetObject(ctx, &s3.GetObjectInput{
+		output, err := email.S3Client.GetObject(ctx, &s3.GetObjectInput{
 			Bucket: aws.String(parts[0]),
-			Key:    aws.String(a.Path[len(parts[0])+1:]),
+			Key:    aws.String(attachment.Path[len(parts[0])+1:]),
 		})
 		if err != nil {
 			return nil, xerror.Wrap("failed to get object from S3", err)
@@ -67,18 +67,18 @@ func (a *Attachment) Load(ctx context.Context) ([]byte, error) {
 
 		return buffer.Bytes(), nil
 	case AttachmentTypeHTTP:
-		if HTTPClient == nil {
-			HTTPClient = http.DefaultClient
+		if email.HTTPClient == nil {
+			email.HTTPClient = http.DefaultClient
 		}
 
 		// Create new http.Request.
-		request, err := http.NewRequest(http.MethodGet, a.Path, nil)
+		request, err := http.NewRequest(http.MethodGet, attachment.Path, nil)
 		if err != nil {
 			return nil, xerror.Wrap("failed to create http.Request", err)
 		}
 
 		// Get the Attachment data.
-		response, err := HTTPClient.Do(request)
+		response, err := email.HTTPClient.Do(request)
 		if err != nil {
 			return nil, xerror.Wrap("failed to do HTTP request on attachment", err)
 		}
@@ -96,5 +96,5 @@ func (a *Attachment) Load(ctx context.Context) ([]byte, error) {
 		// Fallthrough to the error case as a.Type is not a supported AttachmentType.
 	}
 
-	return nil, fmt.Errorf("unable to load Attachment with unexpected type: %s", a.Type)
+	return nil, fmt.Errorf("unable to load Attachment with unexpected type: %s", attachment.Type)
 }

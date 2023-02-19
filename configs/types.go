@@ -14,6 +14,7 @@ type Config struct {
 	Initiated        bool             `json:"initiated"`
 	Zoho             Zoho             `json:"zoho"`
 	CloudFlareConfig CloudFlareConfig `json:"cloudinaryConfig,omitempty"`
+	FirstKey         string           `json:"-"`
 }
 type Zoho struct {
 	ZohoCode         string `json:"code"`

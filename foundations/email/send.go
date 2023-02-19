@@ -11,17 +11,16 @@ import (
 	"github.com/go-mail/mail"
 	"github.com/gofor-little/env"
 	"github.com/gofor-little/xerror"
-	"github.com/ramsfords/backend/configs"
 )
 
 // Send loads the attachments, builds the email and sends it.
-func Send(ctx context.Context, data Data, configs *configs.Config) (string, error) {
+func (email Email) Send(ctx context.Context, data Data) (string, error) {
 	// Check that the package clients have been initialized.
-	if SESClient == nil {
+	if email.SESClient == nil {
 		return "", xerror.New("SESClient is nil")
 	}
 
-	if S3Client == nil {
+	if email.S3Client == nil {
 		return "", xerror.New("S3Client is nil")
 	}
 
@@ -51,7 +50,7 @@ func Send(ctx context.Context, data Data, configs *configs.Config) (string, erro
 	// Load and attach the Attachments.
 	if data.Attachments != nil {
 		for _, a := range data.Attachments {
-			data, err := a.Load(ctx)
+			data, err := email.load(ctx, a)
 			if err != nil {
 				return "", xerror.Wrap("failed to load Attachment", err)
 			}
@@ -79,9 +78,9 @@ func Send(ctx context.Context, data Data, configs *configs.Config) (string, erro
 	}
 
 	// Send email.
-	output, err := SESClient.SendRawEmail(ctx, &ses.SendRawEmailInput{
+	output, err := email.SESClient.SendRawEmail(ctx, &ses.SendRawEmailInput{
 		Destinations: destinations,
-		FromArn:      &configs.AWS.Prod.SnsSender,
+		FromArn:      &email.Conf.AWS.Prod.SnsSender,
 		RawMessage: &types.RawMessage{
 			Data: buf.Bytes(),
 		},

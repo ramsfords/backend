@@ -12,9 +12,8 @@ import (
 	"github.com/ramsfords/backend/api/utils"
 	rapid "github.com/ramsfords/backend/business/rapid/rapid_utils/book"
 	"github.com/ramsfords/backend/configs"
-	"github.com/ramsfords/backend/email"
-	template "github.com/ramsfords/backend/email"
 	books "github.com/ramsfords/backend/foundations/books"
+	"github.com/ramsfords/backend/foundations/email"
 	"github.com/ramsfords/backend/foundations/errs"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -168,23 +167,23 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	// case "R&L":
 
 	bolTemplate := email.GetBookingConfirmationTempalte(outRes)
-	data := template.Data{
+	data := email.Data{
 		To:          []string{oldQuote.QuoteRequest.Pickup.Contact.EmailAddress},
 		Subject:     emailSubject,
 		From:        bookingApi.services.Conf.SitesSettings.FirstShipper.Prod.EmailId,
 		ContentType: "text/html",
 		Body:        bolTemplate,
-		Attachments: []template.Attachment{
+		Attachments: []email.Attachment{
 			{
 				Path: "firstshipperbol/" + fileName,
-				Type: template.AttachmentTypeS3,
+				Type: email.AttachmentTypeS3,
 			},
 		},
 	}
 	// go func() {
 	fmt.Println("data to send emaill is", data)
 	time.Sleep(10 * time.Second)
-	bolSentRes, err := template.Send(context.Background(), data, bookingApi.services.Conf)
+	bolSentRes, err := bookingApi.services.Email.Send(context.Background(), data)
 	if err != nil {
 		bookingApi.services.Logger.Errorf("error sending bol to user ", err, outRes)
 	}
