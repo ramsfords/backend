@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/business/core/model"
-	errs "github.com/ramsfords/backend/foundations/error"
+	"github.com/ramsfords/backend/foundations/errs"
 )
 
 func (qt Quote) EchoGetQuotesByBusinessId(ctx echo.Context) error {

@@ -9,7 +9,7 @@ import (
 	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/business/core/model"
 	rapid "github.com/ramsfords/backend/business/rapid/rapid_utils/quote"
-	errs "github.com/ramsfords/backend/foundations/error"
+	"github.com/ramsfords/backend/foundations/errs"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 

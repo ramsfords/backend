@@ -15,7 +15,7 @@ import (
 	"github.com/ramsfords/backend/email"
 	template "github.com/ramsfords/backend/email"
 	books "github.com/ramsfords/backend/foundations/books"
-	errs "github.com/ramsfords/backend/foundations/error"
+	"github.com/ramsfords/backend/foundations/errs"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 

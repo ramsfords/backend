@@ -2,7 +2,7 @@ package utils
 
 import (
 	valid "github.com/asaskevich/govalidator"
-	errs "github.com/ramsfords/backend/foundations/error"
+	"github.com/ramsfords/backend/foundations/errs"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 

@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/services"
 
-	errs "github.com/ramsfords/backend/foundations/error"
+	"github.com/ramsfords/backend/foundations/errs"
 	"github.com/ramsfords/backend/foundations/mid"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
