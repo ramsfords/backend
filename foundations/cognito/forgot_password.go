@@ -6,7 +6,7 @@ import (
 	cip "github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
 )
 
-func (cc CognitoClient) Forgot_Password(ctx context.Context, email string) (*cip.ForgotPasswordOutput, error) {
+func (cc CognitoClient) ForgotPassword(ctx context.Context, email string) (*cip.ForgotPasswordOutput, error) {
 	input := cip.ForgotPasswordInput{
 		ClientId: &cc.Conf.CognitoClientID,
 		Username: &email,

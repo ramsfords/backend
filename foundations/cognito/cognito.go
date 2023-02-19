@@ -2,7 +2,6 @@ package cognito
 
 import (
 	"context"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"log"
@@ -49,10 +48,8 @@ func GetCognitoClient(conf *configs.Config) (CognitoClient, error) {
 
 func NewClient(conf *configs.Config) (*CognitoClient, error) {
 	awsConf := conf.GetAwsConfig()
-	baseAuth := base64.RawStdEncoding.EncodeToString([]byte(awsConf.CognitoClientID + ":" + awsConf.CognitoClientSecret))
 	ct := &CognitoClient{
 		Conf:                awsConf,
-		BaseAuth:            baseAuth,
 		CognitoRegion:       awsConf.CognitoRegion,
 		CognitoUserPoolID:   awsConf.CognitoUserPoolID,
 		CognitoClientSecret: awsConf.CognitoClientSecret,

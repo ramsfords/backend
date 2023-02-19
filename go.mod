@@ -29,7 +29,7 @@ require (
 	github.com/lestrrat-go/jwx v1.2.25
 	github.com/newrelic/go-agent/v3 v3.20.2
 	github.com/pkg/errors v0.9.1
-	github.com/ramsfords/types_gen v0.0.0-20230211023042-a290facfcf47
+	github.com/ramsfords/types_gen v0.0.0-20230219045913-d27f6512fbe5
 	github.com/schmorrison/go-querystring v1.1.1
 	github.com/spf13/viper v1.14.0
 	github.com/valyala/fasthttp v1.44.0
