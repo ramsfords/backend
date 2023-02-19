@@ -12,7 +12,7 @@ type BookingApi struct {
 	books    *books.API
 }
 
-func New(services *services.Services, echoClient *echo.Group) {
+func New(services *services.Services, echoClient *echo.Echo) {
 	book := BookingApi{
 		services: services,
 	}

@@ -20,7 +20,7 @@ type Quote struct {
 	*sync.Mutex
 }
 
-func New(services *services.Services, echo *echo.Group) {
+func New(services *services.Services, echo *echo.Echo) {
 	qt := Quote{
 		services: services,
 		Mutex:    &sync.Mutex{},

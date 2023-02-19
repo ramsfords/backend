@@ -23,7 +23,7 @@ func (user UserApi) EchoLogout(ctx echo.Context) error {
 	return ctx.NoContent(http.StatusOK)
 }
 
-func New(services *services.Services, echo *echo.Group) {
+func New(services *services.Services, echo *echo.Echo) {
 	userApi := UserApi{
 		services: services,
 	}

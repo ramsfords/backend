@@ -17,7 +17,7 @@ type Business struct {
 	services *services.Services
 }
 
-func New(services *services.Services, app *echo.Group) Business {
+func New(services *services.Services, app *echo.Echo) Business {
 	bis := Business{
 		services: services,
 	}

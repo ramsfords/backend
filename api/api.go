@@ -14,14 +14,13 @@ import (
 )
 
 func SetUpAPi(engine *echo.Echo, services *services.Services) {
-	api := engine.Group("/api")
-	auth.New(services, api)
-	bol_api.New(services, api)
-	location_api.New(services, api)
-	quote_api.New(services, api)
-	tracking_api.New(services, api)
-	user_api.New(services, api)
-	business_api.New(services, api)
-	booking_api.New(services, api)
+	auth.New(services, engine)
+	bol_api.New(services, engine)
+	location_api.New(services, engine)
+	quote_api.New(services, engine)
+	tracking_api.New(services, engine)
+	user_api.New(services, engine)
+	business_api.New(services, engine)
+	booking_api.New(services, engine)
 
 }
