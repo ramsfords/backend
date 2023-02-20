@@ -56,7 +56,16 @@ func main() {
 	echos.Use(middleware.Recover())
 	echos.Use(mid.CORS())
 	api.SetUpAPi(echos, servicesInstance)
-
+	go func() error {
+		err := servicesInstance.Rapid.Login(&models.AuthRequestPayload{
+			Username: servicesInstance.Conf.SitesSettings.FirstShipper.RapidShipLTL.UserName,
+			Password: servicesInstance.Conf.SitesSettings.FirstShipper.RapidShipLTL.Password,
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		return nil
+	}()
 	if err := echos.Start(":8090"); err != nil {
 		log.Fatal(err)
 	}
