@@ -9,7 +9,7 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (business Business) GinCreateBusiness(ctx echo.Context) error {
+func (business Business) EchoCreateBusiness(ctx echo.Context) error {
 	req := v1.Business{}
 	err := ctx.Bind(&req)
 	if err != nil {

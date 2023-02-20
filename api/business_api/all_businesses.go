@@ -9,7 +9,7 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (business Business) GinGetAllBusiness(ctx echo.Context) error {
+func (business Business) EchoGetAllBusiness(ctx echo.Context) error {
 	res, err := business.GetBusinesses(ctx.Request().Context())
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)

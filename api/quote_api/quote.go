@@ -34,7 +34,7 @@ func New(services *services.Services, echo *echo.Echo) {
 	protectedQuoteGroup.GET("/bids/:quoteId", qt.EchoGetBidsByQuoteId)
 	protectedQuoteGroup.GET("/quotewithbid/:bidId", qt.EchoGetQuoteWithBidByBidId)
 	protectedQuoteGroup.GET("/quotewithbids/:quoteId", qt.EchoGetQuoteWithBidsByQuoteId)
-	protectedQuoteGroup.GET("/business/:businessId", qt.EchoGetQuotesByBusinessId)
+	protectedQuoteGroup.GET("/business", qt.EchoGetQuotesByBusinessId)
 	//POST
 	protectedQuoteGroup.POST("", qt.EchoCreateQuote)
 	//PATCH

@@ -29,7 +29,7 @@ func (auth AuthApi) EchoSignUp(ctx echo.Context) error {
 			return ctx.NoContent(http.StatusConflict)
 		}
 	}
-	data.Id = *userId.UserSub
+	data.Id = *userId.User.Username
 	go auth.services.Db.IncreaseBusinessCount()
 	confirmEmailToken, err := auth.services.Crypto.Encrypt(data)
 	if err != nil {

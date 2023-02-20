@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/services"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -47,16 +48,15 @@ func (auth AuthApi) EchoLogin(ctx echo.Context) error {
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	err = auth.services.Db.SaveRefreshToken(ctx.Request().Context(), cognitoUserData.Sub, *loginRes.AuthenticationResult.RefreshToken)
+	err = auth.services.Db.SaveRefreshToken(ctx.Request().Context(), cognitoUserData.OrganizationId, cognitoUserData.Sub, *loginRes.AuthenticationResult.RefreshToken)
 	if err != nil {
 		auth.services.Logger.Errorf("RedirectLogin SaveRefreshToken : error in inserting refresh token into the database: %s", err)
 	}
-	validUntil := time.Now().Add(24 * time.Hour).Format(time.RFC3339)
+
 	loginData := LoginData{
 		Email:          loginReq.Email,
 		OrganizationId: cognitoUserData.OrganizationId,
 		UserId:         cognitoUserData.Sub,
-		ValidUntil:     validUntil,
 	}
 	token, err := auth.services.Crypto.Encrypt(loginData)
 	if err != nil {
@@ -70,26 +70,34 @@ func (auth AuthApi) EchoLogin(ctx echo.Context) error {
 		// log error
 		auth.services.Logger.Errorf("EchoLogin Encrypt : error in encrypting login data: %s", err)
 	}
-	writeCookie(ctx, token, auth)
+	WriteCookie(ctx, loginData, auth.services)
 	return ctx.JSON(http.StatusOK, loginData)
 
 }
 
-func writeCookie(ctx echo.Context, token string, auth AuthApi) error {
+func WriteCookie(ctx echo.Context, loginData LoginData, services *services.Services) error {
+	validUntil := time.Now().Add(1 * time.Hour).Format(time.RFC3339)
+	loginData.ValidUntil = validUntil
+	token, err := services.Crypto.Encrypt(loginData)
+	if err != nil {
+		// log error
+		services.Logger.Errorf("EchoLogin Encrypt : error in encrypting login data: %s", err)
+	}
 	secure := false
 	url := "127.0.0.1"
-	if auth.services.Conf.Env == "prod" {
+	if services.Conf.Env == "prod" {
 		secure = true
 		url = "https://firstshipper.com"
 	}
 	ctx.Response().Header().Set(echo.HeaderAuthorization, token)
+
 	cookie := new(http.Cookie)
 	cookie.Name = "firstAuth"
 	cookie.Value = token
 	cookie.Path = "/"
 	cookie.Domain = url
 	cookie.Secure = secure
-	cookie.Expires = time.Now().Add(60 * time.Minute)
+	cookie.Expires = time.Now().Add(24 * time.Hour * 365)
 	ctx.SetCookie(cookie)
 	return nil
 }

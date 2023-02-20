@@ -5,22 +5,23 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/foundations/errs"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (business Business) GinUpdateStaffRole(ctx echo.Context) error {
+func (business Business) EchoUpdateStaffRole(ctx echo.Context) error {
+	authContext, err := utils.GetAuthContext(ctx)
+	if err != nil {
+		return ctx.NoContent(http.StatusUnauthorized)
+	}
 	updateReq := &v1.UpdateUserRole{}
 	//err := server.unMarshall(ctx, signUpReq)
-	err := ctx.Bind(updateReq)
+	err = ctx.Bind(updateReq)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	businessId := ctx.PathParam("businessId")
-	if businessId == "" {
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-	res, err := business.UpdateStaffRole(ctx.Request().Context(), updateReq, businessId)
+	res, err := business.UpdateStaffRole(ctx.Request().Context(), updateReq, authContext.OrganizationId)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

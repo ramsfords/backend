@@ -31,7 +31,7 @@ type DB interface {
 	Getuser(ctx context.Context, email string) (*v1.User, error)
 	UpdateUserPassword(ctx context.Context, usr v1.User, businessId string) error
 	UpdateUserConfirmEmail(ctx context.Context, businessId, email string) (bool, error)
-	SaveRefreshToken(ctx context.Context, userId string, token string) error
+	SaveRefreshToken(ctx context.Context, businessId string, userId string, token string) error
 	GetRefreshToken(ctx context.Context, userId string) (string, error)
 	//LTL BOOKING DB
 	SaveBooking(ctx context.Context, bookingRes *model.QuoteRequest) error

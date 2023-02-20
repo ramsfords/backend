@@ -4,17 +4,18 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/api/utils"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
 func (business Business) UpdateBusinessPhoneNumber(ctx echo.Context) error {
-	phoneNumber := &v1.PhoneNumber{}
-	err := ctx.Bind(phoneNumber)
+	authContext, err := utils.GetAuthContext(ctx)
 	if err != nil {
-		return ctx.NoContent(http.StatusBadRequest)
+		return ctx.NoContent(http.StatusUnauthorized)
 	}
-	businessId := ctx.PathParam("businessId")
-	if businessId == "" {
+	phoneNumber := &v1.PhoneNumber{}
+	err = ctx.Bind(phoneNumber)
+	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	err = phoneNumber.Validate()
@@ -23,7 +24,7 @@ func (business Business) UpdateBusinessPhoneNumber(ctx echo.Context) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	newContext := ctx.Request().Context()
-	phoneNumber, err = business.services.Db.AddPhoneNumber(newContext, businessId, phoneNumber)
+	phoneNumber, err = business.services.Db.AddPhoneNumber(newContext, authContext.OrganizationId, phoneNumber)
 	if err != nil {
 		business.services.Logger.Errorf("adding address to database failded: %s", err)
 		return ctx.NoContent(http.StatusInternalServerError)

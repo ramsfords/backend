@@ -20,19 +20,12 @@ import (
 
 func (bookApi BookingApi) EchoCreateBooking(ctx echo.Context) error {
 	quote := &v1.BookRequest{}
-
 	err := ctx.Bind(quote)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	// quote.QuoteRequest = &v1.QuoteRequest{
-	// 	QuoteId:    "23122",
-	// 	BusinessId: "kandelsuren@gmail.com",
-	// }
 	newCtx := ctx.Request().Context()
-
 	ctx.Request().Header.Set("Cache-Control", "no-cache")
-
 	res, err := bookApi.CreateNewBook(newCtx, quote)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)

@@ -8,12 +8,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func (userdb UserDb) SaveRefreshToken(ctx context.Context, userId string, token string) error {
+func (userdb UserDb) SaveRefreshToken(ctx context.Context, businessId string, userId string, token string) error {
 	input := &dynamodb.PutItemInput{
 		TableName: aws.String(userdb.GetFirstShipperTableName()),
 		Item: map[string]types.AttributeValue{
-			"pk":             &types.AttributeValueMemberS{Value: userId},
-			"sk":             &types.AttributeValueMemberS{Value: userId},
+			"pk":             &types.AttributeValueMemberS{Value: "pk#" + businessId},
+			"sk":             &types.AttributeValueMemberS{Value: "sk#" + userId},
 			"refreshTokenPk": &types.AttributeValueMemberS{Value: userId},
 			"refreshToken":   &types.AttributeValueMemberS{Value: token},
 		},

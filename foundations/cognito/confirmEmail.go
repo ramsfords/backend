@@ -22,6 +22,9 @@ func (cognito *CognitoClient) ConfirmEmail(ctx context.Context, email string) er
 		if strings.Contains(errMsg, "LimitExceededException") {
 			return &errs.ErrTooManyRequest
 		}
+		if strings.Contains(errMsg, "Current status is CONFIRMED") {
+			return &errs.ErrUserAlreadyExits
+		}
 		return &errs.ErrConfirmEmail
 	}
 	return nil

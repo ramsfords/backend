@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/api/utils"
 )
 
 type AddBusinessName struct {
@@ -11,17 +12,20 @@ type AddBusinessName struct {
 }
 
 func (business Business) UpdateBusinessName(ctx echo.Context) error {
+	authContext, err := utils.GetAuthContext(ctx)
+	if err != nil {
+		return ctx.NoContent(http.StatusUnauthorized)
+	}
 	businessName := &AddBusinessName{}
-	err := ctx.Bind(businessName)
+	err = ctx.Bind(businessName)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	businessId := ctx.QueryParam("businessId")
-	if businessId == "" || businessName.BusinessName == "" || len(businessName.BusinessName) < 3 {
+	if authContext.OrganizationId == "" || businessName.BusinessName == "" || len(businessName.BusinessName) < 3 {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	newContext := ctx.Request().Context()
-	err = business.services.Db.UpdateBusinessName(newContext, businessId, businessName.BusinessName)
+	err = business.services.Db.UpdateBusinessName(newContext, authContext.OrganizationId, businessName.BusinessName)
 	if err != nil {
 		business.services.Logger.Errorf("adding address to database failded: %s", err)
 		return ctx.NoContent(http.StatusInternalServerError)

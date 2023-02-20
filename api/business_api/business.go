@@ -22,24 +22,19 @@ func New(services *services.Services, app *echo.Echo) Business {
 		services: services,
 	}
 	businessGrp := app.Group("/business", mid.Protected(services))
-	businessGrp.GET("", bis.GinGetAllBusinesses)
-	businessGrp.GET("/:id", bis.GinGetAllBusiness)
-	businessGrp.POST("", bis.GinCreateBusiness)
+	businessGrp.GET("", bis.EchoGetAllBusinesses)
+	businessGrp.POST("", bis.EchoCreateBusiness)
 	businessGrp.DELETE("", bis.EchoCloseBusiness)
-	businessGrp.PATCH("", bis.GinUpdateBusiness)
-	businessGrp.PATCH("/update_staff_role", bis.GinUpdateStaffRole)
-	businessGrp.POST("/add_staff", bis.GinAddStaff)
+	businessGrp.PATCH("/update_staff_role", bis.EchoUpdateStaffRole)
+	businessGrp.POST("/add_staff", bis.EchoAddStaff)
 	businessGrp.DELETE("/delete_staff", bis.DeleteStaff)
 	businessGrp.POST("/add_business_address", bis.AddBusinessAddress)
 	businessGrp.PATCH("/update_business_name", bis.UpdateBusinessName)
 	businessGrp.GET("/get_basic_info", bis.GetBasicInfo)
 	businessGrp.PATCH("/update_pickup_address", bis.UpdateDefaultPickupAddress)
-	businessGrp.POST("/address/:businessId", bis.AddBusinessAddress)
-	businessGrp.POST("/phone/:businessId", bis.UpdateBusinessPhoneNumber)
-	// allowGrp := businessGrp.Group("/allow_booking")
-	// allowBookingGrp.Use(apis.RequireAdminAuth())
+	businessGrp.POST("/address", bis.AddBusinessAddress)
+	businessGrp.POST("/phone", bis.UpdateBusinessPhoneNumber)
 	businessGrp.POST("/allow_booking", bis.AllowBooking)
-
 	return bis
 }
 func (business Business) GetBusinessById(ctx context.Context, req string) (*v1.Business, error) {

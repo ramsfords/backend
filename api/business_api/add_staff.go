@@ -10,17 +10,18 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (business Business) GinAddStaff(ctx echo.Context) error {
+func (business Business) EchoAddStaff(ctx echo.Context) error {
+	authContext, err := utils.GetAuthContext(ctx)
+	if err != nil {
+		return ctx.NoContent(http.StatusUnauthorized)
+	}
 	addStaffReq := &v1.AddStaff{}
-	err := ctx.Bind(addStaffReq)
+	err = ctx.Bind(addStaffReq)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	businessId := ctx.PathParam("businessId")
-	if businessId == "" {
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-	addStaffReq.BusinessId = businessId
+
+	addStaffReq.BusinessId = authContext.OrganizationId
 	res, err := business.AddStaff(ctx.Request().Context(), addStaffReq)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)

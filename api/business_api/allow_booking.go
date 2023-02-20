@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/api/utils"
 )
 
 type AllowBooking struct {
@@ -12,8 +13,12 @@ type AllowBooking struct {
 }
 
 func (business Business) AllowBooking(ctx echo.Context) error {
+	authContext, err := utils.GetAuthContext(ctx)
+	if err != nil || authContext.Email != "kandelsuren@gmail.com" {
+		return ctx.NoContent(http.StatusUnauthorized)
+	}
 	allowBooking := &AllowBooking{}
-	err := ctx.Bind(allowBooking)
+	err = ctx.Bind(allowBooking)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}

@@ -58,11 +58,10 @@ func (auth AuthApi) ConfirmEmail(ctx echo.Context) error {
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-
-	err = auth.services.CognitoClient.ConfirmEmail(ctx.Request().Context(), user.Email)
-	if err != nil {
-		return ctx.NoContent(http.StatusBadRequest)
-	}
+	// err = auth.services.CognitoClient.ConfirmEmail(ctx.Request().Context(), user.Email)
+	// if err != nil {
+	// 	return ctx.String(http.StatusBadRequest, err.Error())
+	// }
 	createdAt := time.Now().Format(time.RFC3339)
 	business := &v1.Business{
 		BusinessId:                        user.OrgId,
@@ -90,16 +89,5 @@ func (auth AuthApi) ConfirmEmail(ctx echo.Context) error {
 		}
 	}()
 
-	loginData := &RedirectLoginData{
-		UserId:         user.Id,
-		Email:          user.Email,
-		Password:       user.Password,
-		OrganizationId: user.OrgId,
-		ValidUntil:     time.Now().Add(time.Hour * 1).Format(time.RFC3339),
-	}
-	redirectLoginDataInc, err := auth.services.Crypto.Encrypt(loginData)
-	if err != nil {
-		return ctx.NoContent(http.StatusOK)
-	}
-	return ctx.String(http.StatusOK, redirectLoginDataInc)
+	return ctx.String(http.StatusOK, "Email confirmed")
 }

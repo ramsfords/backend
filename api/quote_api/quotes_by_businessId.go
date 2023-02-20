@@ -5,17 +5,17 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/business/core/model"
 	"github.com/ramsfords/backend/foundations/errs"
 )
 
 func (qt Quote) EchoGetQuotesByBusinessId(ctx echo.Context) error {
-	businessId := ctx.QueryParam("businessId")
-	if len(businessId) < 5 {
-		return ctx.NoContent(http.StatusBadRequest)
+	authContext, err := utils.GetAuthContext(ctx)
+	if err != nil {
+		return ctx.NoContent(http.StatusUnauthorized)
 	}
-
-	res, err := qt.GetQuotesByBusinessId(ctx.Request().Context(), businessId)
+	res, err := qt.GetQuotesByBusinessId(ctx.Request().Context(), authContext.OrganizationId)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

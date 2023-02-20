@@ -6,10 +6,10 @@ import (
 	"github.com/ramsfords/backend/api/authapi"
 )
 
-func GetAuthContext(ctx echo.Context) (*authapi.LoginData, error) {
+func GetAuthContext(ctx echo.Context) (authapi.LoginData, error) {
 	authContext := ctx.Get("authContext")
 	if authContext == nil {
-		return nil, errors.New("authContext not found")
+		return authapi.LoginData{}, errors.New("authContext not found")
 	}
-	return authContext.(*authapi.LoginData), nil
+	return authContext.(authapi.LoginData), nil
 }

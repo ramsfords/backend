@@ -14,72 +14,67 @@ import (
 func Protected(services *services.Services) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
-			letGo := false
+			var err error
+			loginData := authapi.LoginData{}
 			// get cookie named firtAuth
 			cookie, err := ctx.Cookie("firstAuth")
 			if err == nil && len(cookie.Value) > 50 {
 				// decrypt cookie
-				decrypted, err := services.Crypto.Decrypt(cookie.Value)
-				if err != nil {
-					return ctx.NoContent(http.StatusUnauthorized)
+				decrypted, errs := services.Crypto.Decrypt(cookie.Value)
+				if errs != nil {
+					err = errs
 				}
 				// unmarshal decrypted cookie
-				loginData := &authapi.LoginData{}
-				err = json.Unmarshal(decrypted, loginData)
-				if err != nil {
-					return ctx.NoContent(http.StatusUnauthorized)
+				errs = json.Unmarshal(decrypted, &loginData)
+				if errs != nil {
+					err = errs
 				}
-				// set loginData to context
-				ctx.Set("authContext", loginData)
-				letGo = true
-			} else {
-				authorizationHeader := ctx.Request().Header.Get("authorization")
-				if authorizationHeader == "" || len(authorizationHeader) < 50 {
-					return ctx.NoContent(http.StatusUnauthorized)
-				}
-				// decrypt cookie
-				decrypted, err := services.Crypto.Decrypt(cookie.Value)
+				validUntil, errs := time.Parse(time.RFC3339, loginData.ValidUntil)
 				if err != nil {
-					return ctx.NoContent(http.StatusUnauthorized)
-				}
-				// unmarshal decrypted cookie
-				loginData := &authapi.LoginData{}
-				err = json.Unmarshal(decrypted, loginData)
-				if err != nil {
-					return ctx.NoContent(http.StatusUnauthorized)
-				}
-				// check if token is validUntil now
-				validUntil, err := time.Parse(time.RFC3339, loginData.ValidUntil)
-				if err != nil {
-					return ctx.NoContent(http.StatusUnauthorized)
+					err = errs
 				}
 				if time.Now().After(validUntil) {
-					// request new token with refresh token
-					err := ExchageRefreshTokenForToken(ctx, loginData, services)
-					if err != nil {
-						return ctx.NoContent(http.StatusUnauthorized)
+					errs = exchageRefreshTokenForAccesssToken(ctx, loginData, services)
+					if errs != nil {
+						err = errs
 					}
-					loginData.ValidUntil = time.Now().Add(time.Hour * 1).Format(time.RFC3339)
-					// encrypt loginData
-					encrypted, err := services.Crypto.Encrypt(loginData)
-					if err != nil {
-						services.Logger.Errorf("Protected Encrypt : error in encrypting login data: %s", err)
-					}
-					// set cookie
-					writeCookie(ctx, encrypted, services.Conf.Env)
-					letGo = true
+					authapi.WriteCookie(ctx, loginData, services)
 				}
-				letGo = true
+			} else {
+				authorizationHeader := ctx.Request().Header.Get("authorization")
+				if len(authorizationHeader) > 50 {
+					decrypted, errs := services.Crypto.Decrypt(authorizationHeader)
+					if errs != nil {
+						err = errs
+					}
+					// unmarshal decrypted authorizationHeader
+					errs = json.Unmarshal(decrypted, &loginData)
+					if errs != nil {
+						err = errs
+					}
+					validUntil, errs := time.Parse(time.RFC3339, loginData.ValidUntil)
+					if err != nil {
+						err = errs
+					}
+					if time.Now().After(validUntil) {
+						errs = exchageRefreshTokenForAccesssToken(ctx, loginData, services)
+						if err != nil {
+							err = errs
+						}
+						authapi.WriteCookie(ctx, loginData, services)
+					}
+				}
 			}
-			if !letGo {
+			if err != nil {
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
+			ctx.Set("authContext", loginData)
 			return next(ctx)
 		}
 	}
 
 }
-func ExchageRefreshTokenForToken(ctx echo.Context, data *authapi.LoginData, services *services.Services) error {
+func exchageRefreshTokenForAccesssToken(ctx echo.Context, data authapi.LoginData, services *services.Services) error {
 	token, err := services.Db.GetRefreshToken(ctx.Request().Context(), data.UserId)
 	if err != nil {
 		return err
@@ -88,34 +83,9 @@ func ExchageRefreshTokenForToken(ctx echo.Context, data *authapi.LoginData, serv
 		return errors.New("token not found")
 	}
 	// exchange refresh token for new token
-	cognitLoginRes, err := services.CognitoClient.LoginWithRefreshToken(ctx.Request().Context(), token)
+	_, err = services.CognitoClient.LoginWithRefreshToken(ctx.Request().Context(), token)
 	if err != nil {
 		return err
 	}
-	// set refresh token to db
-	err = services.Db.SaveRefreshToken(ctx.Request().Context(), data.Email, *cognitLoginRes.AuthenticationResult.RefreshToken)
-	if err != nil {
-		services.Logger.Errorf("ExchageRefreshTokenForToken SaveRefreshToken : error in inserting refresh token into the database: %s", err)
-		// dont return error here because it should not block the user
-		return nil
-	}
-	return nil
-}
-func writeCookie(ctx echo.Context, token string, env string) error {
-	secure := false
-	url := "127.0.0.1"
-	if env == "prod" {
-		secure = true
-		url = "https://firstshipper.com"
-	}
-	ctx.Response().Header().Set(echo.HeaderAuthorization, token)
-	cookie := new(http.Cookie)
-	cookie.Name = "firstAuth"
-	cookie.Value = token
-	cookie.Path = "/"
-	cookie.Domain = url
-	cookie.Secure = secure
-	cookie.Expires = time.Now().Add(60 * time.Minute)
-	ctx.SetCookie(cookie)
 	return nil
 }

@@ -30,9 +30,7 @@ func GetBookingConfirmationTempalte(bookingRes *v1.BookingResponse) string {
 	template = strings.ReplaceAll(template, "{RECEIVER_STATE}", bookingRes.QuoteRequest.Delivery.Address.State)
 	return template
 }
-func intToString(i int) string {
-	return strings.Split(fmt.Sprintf("%d", i), ".")[0]
-}
+
 func floatToString(f float32) string {
 	return strings.Split(fmt.Sprintf("%f", f), ".")[0]
 }
