@@ -13,7 +13,7 @@ func (business Business) AllowBooking(ctx echo.Context) error {
 		return ctx.NoContent(http.StatusUnauthorized)
 	}
 	allowBooking := false
-	err = ctx.Bind(allowBooking)
+	err = ctx.Bind(&allowBooking)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
