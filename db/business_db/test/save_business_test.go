@@ -15,7 +15,7 @@ import (
 
 func TestSaveBusiness(t *testing.T) {
 	t.Log("TestSaveBusiness")
-	business := v1.Business{
+	business := &v1.Business{
 		BusinessId:                        "1cc284",
 		BusinessName:                      "Ramsfords",
 		BusinessEmail:                     "ramsford@gmail.com",
@@ -51,7 +51,7 @@ func TestSaveBusiness(t *testing.T) {
 			ZipCode:      "94105",
 		},
 
-		CreateAt: time.Now().Format(time.RFC3339),
+		CreatedAt: time.Now().Format(time.RFC3339),
 	}
 	business.Type = "business"
 	itemMarshalled, err := attributevalue.MarshalMap(business)

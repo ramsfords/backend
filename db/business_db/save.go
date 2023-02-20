@@ -11,7 +11,7 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (businessDb BusinessDb) SaveBusiness(ctx context.Context, business v1.Business, businessId string) error {
+func (businessDb BusinessDb) SaveBusiness(ctx context.Context, business *v1.Business, businessId string) error {
 	business.Type = "business"
 	itemMarshalled, err := attributevalue.Marshal(business)
 	if err != nil {

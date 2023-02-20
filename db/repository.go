@@ -25,13 +25,14 @@ import (
 
 type DB interface {
 	// Users
-	SaveUser(ctx context.Context, usr v1.User, businessId string) error
+	SaveUser(ctx context.Context, usr *v1.User, businessId string) error
 	UpdateUser(ctx context.Context, businessId string, user v1.User) error
 	DeleteUser(ctx context.Context, userId string, businessId string) error
 	Getuser(ctx context.Context, email string) (*v1.User, error)
 	UpdateUserPassword(ctx context.Context, usr v1.User, businessId string) error
 	UpdateUserConfirmEmail(ctx context.Context, businessId, email string) (bool, error)
-
+	SaveRefreshToken(ctx context.Context, userId string, token string) error
+	GetRefreshToken(ctx context.Context, userId string) (string, error)
 	//LTL BOOKING DB
 	SaveBooking(ctx context.Context, bookingRes *model.QuoteRequest) error
 	UpdateBooking(ctx context.Context, booking *v1.BookingResponse, businessId string) error
@@ -77,7 +78,7 @@ type DB interface {
 	GetStaffsForABusiness(ctx context.Context, businessId string) ([]*v1.User, error)
 	GetBusiness(ctx context.Context, businessId string) (*v1.Business, error)
 	SaveDefaultPickup(ctx context.Context, businessId string, address v1.Location) error
-	SaveBusiness(ctx context.Context, business v1.Business, businessId string) error
+	SaveBusiness(ctx context.Context, business *v1.Business, businessId string) error
 	UpdateStaffRole(ctx context.Context, businessId string, staffEmail string, roles []v1.Role) error
 	UpdateBusiness(ctx context.Context, businessId string, business v1.Business) error
 	AddPhoneNumber(ctx context.Context, businessId string, phoneNumber *v1.PhoneNumber) (*v1.PhoneNumber, error)
@@ -85,17 +86,20 @@ type DB interface {
 	GetAllDataByBusinessId(ctx context.Context, businessId string) (*model.BusinessData, error)
 	UpdateAllowBooking(ctx context.Context, businessId string, allow bool) (bool, error)
 	// Incraase quote Count
-	IncreateQuoteCount()
+	IncreaseQuoteCount()
+	IncreaseBusinessCount()
 	// Get Quote Count
 	GetQuoteCount() int64
+	GetBusinessCount() int64
 	AddContact(ctx context.Context, businessId string, contact *v1.Location) error
 }
 
 type Repository struct {
 	sync.Mutex
-	QuoteCount int64
-	Config     *configs.Config
-	DB         dynamo.DB
+	QuoteCount    int64
+	BusinessCount int64
+	Config        *configs.Config
+	DB            dynamo.DB
 	user_db.UserDb
 	booking_db.BookingDb
 	location_db.LocationDb
@@ -142,10 +146,37 @@ func New(configs *configs.Config) DB {
 			count = quoteIntCount
 		}
 	}
+	businessCountInput := &dynamodb.GetItemInput{
+		TableName: aws.String(configs.GetFirstShipperTableName()),
+		Key: map[string]types.AttributeValue{
+			"pk": &types.AttributeValueMemberS{
+				Value: "businessCount",
+			},
+			"sk": &types.AttributeValueMemberS{
+				Value: "businessCount",
+			},
+		},
+	}
+	businessCount, err := db.Client.GetItem(context.Background(), businessCountInput)
+	if err != nil {
+		log.Println("Error getting business count", err)
+	}
+	businessCountStrValue := businessCount.Item["businessCount"].(*types.AttributeValueMemberN).Value
+	var businessCountValue int64
+	if businessCountStrValue != "0" {
+		if _, ok := repo.(*Repository); ok {
+			businessCountInt, err := strconv.ParseInt(businessCountStrValue, 10, 64)
+			if err != nil {
+				log.Println("Error converting businesss count to int", err)
+			}
+			businessCountValue = businessCountInt
+		}
+	}
 	repo = &Repository{
-		QuoteCount: count,
-		Config:     configs,
-		DB:         db,
+		QuoteCount:    count,
+		BusinessCount: businessCountValue,
+		Config:        configs,
+		DB:            db,
 		UserDb: user_db.UserDb{
 			Config: configs,
 			DB:     db,
@@ -171,10 +202,11 @@ func New(configs *configs.Config) DB {
 			DB:     db,
 		},
 	}
-	repo.IncreateQuoteCount()
+	repo.IncreaseQuoteCount()
+	repo.IncreaseBusinessCount()
 	return repo
 }
-func (repo *Repository) IncreateQuoteCount() {
+func (repo *Repository) IncreaseQuoteCount() {
 	repo.Mutex.Lock()
 	defer repo.Mutex.Unlock()
 	repo.QuoteCount++
@@ -201,6 +233,36 @@ func (repo *Repository) IncreateQuoteCount() {
 	}
 	fmt.Println(res)
 }
+func (repo *Repository) IncreaseBusinessCount() {
+	repo.Mutex.Lock()
+	defer repo.Mutex.Unlock()
+	repo.BusinessCount++
+	res, err := repo.DB.Client.UpdateItem(context.Background(), &dynamodb.UpdateItemInput{
+		TableName: aws.String(repo.Config.GetFirstShipperTableName()),
+		Key: map[string]types.AttributeValue{
+			"pk": &types.AttributeValueMemberS{
+				Value: "businessCount",
+			},
+			"sk": &types.AttributeValueMemberS{
+				Value: "businessCount",
+			},
+		},
+		UpdateExpression: aws.String("set businessCount =  :val"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":val": &types.AttributeValueMemberN{
+				Value: fmt.Sprint(repo.BusinessCount),
+			},
+		},
+		ReturnValues: "UPDATED_NEW",
+	})
+	if err != nil {
+		log.Println("Error updating quote count", err)
+	}
+	fmt.Println(res)
+}
 func (repo *Repository) GetQuoteCount() int64 {
 	return repo.QuoteCount
+}
+func (repo *Repository) GetBusinessCount() int64 {
+	return repo.BusinessCount
 }

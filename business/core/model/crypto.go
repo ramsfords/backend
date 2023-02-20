@@ -29,7 +29,7 @@ func encode(b []byte) string {
 func decode(s string) []byte {
 	data, err := base64.StdEncoding.DecodeString(s)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return data
 }
@@ -46,28 +46,28 @@ func (crypto Crypto) getBytes(data interface{}) []byte {
 
 // Encrypt method is to encrypt or hide any classified text
 func (crypto Crypto) Encrypt(data interface{}) (string, error) {
+	plainBytes := crypto.getBytes(data)
 	block, err := aes.NewCipher([]byte(crypto.secretkey))
 	if err != nil {
 		crypto.logger.Error(err)
 		return "", err
 	}
-	plainBytes := crypto.getBytes(data)
 	cfb := cipher.NewCFBEncrypter(block, crypto.bytes)
-	plainBytes = make([]byte, len(plainBytes))
-	cfb.XORKeyStream(plainBytes, plainBytes)
+	newBytes := make([]byte, len(plainBytes))
+	cfb.XORKeyStream(newBytes, plainBytes)
 	return encode(plainBytes), nil
 }
 
 // Decrypt method is to extract back the encrypted text
-func (crypto Crypto) Decrypt(data string) (string, error) {
+func (crypto Crypto) Decrypt(data string) ([]byte, error) {
+	cipherBytes := decode(data)
 	block, err := aes.NewCipher([]byte(crypto.secretkey))
 	if err != nil {
 		crypto.logger.Error(err)
-		return "", err
+		return nil, err
 	}
-	cipherBytes := decode(data)
 	cfb := cipher.NewCFBDecrypter(block, crypto.bytes)
-	cipherBytes = make([]byte, len(cipherBytes))
-	cfb.XORKeyStream(cipherBytes, cipherBytes)
-	return string(cipherBytes), nil
+	newBytes := make([]byte, len(cipherBytes))
+	cfb.XORKeyStream(newBytes, cipherBytes)
+	return cipherBytes, nil
 }

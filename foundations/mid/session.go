@@ -1,17 +1,13 @@
 package mid
 
 import (
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
-	"io"
+	"errors"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/api/auth"
+	"github.com/ramsfords/backend/api/authapi"
 	"github.com/ramsfords/backend/services"
 )
 
@@ -19,37 +15,61 @@ func Protected(services *services.Services) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			letGo := false
-			authorizationHeader := ctx.Request().Header.Get("authorization")
-			if authorizationHeader == "" {
-				return ctx.NoContent(http.StatusUnauthorized)
-			}
-			rawDecodedText, err := base64.RawStdEncoding.DecodeString(authorizationHeader)
-			if err != nil {
-				panic(err)
-			}
-			token := &auth.LoginResponse{}
-			err = json.Unmarshal([]byte(rawDecodedText), token)
-			if err != nil {
-				return ctx.NoContent(http.StatusUnauthorized)
-			}
-			if token.Token.AccessToken == "" && token.Token.RefreshToken == "" {
-				return ctx.NoContent(http.StatusUnauthorized)
-			}
-			var tkn jwt.Token
-			if token.Token.AccessToken != "" {
-				tkn, err = services.CognitoClient.Validate(ctx.Request().Context(), token.Token.AccessToken)
-				if tkn.Valid && err == nil {
-					letGo = true
-				} else if token.Token.RefreshToken != "" && !tkn.Valid {
-					err := ExchageRefreshTokenForToken(ctx, token.Token.RefreshToken, services)
+			// get cookie named firtAuth
+			cookie, err := ctx.Cookie("firstAuth")
+			if err == nil && len(cookie.Value) > 50 {
+				// decrypt cookie
+				decrypted, err := services.Crypto.Decrypt(cookie.Value)
+				if err != nil {
+					return ctx.NoContent(http.StatusUnauthorized)
+				}
+				// unmarshal decrypted cookie
+				loginData := &authapi.LoginData{}
+				err = json.Unmarshal(decrypted, loginData)
+				if err != nil {
+					return ctx.NoContent(http.StatusUnauthorized)
+				}
+				// set loginData to context
+				ctx.Set("authContext", loginData)
+				letGo = true
+			} else {
+				authorizationHeader := ctx.Request().Header.Get("authorization")
+				if authorizationHeader == "" || len(authorizationHeader) < 50 {
+					return ctx.NoContent(http.StatusUnauthorized)
+				}
+				// decrypt cookie
+				decrypted, err := services.Crypto.Decrypt(cookie.Value)
+				if err != nil {
+					return ctx.NoContent(http.StatusUnauthorized)
+				}
+				// unmarshal decrypted cookie
+				loginData := &authapi.LoginData{}
+				err = json.Unmarshal(decrypted, loginData)
+				if err != nil {
+					return ctx.NoContent(http.StatusUnauthorized)
+				}
+				// check if token is validUntil now
+				validUntil, err := time.Parse(time.RFC3339, loginData.ValidUntil)
+				if err != nil {
+					return ctx.NoContent(http.StatusUnauthorized)
+				}
+				if time.Now().After(validUntil) {
+					// request new token with refresh token
+					err := ExchageRefreshTokenForToken(ctx, loginData, services)
 					if err != nil {
 						return ctx.NoContent(http.StatusUnauthorized)
 					}
+					loginData.ValidUntil = time.Now().Add(time.Hour * 1).Format(time.RFC3339)
+					// encrypt loginData
+					encrypted, err := services.Crypto.Encrypt(loginData)
+					if err != nil {
+						services.Logger.Errorf("Protected Encrypt : error in encrypting login data: %s", err)
+					}
+					// set cookie
+					writeCookie(ctx, encrypted, services.Conf.Env)
 					letGo = true
-				} else {
-					letGo = false
-					return ctx.NoContent(http.StatusUnauthorized)
 				}
+				letGo = true
 			}
 			if !letGo {
 				return ctx.NoContent(http.StatusUnauthorized)
@@ -59,80 +79,43 @@ func Protected(services *services.Services) echo.MiddlewareFunc {
 	}
 
 }
-func ExchageRefreshTokenForToken(ctx echo.Context, refreshToken string, services *services.Services) error {
-	cognitoConf := services.Conf.GetAwsConfig()
-	client := &http.Client{}
-	encodedBody := fmt.Sprintf("refresh_token=%s&grant_type=refresh_token&client_id=%s", refreshToken, cognitoConf.CognitoClientID)
-	var data = strings.NewReader(encodedBody)
-	req, err := http.NewRequest("POST", cognitoConf.CognitoUrl+"/oauth2/token", data)
+func ExchageRefreshTokenForToken(ctx echo.Context, data *authapi.LoginData, services *services.Services) error {
+	token, err := services.Db.GetRefreshToken(ctx.Request().Context(), data.UserId)
 	if err != nil {
 		return err
 	}
-	baseAuth := base64.RawStdEncoding.EncodeToString([]byte(cognitoConf.CognitoClientID + ":" + cognitoConf.CognitoClientSecret))
-	req.Header.Set("Authorization", "Basic "+baseAuth)
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	resp, err := client.Do(req)
+	if token == "" {
+		return errors.New("token not found")
+	}
+	// exchange refresh token for new token
+	cognitLoginRes, err := services.CognitoClient.LoginWithRefreshToken(ctx.Request().Context(), token)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
-	bodyText, err := io.ReadAll(resp.Body)
+	// set refresh token to db
+	err = services.Db.SaveRefreshToken(ctx.Request().Context(), data.Email, *cognitLoginRes.AuthenticationResult.RefreshToken)
 	if err != nil {
-		return err
+		services.Logger.Errorf("ExchageRefreshTokenForToken SaveRefreshToken : error in inserting refresh token into the database: %s", err)
+		// dont return error here because it should not block the user
+		return nil
 	}
-	fmt.Print(string(bodyText))
-	tkn := &auth.Token{}
-	err = json.Unmarshal(bodyText, tkn)
-	if err != nil {
-		return err
-	}
-	tkn.RefreshToken = refreshToken
-	return writeCookie(ctx, *tkn, services)
+	return nil
 }
-func writeCookie(ctx echo.Context, token auth.Token, services *services.Services) error {
+func writeCookie(ctx echo.Context, token string, env string) error {
 	secure := false
 	url := "127.0.0.1"
-	if services.Conf.Env == "prod" {
+	if env == "prod" {
 		secure = true
 		url = "https://firstshipper.com"
 	}
-	time.Sleep(1 * time.Second)
-	tokens, err := services.CognitoClient.Validate(ctx.Request().Context(), token.IdToken)
-	if err != nil {
-		return err
-	}
-	type Data struct {
-		Email string `json:"email"`
-	}
-	emailData := Data{}
-	byts, err := json.Marshal(tokens.Claims)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(byts, &emailData)
-	if err != nil {
-		return err
-	}
-	tokenResponse := auth.LoginResponse{
-		Token:      token,
-		LoggedUser: emailData.Email,
-	}
-	if emailData.Email == "" {
-		return ctx.JSON(http.StatusOK, map[string]string{"loggedUser": ""})
-	}
-
-	tokenStr, err := json.Marshal(tokenResponse)
-	if err != nil {
-		return err
-	}
+	ctx.Response().Header().Set(echo.HeaderAuthorization, token)
 	cookie := new(http.Cookie)
 	cookie.Name = "firstAuth"
-	cookie.Value = string(tokenStr)
+	cookie.Value = token
 	cookie.Path = "/"
 	cookie.Domain = url
 	cookie.Secure = secure
 	cookie.Expires = time.Now().Add(60 * time.Minute)
 	ctx.SetCookie(cookie)
-	services.CloudFlare.AddTokenToCloudFlareKV(token.AccessToken, token.RefreshToken)
 	return nil
 }

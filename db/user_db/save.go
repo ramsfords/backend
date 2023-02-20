@@ -11,7 +11,7 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func (userdb UserDb) SaveUser(ctx context.Context, usr v1.User, businessId string) error {
+func (userdb UserDb) SaveUser(ctx context.Context, usr *v1.User, businessId string) error {
 	usr.Type = "user"
 	marshalledUser, err := attributevalue.Marshal(usr)
 	if err != nil {

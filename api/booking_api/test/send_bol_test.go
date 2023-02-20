@@ -8,17 +8,19 @@ import (
 
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/db"
-	"github.com/ramsfords/backend/email"
+	"github.com/ramsfords/backend/foundations/S3"
+	"github.com/ramsfords/backend/foundations/email"
 )
 
 func TestSendEmailBol(t *testing.T) {
 	config := configs.GetConfig()
 	db := db.New(config)
+	s3client := S3.New(config)
 	booking, err := db.GetBooking(context.Background(), "50099")
 	if err != nil {
 		fmt.Println(err)
 	}
-	email.New(config)
+	emailCli := email.New(config, s3client.Client)
 	fileName := strings.Split(booking.BookingInfo.BolUrl, ".com/")[1]
 	data := email.Data{
 		To:          []string{"kandelsuren@gmail.com"},
@@ -32,7 +34,7 @@ func TestSendEmailBol(t *testing.T) {
 			},
 		},
 	}
-	res, err := email.Send(context.Background(), data, config)
+	res, err := emailCli.Send(context.Background(), data)
 	if err != nil {
 		fmt.Println(err)
 	}

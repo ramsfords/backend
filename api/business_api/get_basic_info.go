@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 
+	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/business/core/model"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -16,19 +17,15 @@ type BasicInfo struct {
 }
 
 func (business Business) GetBasicInfo(ctx echo.Context) error {
-	businessID := ctx.PathParam("businessId")
-	if businessID == "" {
-		return ctx.NoContent(http.StatusBadRequest)
+	authContext, err := utils.GetAuthContext(ctx)
+	if err != nil {
+		return ctx.NoContent(http.StatusUnauthorized)
 	}
-	email := ctx.QueryParam("email")
-
-	// emails := user.GetString("email")
-	// fmt.Println(email, emails)
-	data, err := business.services.Db.GetAllDataByBusinessId(ctx.Request().Context(), businessID)
+	data, err := business.services.Db.GetAllDataByBusinessId(ctx.Request().Context(), authContext.OrganizationId)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	shipments, err := business.services.Db.GetAllBookingsByBusinessId(ctx.Request().Context(), businessID)
+	shipments, err := business.services.Db.GetAllBookingsByBusinessId(ctx.Request().Context(), authContext.OrganizationId)
 	if err != nil {
 		business.services.Logger.Errorf("error getting shipments: %v", err)
 	}
@@ -40,7 +37,7 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 		User:          &v1.FrontEndUser{},
 		Shipments:     shipments,
 	}
-	resdata.User = getCurrentSanitizedUser(resdata.Users, email)
+	resdata.User = getCurrentSanitizedUser(resdata.Users, authContext.Email)
 	return ctx.JSON(http.StatusOK, resdata)
 }
 func getUserFromUsers(email string, users []*v1.User) *v1.User {

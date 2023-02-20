@@ -30,6 +30,10 @@ func (cognito CognitoClient) CreateUser(ctx context.Context, data *v1.User) (*ci
 				Value: aws.String(data.Name),
 			},
 			{
+				Name:  aws.String("custom:organizationId"),
+				Value: aws.String(data.OrgId),
+			},
+			{
 				Name:  aws.String("phone_number"),
 				Value: aws.String(data.PhoneNumber),
 			},

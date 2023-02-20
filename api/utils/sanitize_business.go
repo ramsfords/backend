@@ -14,7 +14,7 @@ func SanitizeBusiness(req *v1.User) (businessDb *v1.Business, err error) {
 		AccountingEmail:      req.Email,
 		HighPriorityEmail:    req.Email,
 		CustomerServiceEmail: req.Email,
-		CreateAt:             time.Now().String(),
+		CreatedAt:            time.Now().String(),
 		AdminEmail:           req.Email,
 		NeedsAddressUpdate:   true,
 	}

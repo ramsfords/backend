@@ -32,7 +32,7 @@ func New(services *services.Services, app *echo.Echo) Business {
 	businessGrp.DELETE("/delete_staff", bis.DeleteStaff)
 	businessGrp.POST("/add_business_address", bis.AddBusinessAddress)
 	businessGrp.PATCH("/update_business_name", bis.UpdateBusinessName)
-	businessGrp.GET("/get_basic_info/:businessId", bis.GetBasicInfo)
+	businessGrp.GET("/get_basic_info", bis.GetBasicInfo)
 	businessGrp.PATCH("/update_pickup_address", bis.UpdateDefaultPickupAddress)
 	businessGrp.POST("/address/:businessId", bis.AddBusinessAddress)
 	businessGrp.POST("/phone/:businessId", bis.UpdateBusinessPhoneNumber)

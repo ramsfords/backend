@@ -8,13 +8,12 @@ import (
 	"github.com/ramsfords/backend/foundations/errs"
 )
 
-func (cognito *CognitoClient) ConfirmEmail(ctx context.Context, email string, code string) error {
-	confirmRequest := cip.ConfirmSignUpInput{
-		ClientId:         &cognito.CognitoClientID,
-		Username:         &email,
-		ConfirmationCode: &code,
+func (cognito *CognitoClient) ConfirmEmail(ctx context.Context, email string) error {
+	confirmRequest := cip.AdminConfirmSignUpInput{
+		UserPoolId: &cognito.CognitoUserPoolID,
+		Username:   &email,
 	}
-	_, err := cognito.Client.ConfirmSignUp(ctx, &confirmRequest)
+	_, err := cognito.Client.AdminConfirmSignUp(ctx, &confirmRequest)
 	if err != nil {
 		errMsg := err.Error()
 		if strings.Contains(errMsg, "ExpiredCodeException") {

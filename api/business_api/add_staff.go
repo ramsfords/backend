@@ -41,7 +41,7 @@ func (business Business) AddStaff(ctx context.Context, req *v1.AddStaff) (*v1.Ok
 	}
 	dbUser := utils.SanitizeUser(req)
 
-	err = business.services.Db.SaveUser(ctx, *dbUser, req.BusinessId)
+	err = business.services.Db.SaveUser(ctx, dbUser, req.BusinessId)
 	if err != nil {
 		business.services.Logger.Errorf("adding staff to database failded: %s", err)
 		return nil, errs.ErrInvalidInputs

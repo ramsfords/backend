@@ -1,5 +1,9 @@
 vendor 
 .env 
+.vscode 
+__debug_*
+.tokens*
+go.sum
 configs/*.yaml
 configs/*.yml 
 configs/*.json
