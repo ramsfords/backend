@@ -21,7 +21,7 @@ func (business Business) UpdateBusinessName(ctx echo.Context) error {
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	if authContext.OrganizationId == "" || businessName.BusinessName == "" || len(businessName.BusinessName) < 3 {
+	if businessName.BusinessName == "" || len(businessName.BusinessName) < 3 {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	newContext := ctx.Request().Context()
