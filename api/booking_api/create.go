@@ -1,7 +1,9 @@
 package booking_api
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -48,7 +50,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	if !business.AllowBooking {
 		return nil, errs.ErrNotAllowed
 	}
-	if !business.BooksOpened {
+	if business.BooksOpened {
 		// business, err := bookingApi.services.Db.GetBusiness(ctxx, bkReq.QuoteRequest.BusinessId)
 		// if err != nil {
 		// 	return nil, errors.New("user not found")
@@ -68,7 +70,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		}
 		fmt.Println(contact)
 	}
-	books.InsertProspects(oldQuote.QuoteRequest.Delivery, *bookingApi.books)
+	// books.InsertProspects(oldQuote.QuoteRequest.Delivery, *bookingApi.books)
 	bid := getBidFormBids(oldQuote.Bids, bkReq.BidId)
 	if bid.BidId == "" {
 		return nil, fmt.Errorf("bid not found")
@@ -138,11 +140,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		bookingApi.services.Logger.Error(err)
 		return nil, err
 	}
-	err = makeBOlGenGetRequest(bookingApi.services.Conf, fileName)
-	if err != nil {
-		// just log the error not Need to return error
-		bookingApi.services.Logger.Error(err)
-	}
+
 	oldQuote.BookingInfo.SvgData = url
 	oldQuote.BookingInfo.BolUrl = bolUrl
 	outRes := &v1.BookingResponse{
@@ -192,10 +190,15 @@ func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
 	}
 	return nil
 }
-func makeBOlGenGetRequest(conf *configs.Config, fileName string) error {
+func makeBOlGenGetRequest(conf *configs.Config, fileName string, bookingData *v1.BookingResponse) error {
 	url := conf.GetFirstShipperFontEndURL() + "/api/bol?fileName=" + fileName
 	fmt.Println("calling url to generate bol", url)
-	resp, err := http.Get(url)
+	jsonData, err := json.Marshal(bookingData)
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil || resp.StatusCode != http.StatusOK {
 		return err
 	}
