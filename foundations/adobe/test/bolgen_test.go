@@ -11,7 +11,6 @@ import (
 	"github.com/ramsfords/backend/configs"
 	"github.com/ramsfords/backend/foundations/S3"
 	"github.com/ramsfords/backend/foundations/adobe"
-	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -20,8 +19,7 @@ var adobes *adobe.Adobe
 func init() {
 	conf := configs.GetConfig()
 	seClient := S3.New(conf)
-	logger := logger.New("debug")
-	adobes = adobe.NewAdobe(seClient, &logger)
+	adobes = adobe.NewAdobe(seClient)
 	adobes.GetToken()
 }
 func TestBolGen(t *testing.T) {

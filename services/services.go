@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/ramsfords/backend/business/core/model"
 	"github.com/ramsfords/backend/business/rapid"
 	"github.com/ramsfords/backend/configs"
@@ -12,13 +14,11 @@ import (
 	"github.com/ramsfords/backend/foundations/cognito"
 	"github.com/ramsfords/backend/foundations/email"
 	"github.com/ramsfords/backend/foundations/logger"
-	"go.uber.org/zap"
 )
 
 type Services struct {
 	Conf          *configs.Config
 	S3Client      S3.S3Client
-	Logger        logger.Logger
 	Cloudinery    *cloudinery.Cloudinery
 	CloudFlare    *cloudflare.Cloudflare
 	CognitoClient *cognito.CognitoClient
@@ -26,19 +26,25 @@ type Services struct {
 	Zoho          *auth.Zoho
 	Db            db.DB
 	Email         *email.Email
+	Logger        *logger.AppLogger
 	Crypto        *model.Crypto
 }
 
 func New(conf *configs.Config) *Services {
 	S3Client := S3.New(conf)
-	logger := logger.New(conf.GetFirstShipperServiceName())
+	logger, err := logger.New(conf, "firstshipper-api")
+	if err != nil {
+		fmt.Println(fmt.Errorf("could not start cognito client: %v", err))
+		return nil
+
+	}
 	emailCli := email.New(conf, S3Client.Client)
 	db := db.New(conf)
 	cloudinery := cloudinery.New(conf.SitesSettings.FirstShipper.CloudinaryConfig)
 	cloudflar := cloudflare.New(conf.CloudFlareConfig)
 	cogClient, err := cognito.NewClient(conf)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Error("could not start cognito client", map[string]interface{}{"error": err})
 	}
 	crypto := model.New(conf.FirstKey)
 	// zohoClient := auth.New(conf)
@@ -50,7 +56,6 @@ func New(conf *configs.Config) *Services {
 	newService := &Services{
 		Conf:          conf,
 		S3Client:      S3Client,
-		Logger:        logger,
 		Cloudinery:    cloudinery,
 		CloudFlare:    cloudflar,
 		CognitoClient: cogClient,
@@ -58,10 +63,8 @@ func New(conf *configs.Config) *Services {
 		Zoho:          &auth.Zoho{},
 		Rapid:         rapid,
 		Crypto:        crypto,
+		Logger:        logger,
 		Email:         emailCli,
 	}
 	return newService
-}
-func (ser Services) GetLogger() *zap.SugaredLogger {
-	return ser.Logger.SugaredLogger
 }

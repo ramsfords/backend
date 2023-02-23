@@ -8,6 +8,7 @@ import (
 
 	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/business/core/model"
+	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -27,7 +28,7 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 	}
 	shipments, err := business.services.Db.GetAllBookingsByBusinessId(ctx.Request().Context(), authContext.OrganizationId)
 	if err != nil {
-		business.services.Logger.Errorf("error getting shipments: %v", err)
+		logger.Error(err, "error getting shipments")
 	}
 	removeSaltedPassword(data.Users)
 	resdata := model.FrontEndBusinessData{

@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/api/utils"
+	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -24,13 +25,13 @@ func (business Business) AddBusinessAddress(ctx echo.Context) error {
 	address.BusinessId = authContext.OrganizationId
 	err = address.Validate()
 	if err != nil {
-		business.services.Logger.Errorf("req data validation failed: %s", err)
+		logger.Error(err, "req data validation failed")
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	newContext := ctx.Request().Context()
 	address, err = business.services.Db.AddLocationAddress(newContext, address.BusinessId, address)
 	if err != nil {
-		business.services.Logger.Errorf("adding address to database failded: %s", err)
+		logger.Error(err, "adding address to database failded")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	return ctx.JSON(http.StatusCreated, address)

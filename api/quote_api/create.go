@@ -10,6 +10,7 @@ import (
 	"github.com/ramsfords/backend/business/core/model"
 	rapid "github.com/ramsfords/backend/business/rapid/rapid_utils/quote"
 	"github.com/ramsfords/backend/foundations/errs"
+	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -43,14 +44,14 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 	// get quote from rapid
 	res, err := qt.services.Rapid.GetQuote(rapidQuoteRequest)
 	if err != nil {
-		qt.services.Logger.Error(err)
+		logger.Error(err, "GetNewQuote : error in getting quote from rapid")
 		return nil, errs.ErrInternal
 	}
 	saveQuote := rapid.SaveQuoteStep2(rapidQuoteRequest, res)
 	saveQuoteRes, err := qt.services.Rapid.SaveQuoteStep(saveQuote)
 	if err != nil {
 		// just log the error not Need to return error
-		qt.services.Logger.Error(err)
+		logger.Error(err, "GetNewQuote : error in saving quote from rapid")
 	}
 	bidRes := rapid.MakeBid(qtReq, res.DayDeliveries, qt.Mutex)
 	if bidRes == nil {

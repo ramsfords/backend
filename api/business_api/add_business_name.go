@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/api/utils"
+	"github.com/ramsfords/backend/foundations/logger"
 )
 
 type AddBusinessName struct {
@@ -27,7 +28,7 @@ func (business Business) UpdateBusinessName(ctx echo.Context) error {
 	newContext := ctx.Request().Context()
 	err = business.services.Db.UpdateBusinessName(newContext, authContext.OrganizationId, businessName.BusinessName)
 	if err != nil {
-		business.services.Logger.Errorf("adding address to database failded: %s", err)
+		logger.Error(err, "adding address to database failded")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	return ctx.NoContent(http.StatusCreated)

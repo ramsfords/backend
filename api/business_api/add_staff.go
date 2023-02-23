@@ -2,11 +2,13 @@ package business_api
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/foundations/errs"
+	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -31,20 +33,20 @@ func (business Business) EchoAddStaff(ctx echo.Context) error {
 func (business Business) AddStaff(ctx context.Context, req *v1.AddStaff) (*v1.Ok, error) {
 	err := req.Validate()
 	if err != nil {
-		business.services.Logger.Errorf("req data validation failed: %s", err)
+		logger.Error(err, "req data validation failed")
 		return nil, errs.ErrInvalidInputs
 	}
 	isAdmin := false
 
 	if !isAdmin {
-		business.services.Logger.Info("user does not have admin role to add staff for email", req.NewStaffEmail)
+		logger.Error(errors.New("user does not have admin role"), "user does not have admin role to add staff for email")
 		return nil, errs.ErrNotAllowed
 	}
 	dbUser := utils.SanitizeUser(req)
 
 	err = business.services.Db.SaveUser(ctx, dbUser, req.BusinessId)
 	if err != nil {
-		business.services.Logger.Errorf("adding staff to database failded: %s", err)
+		logger.Error(err, "adding staff to database failded")
 		return nil, errs.ErrInvalidInputs
 	}
 

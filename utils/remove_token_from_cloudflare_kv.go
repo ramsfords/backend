@@ -8,17 +8,17 @@ import (
 	"github.com/ramsfords/backend/foundations/logger"
 )
 
-func RemoveTokenFormCloudflareKv(conf *configs.Config, logger logger.Logger, cloudFlareCli *cloudflare.API, tokenKey string) error {
+func RemoveTokenFormCloudflareKv(conf *configs.Config, cloudFlareCli *cloudflare.API, tokenKey string) error {
 	res, err := cloudFlareCli.DeleteWorkersKVEntry(context.Background(), cloudflare.AccountIdentifier(conf.CloudFlareConfig.AccountId), cloudflare.DeleteWorkersKVEntryParams{
 		NamespaceID: conf.CloudFlareConfig.NamespaceId,
 		Key:         tokenKey,
 	})
 	if err != nil {
-		logger.Errorf("error writing to cloudflare: %v", err)
+		logger.Error(err, "error writing to cloudflare")
 		return err
 	}
 	if err != nil || len(res.Errors) > 0 {
-		logger.Errorf("error writing to cloudflare: %v", err)
+		logger.Error(err, "error writing to cloudflare: %v")
 		return err
 	}
 	return nil

@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/foundations/errs"
+	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -26,12 +27,12 @@ func (business Business) EchoCreateBusiness(ctx echo.Context) error {
 func (business Business) CreateBusiness(ctx context.Context, req *v1.Business) (*v1.Ok, error) {
 	err := req.Validate()
 	if err != nil {
-		business.services.Logger.Errorf("CreateBusiness Validate : req data validation failed: %s", err)
+		logger.Error(err, "CreateBusiness Validate : req data validation failed")
 		return nil, errs.ErrInputDataNotValid
 	}
 	err = business.services.Db.SaveBusiness(ctx, req, req.BusinessId)
 	if err != nil {
-		business.services.Logger.Errorf("CreateBusiness InsertBusiness : error in inserting business into the database: %s", err)
+		logger.Error(err, "CreateBusiness InsertBusiness : error in inserting business into the database")
 		return nil, errs.ErrLocationCreationFailed
 	}
 

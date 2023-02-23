@@ -10,9 +10,8 @@ import (
 )
 
 type Crypto struct {
-	secretkey string        `json:"-"`
-	logger    logger.Logger `json:"-"`
-	bytes     []byte        `json:"-"`
+	secretkey string `json:"-"`
+	bytes     []byte `json:"-"`
 }
 
 func New(secretKey string) *Crypto {
@@ -38,7 +37,7 @@ func (crypto Crypto) getBytes(data interface{}) []byte {
 	// create json bytes
 	bytes, err := json.Marshal(data)
 	if err != nil {
-		crypto.logger.Error(err)
+		logger.Error(err, "error in getting bytes")
 		return nil
 	}
 	return bytes
@@ -49,7 +48,7 @@ func (crypto Crypto) Encrypt(data interface{}) (string, error) {
 	plainBytes := crypto.getBytes(data)
 	block, err := aes.NewCipher([]byte(crypto.secretkey))
 	if err != nil {
-		crypto.logger.Error(err)
+		logger.Error(err, "error in encrypting")
 		return "", err
 	}
 	cfb := cipher.NewCFBEncrypter(block, crypto.bytes)
@@ -63,7 +62,7 @@ func (crypto Crypto) Decrypt(data string) ([]byte, error) {
 	cipherBytes := decode(data)
 	block, err := aes.NewCipher([]byte(crypto.secretkey))
 	if err != nil {
-		crypto.logger.Error(err)
+		logger.Error(err, "error in decrypting")
 		return nil, err
 	}
 	cfb := cipher.NewCFBDecrypter(block, crypto.bytes)

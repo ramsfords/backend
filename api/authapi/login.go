@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/foundations/logger"
 	"github.com/ramsfords/backend/services"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
@@ -36,7 +37,7 @@ func (auth AuthApi) EchoLogin(ctx echo.Context) error {
 	// jwtBytes
 	getClaim, err := auth.services.CognitoClient.Validate(ctx.Request().Context(), *loginRes.AuthenticationResult.IdToken)
 	if err != nil {
-		auth.services.Logger.Error("could not validate jwt")
+		logger.Error(err, "could not validate jwt")
 	}
 	loginResBytes, err := json.Marshal(getClaim.Claims)
 	if err != nil {
@@ -50,7 +51,7 @@ func (auth AuthApi) EchoLogin(ctx echo.Context) error {
 	}
 	err = auth.services.Db.SaveRefreshToken(ctx.Request().Context(), cognitoUserData.OrganizationId, cognitoUserData.Sub, *loginRes.AuthenticationResult.RefreshToken)
 	if err != nil {
-		auth.services.Logger.Errorf("RedirectLogin SaveRefreshToken : error in inserting refresh token into the database: %s", err)
+		logger.Error(err, "RedirectLogin SaveRefreshToken : error in inserting refresh token into the database")
 	}
 
 	loginData := LoginData{
@@ -61,14 +62,14 @@ func (auth AuthApi) EchoLogin(ctx echo.Context) error {
 	token, err := auth.services.Crypto.Encrypt(loginData)
 	if err != nil {
 		// log error
-		auth.services.Logger.Errorf("EchoLogin Encrypt : error in encrypting login data: %s", err)
+		logger.Error(err, "EchoLogin Encrypt : error in encrypting login data")
 	}
 	loginData.Token = token
 	// encrypt with token again
 	token, err = auth.services.Crypto.Encrypt(loginData)
 	if err != nil {
 		// log error
-		auth.services.Logger.Errorf("EchoLogin Encrypt : error in encrypting login data: %s", err)
+		logger.Error(err, "EchoLogin Encrypt : error in encrypting login data")
 	}
 	WriteCookie(ctx, loginData, auth.services)
 	return ctx.JSON(http.StatusOK, loginData)
@@ -81,7 +82,7 @@ func WriteCookie(ctx echo.Context, loginData LoginData, services *services.Servi
 	token, err := services.Crypto.Encrypt(loginData)
 	if err != nil {
 		// log error
-		services.Logger.Errorf("EchoLogin Encrypt : error in encrypting login data: %s", err)
+		logger.Error(err, "EchoLogin Encrypt : error in encrypting login data")
 	}
 	secure := false
 	url := "127.0.0.1"

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -81,11 +82,11 @@ func (auth AuthApi) ConfirmEmail(ctx echo.Context) error {
 	go func() {
 		err = auth.services.Db.SaveBusiness(context.Background(), business, user.OrgId)
 		if err != nil {
-			auth.services.Logger.Errorf("could not save business: %v", err)
+			logger.Error(err, "could not save business")
 		}
 		err = auth.services.Db.SaveUser(context.Background(), user, user.OrgId)
 		if err != nil {
-			auth.services.Logger.Errorf("could not save user: %v", err)
+			logger.Error(err, "could not save user")
 		}
 	}()
 

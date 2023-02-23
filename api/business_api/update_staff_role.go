@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/foundations/errs"
+	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -33,12 +34,12 @@ func (business Business) UpdateStaffRole(ctx context.Context, req *v1.UpdateUser
 	isAdmin := false
 
 	if !isAdmin {
-		business.services.Logger.Errorf("user trying to update role without valid role", req.Token)
+		logger.Error(err, "user trying to update role without valid role")
 		return &v1.Ok{}, errs.ErrNotAllowed
 	}
 	err = business.services.Db.UpdateStaffRole(ctx, businessId, req.StaffEmail, req.NewRole)
 	if err != nil {
-		business.services.Logger.Info("could not update staff role ", err)
+		logger.Error(err, "could not update staff role")
 		return &v1.Ok{
 			Success: false,
 			Message: "please try again leter",

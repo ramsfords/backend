@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/foundations/errs"
+	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -27,12 +28,12 @@ func (loc Location) EchoAddLocation(ctx echo.Context) error {
 func (loc Location) AddLocation(ctx context.Context, locationReq *v1.Location) (*v1.Ok, error) {
 	err := locationReq.Validate()
 	if err != nil {
-		loc.services.Logger.Error("AddLocation Validate : req data validation failed: %s", err)
+		logger.Error(err, "AddLocation Validate : req data validation failed")
 		return nil, errs.ErrInvalidInputs
 	}
 	err = loc.services.Db.SaveLocation(ctx, locationReq.BusinessId, locationReq)
 	if err != nil {
-		loc.services.Logger.Error("AddLocation InsertLocation : error in inserting location into the database: %s", err)
+		logger.Error(err, "AddLocation InsertLocation : error in inserting location into the database")
 		return nil, errs.ErrLocationCreationFailed
 	}
 

@@ -41,17 +41,15 @@ type AdoblePullRes struct {
 type Adobe struct {
 	S3.S3Client
 	TokenRes TokenRes `json:"token_res"`
-	logger   *logger.Logger
 }
 
-func NewAdobe(s3Client S3.S3Client, logger *logger.Logger) *Adobe {
+func NewAdobe(s3Client S3.S3Client) *Adobe {
 	adobe := &Adobe{
 		S3Client: s3Client,
-		logger:   logger,
 	}
 	err := adobe.ExchangeToken()
 	if err != nil {
-		logger.Errorf("Error in exchange token %v", err)
+		logger.Error(err, "Error in exchange token")
 	} else {
 		adobe.TokenRes.ApiKey = "1a0995378e964e85a260ce3e98f5e6b7"
 	}
@@ -59,7 +57,6 @@ func NewAdobe(s3Client S3.S3Client, logger *logger.Logger) *Adobe {
 	return adobe
 }
 func (adobe *Adobe) UrlToPdf(bid *v1.Bid, fileName string) (string, error) {
-	adobe.logger.Infof("starting url to pdf %v", time.Now().Local())
 	tryAgain := true
 	for tryAgain {
 		url := "https://pdf-services-ue1.adobe.io/operation/htmltopdf"
@@ -82,7 +79,7 @@ func (adobe *Adobe) UrlToPdf(bid *v1.Bid, fileName string) (string, error) {
 		req.Body = ioutil.NopCloser(bytes.NewBufferString(reqBody))
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
-			adobe.logger.Errorf("I am in loop.Error in url to pdf %v", err)
+			logger.Error(err, "I am in loop.Error in url to pdf")
 			break
 		}
 
@@ -93,7 +90,7 @@ func (adobe *Adobe) UrlToPdf(bid *v1.Bid, fileName string) (string, error) {
 			tryAgain = false
 			body, err := ioutil.ReadAll(res.Body)
 			if err != nil {
-				adobe.logger.Errorf("I am in loop.Error in url to pdf %v", err)
+				logger.Error(err, "I am in loop.Error in url to pdf")
 			}
 			location := res.Header.Get("Location")
 			pullObjectId := strings.Split(strings.Split(location, "htmltopdf/")[1], "/")[0]
@@ -104,11 +101,9 @@ func (adobe *Adobe) UrlToPdf(bid *v1.Bid, fileName string) (string, error) {
 		}
 
 	}
-	adobe.logger.Infof("finished url to pdf %v", time.Now().Local())
 	return "", nil
 }
 func (adobe *Adobe) PullObjectResult(pullObjectId string, bid *v1.Bid, fileName string) (adobeResourceURL string, err error) {
-	adobe.logger.Infof("starint pull object from adobe %v", time.Now().Local())
 	time.Sleep(10 * time.Second)
 	url := "https://pdf-services-ue1.adobe.io/operation/htmltopdf/{PULLOBJECTID}/status"
 	url = strings.Replace(url, "{PULLOBJECTID}", pullObjectId, 1)
@@ -120,33 +115,32 @@ func (adobe *Adobe) PullObjectResult(pullObjectId string, bid *v1.Bid, fileName 
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		adobe.logger.Errorf("Error in pull object from adobe %v", err)
+		logger.Error(err, "Error in pull object from adobe")
 	}
 
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		adobe.logger.Errorf("Error in pull object from adobe %v", err)
+		logger.Error(err, "Error in pull object from adobe")
 	}
 	resData := AdoblePullRes{}
 	err = json.Unmarshal(body, &resData)
 	if err != nil {
-		adobe.logger.Errorf("Error in pull object from adobe %v", err)
+		logger.Error(err, "Error in pull object from adobe")
 	}
 	adobe.UploadBOlTOS3(resData.Aseets.DownloadUri, bid, fileName)
-	adobe.logger.Info("finised PullObjectResult from adobe")
+	logger.Error(err, "finised PullObjectResult from adobe")
 	return "", nil
 }
 func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bid *v1.Bid, fileName string) (string, error) {
-	adobe.logger.Infof("starting upload bol to s3", time.Now().Local())
 	// gets pdf from provided url
 	reqs, err := http.Get(adobeResourceURl)
 	if err != nil {
-		adobe.logger.Errorf("Error in pull object from adobe %v", err)
+		logger.Error(err, "Error in pull object from adobe")
 	}
 	pdfBytes, err := io.ReadAll(reqs.Body)
 	if err != nil {
-		adobe.logger.Errorf("Error in pull object from adobe %v", err)
+		logger.Error(err, "Error in pull object from adobe")
 	}
 	reqs.Body.Close()
 	s3Input := &s3.PutObjectInput{
@@ -159,14 +153,12 @@ func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bid *v1.Bid, fileName
 	}
 	s3res, err := adobe.Client.PutObject(context.Background(), s3Input)
 	if err != nil {
-		adobe.logger.Errorf("Error in putting object in s3 %v", err)
+		logger.Error(err, "Error in putting object in s3")
 	}
 	fmt.Println(s3res)
-	adobe.logger.Info("finished upload bol to s3")
 	return "", nil
 }
 func (adobe *Adobe) ExchangeToken() error {
-	adobe.logger.Infof("starting exchange token form adobe %v", time.Now().Local())
 	urls := "https://ims-na1.adobelogin.com/ims/exchange/jwt/"
 	form := url.Values{}
 	form.Add("client_id", "1a0995378e964e85a260ce3e98f5e6b7")
@@ -175,27 +167,26 @@ func (adobe *Adobe) ExchangeToken() error {
 
 	res, err := http.PostForm(urls, form)
 	if err != nil {
-		adobe.logger.Errorf("Error in exchanging token from adobe %v", err)
+		logger.Error(err, "Error in exchanging token from adobe")
 		return err
 	}
 
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		adobe.logger.Errorf("Error in exchanging token from adobe %v", err)
+		logger.Error(err, "Error in exchanging token from adobe")
 		return err
 	}
 	token := &TokenRes{}
 	err = json.Unmarshal(body, token)
 	if err != nil || res.Status != "200 OK" {
-		adobe.logger.Errorf("Error in exchanging token from adobe %v", err)
+		logger.Error(err, "Error in exchanging token from adobe")
 		return err
 	}
 	token.AccessToken = "Bearer " + token.AccessToken
 	adobe.TokenRes.AccessToken = token.AccessToken
 	adobe.TokenRes.ExpiresIn = token.ExpiresIn
 	adobe.TokenRes.TokenType = token.TokenType
-	adobe.logger.Infof("done exchange token form adobe %v", time.Now().Local())
 	return nil
 }
 
@@ -214,18 +205,18 @@ func (adobe *Adobe) GetToken() (string, error) {
 	jsonValue, _ := json.Marshal(jsonData)
 	request, err := http.NewRequest("POST", "https://developer.adobe.com/console/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
-		adobe.logger.Errorf("Error in exchanging token from adobe %v", err)
+		logger.Error(err, "Error in exchanging token from adobe")
 		return "", err
 	}
 	client := &http.Client{Timeout: time.Second * 10}
 	response, err := client.Do(request)
 	if err != nil && response.StatusCode == 200 {
-		adobe.logger.Errorf("Error in exchanging token from adobe %v", err)
+		logger.Error(err, "Error in exchanging token from adobe")
 		return "", err
 	}
 	defer response.Body.Close()
 	if err != nil {
-		fmt.Printf("The HTTP request failed with error %s\n", err)
+		logger.Error(err, "Error in exchanging token from adobe")
 	}
 	data, _ := ioutil.ReadAll(response.Body)
 	fmt.Println(string(data))

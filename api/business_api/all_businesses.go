@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/foundations/errs"
+	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -20,7 +21,7 @@ func (business Business) EchoGetAllBusiness(ctx echo.Context) error {
 func (business Business) GetBusinesses(ctx context.Context) (*v1.Business, error) {
 	res, err := business.services.Db.GetBusiness(ctx, "req.Id")
 	if err != nil {
-		business.services.Logger.Errorf("GetAllBusinesses : error in getting all businesses: %s", err)
+		logger.Error(err, "GetAllBusinesses : error in getting all businesses")
 		return nil, errs.ErrStoreInternal
 	}
 

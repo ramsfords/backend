@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/api/utils"
+	"github.com/ramsfords/backend/foundations/logger"
 )
 
 func (business Business) AllowBooking(ctx echo.Context) error {
@@ -20,7 +21,7 @@ func (business Business) AllowBooking(ctx echo.Context) error {
 	newContext := ctx.Request().Context()
 	_, err = business.services.Db.UpdateAllowBooking(newContext, authContext.OrganizationId, allowBooking)
 	if err != nil {
-		business.services.Logger.Errorf("adding address to database failded: %s", err)
+		logger.Error(err, "adding address to database failded")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	return ctx.JSON(http.StatusCreated, allowBooking)

@@ -1,73 +1,51 @@
 package mid
 
 import (
-	"context"
-	"errors"
-	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/labstack/echo/v5"
-	"go.opentelemetry.io/otel/trace"
+	newrelic "github.com/newrelic/go-agent/v3/newrelic"
 )
 
-// ctxKey represents the type of value for the context key.
-type ctxKey string
+// Middleware creates Echo middleware with provided config that
+// instruments requests.
+//
+//	e := echo.New()
+//	// Add the nrecho middleware before other middlewares or routes:
+//	e.Use(nrecho.MiddlewareWithConfig(nrecho.Config{App: app}))
+func Tracer(app *newrelic.Application) func(echo.HandlerFunc) echo.HandlerFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) (err error) {
+			rw := c.Response().Writer
+			txn := app.StartTransaction(c.RouteInfo().Path())
+			defer txn.End()
+			txn.SetWebRequestHTTP(c.Request())
+			c.Response().Writer = txn.SetWebResponse(rw)
+			// Add txn to c.Request().Context()
+			c.SetRequest(c.Request().WithContext(newrelic.NewContext(c.Request().Context(), txn)))
+			app.RecordLog(newrelic.LogData{
+				Message:   "Hello World",
+				Timestamp: time.Now().Unix(),
+				Severity:  "info",
+			})
+			err = next(c)
 
-// key is how request values are stored/retrieved.
-const key ctxKey = "1"
+			// Record the response code. The response headers are not captured
+			// in this case because they are set after this middleware returns.
+			// Designed to mimic the logic in echo.DefaultHTTPErrorHandler.
+			if nil != err && !c.Response().Committed {
 
-// Values represent state for each request.
-type Values struct {
-	TraceID    string    `json:"trace_id"`
-	Now        time.Time `json:"now"`
-	StatusCode int       `json:"status_code"`
-}
+				c.Response().Writer = rw
 
-func (va Values) String() string {
-	return fmt.Sprintf("trace_id:%s,now:%v,status_code:%d", va.TraceID, va.Now.Local().String(), va.StatusCode)
-}
+				if httperr, ok := err.(*echo.HTTPError); ok {
+					txn.SetWebResponse(nil).WriteHeader(httperr.Code)
+				} else {
+					txn.SetWebResponse(nil).WriteHeader(http.StatusInternalServerError)
+				}
+			}
 
-// GetValues returns the values from the context.
-func GetValues(ctx context.Context) (*Values, error) {
-	v, ok := ctx.Value(key).(*Values)
-	if !ok {
-		return nil, errors.New("web value missing from context")
-	}
-	return v, nil
-}
-
-// GetTraceID returns the trace id from the context.
-func GetTraceID(ctx context.Context) string {
-	v, ok := ctx.Value(key).(*Values)
-	if !ok {
-		return "00000000-0000-0000-0000-000000000000"
-	}
-	return v.TraceID
-}
-
-// SetStatusCode sets the status code back into the context.
-func SetStatusCode(ctx context.Context, statusCode int) error {
-	v, ok := ctx.Value(key).(*Values)
-	if !ok {
-		return errors.New("web value missing from context")
-	}
-	v.StatusCode = statusCode
-	return nil
-}
-
-func TraceInjector() echo.HandlerFunc {
-	return func(ctx echo.Context) error {
-		// Pull the context from request
-		c := ctx.Request().Context()
-		// Capture the parent request span from the context.
-		span := trace.SpanFromContext(c)
-		// Set the context with the required values to
-		// process the request.
-		v := Values{
-			TraceID: span.SpanContext().TraceID().String(),
-			Now:     time.Now(),
+			return
 		}
-		ctx.Set("trace_id", &v)
-		return nil
 	}
 }

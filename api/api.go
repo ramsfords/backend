@@ -14,6 +14,13 @@ import (
 )
 
 func SetUpAPi(engine *echo.Echo, services *services.Services) {
+	engine.GET("/ping", func(ctx echo.Context) error {
+		return ctx.JSON(200, echo.Map{
+			"message": "pong",
+			"status":  "ok",
+			"code":    200,
+		})
+	})
 	authapi.New(services, engine)
 	bol_api.New(services, engine)
 	location_api.New(services, engine)

@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/ramsfords/backend/business/core/model"
+	"github.com/ramsfords/backend/foundations/errs"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -25,7 +26,7 @@ func (businessDb BusinessDb) GetAllDataByBusinessId(ctx context.Context, busines
 		return nil, err
 	}
 	if len(res.Items) == 0 {
-		return nil, err
+		return nil, errs.ErrDataNotFound
 	}
 	data := &model.BusinessData{}
 	for _, item := range res.Items {
@@ -34,32 +35,27 @@ func (businessDb BusinessDb) GetAllDataByBusinessId(ctx context.Context, busines
 		if ok {
 			err = attributevalue.Unmarshal(businessData, &data.Business)
 			if err != nil {
-				fmt.Println(businessData)
+				return nil, err
 			}
-			fmt.Println(businessData)
 		}
 		userData, ok := item["users"]
 		if ok {
 			user := &v1.User{}
 			err = attributevalue.Unmarshal(userData, user)
 			if err != nil {
-				fmt.Println(businessData)
+				return nil, err
 			}
 			data.Users = append(data.Users, user)
-			fmt.Println(businessData)
 		}
 		quotesData, ok := item["quotes"]
 		if ok {
 			quote := &model.QuoteRequest{}
 			err = attributevalue.Unmarshal(quotesData, quote)
 			if err != nil {
-				fmt.Println(businessData)
+				return nil, err
 			}
 			data.QuoteRequests = append(data.QuoteRequests, quote)
-			fmt.Println(businessData)
 		}
-		fmt.Println(userData)
 	}
-
 	return data, nil
 }

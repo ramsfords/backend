@@ -2,12 +2,14 @@ package mid
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/api/authapi"
+	"github.com/ramsfords/backend/foundations/logger"
 	"github.com/ramsfords/backend/services"
 )
 
@@ -43,6 +45,8 @@ func Protected(services *services.Services) echo.MiddlewareFunc {
 			} else {
 				authorizationHeader := ctx.Request().Header.Get("authorization")
 				if len(authorizationHeader) > 50 {
+					// remove cokie not found error
+					err = nil
 					decrypted, errs := services.Crypto.Decrypt(authorizationHeader)
 					if errs != nil {
 						err = errs
@@ -53,7 +57,7 @@ func Protected(services *services.Services) echo.MiddlewareFunc {
 						err = errs
 					}
 					validUntil, errs := time.Parse(time.RFC3339, loginData.ValidUntil)
-					if err != nil {
+					if errs != nil {
 						err = errs
 					}
 					if time.Now().After(validUntil) {
@@ -66,6 +70,8 @@ func Protected(services *services.Services) echo.MiddlewareFunc {
 				}
 			}
 			if err != nil {
+				newErr := errors.Wrap(errors.New("users dont have access to this resource"), "error in protected middleware")
+				logger.Logger.Error("error in protected middleware", map[string]interface{}{"erorr": errors.Unwrap(newErr)})
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
 			ctx.Set("authContext", loginData)

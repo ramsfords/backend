@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/foundations/errs"
+	"github.com/ramsfords/backend/foundations/logger"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -27,12 +28,12 @@ func (qt Quote) EchoUpdateQuote(ctx echo.Context) error {
 func (qt Quote) UpdateQuote(ctx context.Context, quoteReq *v1.QuoteRequest) (*v1.QuoteRequest, error) {
 	err := quoteReq.Validate()
 	if err != nil {
-		qt.services.Logger.Error("UpdateQuote Validate : req data validation failed: %s", err)
+		logger.Error(err, "UpdateQuote Validate : req data validation failed")
 		return nil, errs.ErrInputDataNotValid
 	}
 	err = qt.services.Db.UpdateQuote(ctx, quoteReq)
 	if err != nil {
-		qt.services.Logger.Error("UpdateQuote : error in updating quote into the database: %s", err)
+		logger.Error(err, "UpdateQuote : error in updating quote into the database")
 		return nil, errs.ErrLocationUpdationFailed
 	}
 
