@@ -145,6 +145,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 	outRes := &v1.BookingResponse{
 		QuoteRequest: oldQuote.QuoteRequest,
 		BookingInfo:  oldQuote.BookingInfo,
+		Bid:          oldQuote.Bid,
 		SvgData:      oldQuote.BookingInfo.SvgData,
 	}
 	makeBOlGenGetRequest(bookingApi.services.Conf, outRes)
