@@ -17,9 +17,10 @@ func New(services *services.Services, echoClient *echo.Echo) {
 		services: services,
 	}
 	book.books = books.New(services.Zoho, services.Conf)
-	protectedBolGroup := echoClient.Group("/booking", mid.Protected(services))
+
+	protectedBolGroup := echoClient.Group("/booking")
 	protectedBolGroup.GET("/:bookingId", book.EchoGetBooking)
-	protectedBolGroup.POST("", book.EchoCreateBooking)
+	protectedBolGroup.POST("", book.EchoCreateBooking, mid.Protected(services))
 }
 
 type Script struct {

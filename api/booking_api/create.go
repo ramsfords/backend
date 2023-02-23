@@ -147,6 +147,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		BookingInfo:  oldQuote.BookingInfo,
 		SvgData:      oldQuote.BookingInfo.SvgData,
 	}
+	makeBOlGenGetRequest(bookingApi.services.Conf, outRes)
 	return outRes, nil
 }
 func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
@@ -157,8 +158,8 @@ func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
 	}
 	return nil
 }
-func makeBOlGenGetRequest(conf *configs.Config, fileName string, bookingData *v1.BookingResponse) error {
-	url := conf.GetFirstShipperFontEndURL() + "/api/bol?fileName=" + fileName
+func makeBOlGenGetRequest(conf *configs.Config, bookingData *v1.BookingResponse) error {
+	url := conf.GetFirstShipperFontEndURL() + "/api/bol"
 	fmt.Println("calling url to generate bol", url)
 	jsonData, err := json.Marshal(bookingData)
 	if err != nil {
