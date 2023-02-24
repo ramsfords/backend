@@ -189,7 +189,7 @@ func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bookingResponse *v1.B
 	totalItemsStr := fmt.Sprintf("%d", bookingResponse.QuoteRequest.TotalItems)
 	s3Input := &s3.PutObjectInput{
 		Bucket:             aws.String("firstshipperbol"),
-		Key:                aws.String("BOL" + fileName + ".pdf"),
+		Key:                aws.String("BOL" + fileName),
 		CacheControl:       aws.String(""),
 		ContentType:        aws.String("application/pdf"),
 		ContentDisposition: aws.String("inline"),
