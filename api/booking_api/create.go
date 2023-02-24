@@ -103,7 +103,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 
 	// hash the user password
 
-	fileName := bid.BidId + "-" + strings.ToLower(utils.GenerateString(4)) + ".pdf"
+	fileName := bid.BidId + "-" + strings.ToLower(utils.GenerateString(4))
 	if err != nil {
 		logger.Error(err, "Error in created hashed bol")
 	}
