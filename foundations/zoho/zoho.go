@@ -1,6 +1,8 @@
-package auth
+package zoho
 
 import (
+	_ "embed"
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -10,8 +12,21 @@ import (
 	"github.com/ramsfords/backend/configs"
 )
 
+//go:embed tokens.txt
+var tokenstr string
+
+type tokens struct {
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	ApiDomain    string    `json:"api_domain"`
+	TokenType    string    `json:"token_type"`
+	ExpiresIn    int       `json:"expires_in"`
+	ExpiresAt    time.Time `json:"expires_at"`
+	Error        string    `json:"error"`
+}
+
 // New initializes a Zoho structure
-func New(conf *configs.Config) *Zoho {
+func New(conf *configs.Config) (*Zoho, error) {
 	retryClient := retryablehttp.NewClient()
 	retryClient.Logger = nil
 	retryClient.RetryMax = 1
@@ -24,30 +39,30 @@ func New(conf *configs.Config) *Zoho {
 			TLSHandshakeTimeout: 5 * time.Second,
 		},
 	}
-
+	token := &tokens{}
+	err := json.Unmarshal([]byte(tokenstr), token)
+	if err != nil {
+		return nil, err
+	}
 	z := Zoho{
 		Client:     retryClient.StandardClient(),
 		ZohoTLD:    "com",
-		TokensFile: "./.tokens.zoho",
+		TokensFile: "./tokens.txt",
 		Oauth: OAuth{
-			BaseURL: "https://accounts.zoho.com/oauth/v2/",
+			BaseURL:      "https://accounts.zoho.com/oauth/v2/",
+			ClientID:     conf.Zoho.ZohoClientId,
+			ClientSecret: conf.Zoho.ZohoClientSecret,
+			RedirectURI:  "https://www.ramsfords.com",
+			Scopes: []string{
+				"ZohoBooks.fullaccess.all",
+				"ZohoCRM.modules.ALL",
+			},
+			Token: *token,
 		},
 	}
+	z.RefreshTokenRequest()
+	return &z, nil
 
-	return &z
-
-}
-
-// SetTokenManager can be used to provide a type which implements the TokenManager interface
-// which will get/set AccessTokens/RenewTokens using a persistence mechanism
-func (z *Zoho) SetTokenManager(tm TokenLoaderSaver) {
-	z.TokenManager = tm
-}
-
-// SetTokensFile can be used to set the file location of the token persistence location,
-// by default tokens are stored in a file in the current directory called '.Tokens.zoho'
-func (z *Zoho) SetTokensFile(s string) {
-	z.TokensFile = s
 }
 
 // SetZohoTLD can be used to set the TLD extension for API calls for example for Zoho in EU and China.
@@ -77,7 +92,6 @@ func (z *Zoho) SetOrganizationID(orgID string) {
 type Zoho struct {
 	Oauth          OAuth
 	Client         *http.Client
-	TokenManager   TokenLoaderSaver
 	TokensFile     string
 	OrganizationID string
 	ZohoTLD        string
@@ -85,10 +99,10 @@ type Zoho struct {
 
 // OAuth is the OAuth part of the Zoho struct
 type OAuth struct {
-	Scopes       []ScopeString
+	Scopes       []string
 	ClientID     string
 	ClientSecret string
 	RedirectURI  string
-	Token        AccessTokenResponse
+	Token        tokens
 	BaseURL      string
 }

@@ -14,7 +14,7 @@ type S3Client struct {
 }
 
 // config satisfies the CredentialsProvider interface
-func New(conf *configs.Config) S3Client {
+func New(conf *configs.Config) (S3Client, error) {
 	confs := aws.Config{
 		Region:           "us-west-1",
 		Credentials:      conf,
@@ -26,7 +26,7 @@ func New(conf *configs.Config) S3Client {
 		Client:   s3Client,
 		Config:   conf,
 		Uploader: uploader,
-	}
+	}, nil
 
 }
 

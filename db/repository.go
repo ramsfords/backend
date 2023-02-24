@@ -116,7 +116,7 @@ type Repository struct {
 // 	validatedb.ValidateDb
 // }
 
-func New(configs *configs.Config) DB {
+func New(configs *configs.Config) (DB, error) {
 	db := dynamo.New(configs)
 	getCountInput := &dynamodb.GetItemInput{
 		TableName: aws.String(configs.GetFirstShipperTableName()),
@@ -132,6 +132,7 @@ func New(configs *configs.Config) DB {
 	qtCount, err := db.Client.GetItem(context.Background(), getCountInput)
 	if err != nil {
 		log.Println("Error getting quote count", err)
+		return nil, err
 	}
 	countValue := qtCount.Item["quoteCount"].(*types.AttributeValueMemberN).Value
 	fmt.Println(qtCount)
@@ -160,6 +161,7 @@ func New(configs *configs.Config) DB {
 	businessCount, err := db.Client.GetItem(context.Background(), businessCountInput)
 	if err != nil {
 		log.Println("Error getting business count", err)
+		return nil, err
 	}
 	businessCountStrValue := businessCount.Item["businessCount"].(*types.AttributeValueMemberN).Value
 	var businessCountValue int64
@@ -204,7 +206,7 @@ func New(configs *configs.Config) DB {
 	}
 	repo.IncreaseQuoteCount()
 	repo.IncreaseBusinessCount()
-	return repo
+	return repo, nil
 }
 func (repo *Repository) IncreaseQuoteCount() {
 	repo.Mutex.Lock()

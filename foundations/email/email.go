@@ -20,7 +20,7 @@ type httpClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-func New(conf *configs.Config, S3Client *s3.Client) *Email {
+func New(conf *configs.Config, S3Client *s3.Client) Email {
 	cfg := aws.Config{
 		Region:           "us-west-1",
 		Credentials:      conf,
@@ -33,5 +33,5 @@ func New(conf *configs.Config, S3Client *s3.Client) *Email {
 		Conf:       conf,
 		HTTPClient: &http.Client{},
 	}
-	return &emailCli
+	return emailCli
 }

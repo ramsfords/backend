@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ramsfords/backend/foundations/auth"
+	"github.com/ramsfords/backend/foundations/zoho"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -121,16 +121,16 @@ type ContactResponse struct {
 
 func (api API) CreateContact(contact Contact) (Contact, error) {
 	var responseData ContactResponse
-	endPoint := &auth.Endpoint{
+	endPoint := &zoho.Endpoint{
 		Name: "books",
 		URL:  "https://books.zoho.com/api/v3/contacts",
-		URLParameters: map[string]auth.Parameter{
-			"organization_id": auth.Parameter(api.id),
+		URLParameters: map[string]zoho.Parameter{
+			"organization_id": zoho.Parameter(api.id),
 		},
-		Method:       auth.HTTPPost,
+		Method:       zoho.HTTPPost,
 		ResponseData: &responseData,
 		RequestBody:  contact,
-		BodyFormat:   auth.JSON,
+		BodyFormat:   zoho.JSON,
 	}
 	err := api.Zoho.HTTPRequest(endPoint)
 	if err == nil {

@@ -2,7 +2,7 @@ package books
 
 import (
 	"github.com/ramsfords/backend/configs"
-	zoho "github.com/ramsfords/backend/foundations/auth"
+	"github.com/ramsfords/backend/foundations/zoho"
 )
 
 // API is used for interacting with the Zoho Books API

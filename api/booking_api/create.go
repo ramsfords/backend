@@ -1,18 +1,14 @@
 package booking_api
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/labstack/echo/v5"
 	"github.com/ramsfords/backend/api/utils"
 	rapid "github.com/ramsfords/backend/business/rapid/rapid_utils/book"
-	"github.com/ramsfords/backend/configs"
 	books "github.com/ramsfords/backend/foundations/books"
 	"github.com/ramsfords/backend/foundations/errs"
 	"github.com/ramsfords/backend/foundations/logger"
@@ -148,7 +144,11 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		Bid:          oldQuote.Bid,
 		SvgData:      oldQuote.BookingInfo.SvgData,
 	}
-	makeBOlGenGetRequest(bookingApi.services.Conf, outRes)
+	res, err := bookingApi.services.AdobeCli.UrlToPdf(outRes, fileName)
+	if err != nil {
+		logger.Error(err, "could not save booking")
+	}
+	fmt.Println(res)
 	return outRes, nil
 }
 func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
@@ -159,27 +159,27 @@ func getBidFormBids(bids []*v1.Bid, bidId string) *v1.Bid {
 	}
 	return nil
 }
-func makeBOlGenGetRequest(conf *configs.Config, bookingData *v1.BookingResponse) error {
-	url := conf.GetFirstShipperFontEndURL() + "/api/bol"
-	fmt.Println("calling url to generate bol", url)
-	jsonData, err := json.Marshal(bookingData)
-	if err != nil {
-		return err
-	}
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil || resp.StatusCode != http.StatusOK {
-		return err
-	}
-	// marshall the response
-	defer resp.Body.Close()
-	res, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(res))
-	return nil
-}
+//	func makeBOlGenGetRequest(conf *configs.Config, bookingData *v1.BookingResponse) error {
+//		url := ""
+//		if conf.Env == "dev" {
+//			url = "http://127.0.0.1:5173/bol" + bookingData.Bid.BidId
+//		} else {
+//			url = "" + "/bol" + bookingData.Bid.BidId
+//		}
+//		resp, err := http.Get(url)
+//		if err != nil || resp.StatusCode != http.StatusOK {
+//			return err
+//		}
+//		// marshall the response
+//		defer resp.Body.Close()
+//		res, err := ioutil.ReadAll(resp.Body)
+//		if err != nil {
+//			return err
+//		}
+//		fmt.Println(string(res))
+//		return nil
+//	}
 func GetContactPersonsIds(contactPerson []books.ContactPerson) []string {
 	ids := []string{}
 	for _, j := range contactPerson {

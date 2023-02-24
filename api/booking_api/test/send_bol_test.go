@@ -14,8 +14,14 @@ import (
 
 func TestSendEmailBol(t *testing.T) {
 	config := configs.GetConfig()
-	db := db.New(config)
-	s3client := S3.New(config)
+	db, err := db.New(config)
+	if err != nil {
+		fmt.Println(err)
+	}
+	s3client, err := S3.New(config)
+	if err != nil {
+		fmt.Println(err)
+	}
 	booking, err := db.GetBooking(context.Background(), "50099")
 	if err != nil {
 		fmt.Println(err)

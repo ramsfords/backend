@@ -17,6 +17,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ses v1.15.1
 	github.com/cloudflare/cloudflare-go v0.58.1
 	github.com/cloudinary/cloudinary-go/v2 v2.2.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/goccy/go-json v0.10.0
@@ -40,7 +41,6 @@ require (
 	go.opentelemetry.io/otel/sdk v1.13.0
 	golang.org/x/crypto v0.5.0
 	golang.org/x/time v0.3.0
-	google.golang.org/appengine v1.6.7
 )
 
 require (

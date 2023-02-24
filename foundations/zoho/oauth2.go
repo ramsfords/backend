@@ -1,8 +1,9 @@
-package auth
+package zoho
 
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -44,7 +45,7 @@ func (z *Zoho) RefreshTokenRequest() (err error) {
 	tokenURL := z.RefreshTokenURL()
 	resp, err := z.Client.Post(tokenURL, "application/x-www-form-urlencoded", nil)
 	if err != nil {
-		return fmt.Errorf("Failed while requesting refresh token: %s", err)
+		return fmt.Errorf("failed while requesting refresh token: %s", err)
 	}
 
 	defer func() {
@@ -56,7 +57,7 @@ func (z *Zoho) RefreshTokenRequest() (err error) {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf(
-			"Failed to read request body on request to %s%s: %s",
+			"failed to read request body on request to %s%s: %s",
 			z.Oauth.BaseURL,
 			oauthGenerateTokenRequestSlug,
 			err,
@@ -65,40 +66,46 @@ func (z *Zoho) RefreshTokenRequest() (err error) {
 
 	if resp.StatusCode != 200 {
 		return fmt.Errorf(
-			"Got non-200 status code from request to refresh token: %s\n%s",
+			"got non-200 status code from request to refresh token: %s\n%s",
 			resp.Status,
 			string(body),
 		)
 	}
 
-	tokenResponse := AccessTokenResponse{}
-	err = json.Unmarshal(body, &tokenResponse)
+	tokenResponse := &tokens{}
+	err = json.Unmarshal(body, tokenResponse)
 	if err != nil {
 		return fmt.Errorf(
-			"Failed to unmarshal access token response from request to refresh token: %s",
+			"failed to unmarshal access token response from request to refresh token: %s",
 			err,
 		)
 	}
 	//If the tokenResponse is not valid it should not update local tokens
 	if tokenResponse.Error == "invalid_code" {
-		return ErrTokenInvalidCode
+		return errors.New("invalid_code")
 	}
 
 	//If the tokenResponse is not obtained from proper client secret it should not update local tokens
 	if tokenResponse.Error == "invalid_client_secret" {
-		return ErrClientSecretInvalidCode
+		return errors.New("invalid client credentials")
 	}
-
 	z.Oauth.Token.AccessToken = tokenResponse.AccessToken
-	z.Oauth.Token.APIDomain = tokenResponse.APIDomain
+	z.Oauth.Token.ApiDomain = tokenResponse.ApiDomain
 	z.Oauth.Token.ExpiresIn = tokenResponse.ExpiresIn
 	z.Oauth.Token.TokenType = tokenResponse.TokenType
-
-	err = z.SaveTokens(z.Oauth.Token)
+	z.Oauth.Token.ExpiresAt = time.Now().Add(1 * time.Hour)
 	if err != nil {
-		return fmt.Errorf("Failed to save access tokens: %s", err)
+		return fmt.Errorf("failed to save access tokens: %s", err)
 	}
-
+	bytes, err := json.Marshal(z.Oauth.Token)
+	if err != nil {
+		return err
+	}
+	// write to file
+	err = ioutil.WriteFile("./foundations/zoho/tokens.txt", bytes, 0644)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -117,15 +124,13 @@ func (z *Zoho) GenerateTokenURL(code, clientID, clientSecret string) string {
 // AuthorizationCodeRequest is you do not want to click on a link and redirect to a consent screen. Instead you can go to, https://accounts.zoho.Com/developerconsole
 // and click the kebab icon beside your clientID, and click 'Self-Client'; then you can define you scopes and an expiry, then provide the generated authorization code
 // to this function which will generate your access token and refresh tokens.
-func (z *Zoho) GenerateTokenRequest(clientID, clientSecret, code, redirectURI string) (err error) {
-
-	z.Oauth.ClientID = clientID
-	z.Oauth.ClientSecret = clientSecret
-	z.Oauth.RedirectURI = redirectURI
-
-	err = z.CheckForSavedTokens()
-	if err == ErrTokenExpired {
-		return z.RefreshTokenRequest()
+func (z *Zoho) GenerateTokenRequest(code string) (err error) {
+	// Load and renew access token if expired
+	if z.Oauth.Token.ExpiresAt.Before(time.Now()) {
+		err = z.RefreshTokenRequest()
+		if err != nil {
+			return fmt.Errorf("failed to refresh the access token")
+		}
 	}
 
 	// q := url.Values{}
@@ -136,10 +141,10 @@ func (z *Zoho) GenerateTokenRequest(clientID, clientSecret, code, redirectURI st
 	// q.Set("grant_type", "authorization_code")
 
 	// tokenURL := fmt.Sprintf("%s%s?%s", z.Oauth.baseURL, oauthGenerateTokenRequestSlug, q.Encode())
-	tokenURL := z.GenerateTokenURL(code, clientID, clientSecret)
+	tokenURL := z.GenerateTokenURL(code, z.Oauth.ClientID, z.Oauth.ClientSecret)
 	resp, err := z.Client.Post(tokenURL, "application/x-www-form-urlencoded", nil)
 	if err != nil {
-		return fmt.Errorf("Failed while requesting generate token: %s", err)
+		return fmt.Errorf("failed while requesting generate token: %s", err)
 	}
 
 	defer func() {
@@ -151,7 +156,7 @@ func (z *Zoho) GenerateTokenRequest(clientID, clientSecret, code, redirectURI st
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf(
-			"Failed to read request body on request to %s%s: %s",
+			"failed to read request body on request to %s%s: %s",
 			z.Oauth.BaseURL,
 			oauthGenerateTokenRequestSlug,
 			err,
@@ -160,55 +165,41 @@ func (z *Zoho) GenerateTokenRequest(clientID, clientSecret, code, redirectURI st
 
 	if resp.StatusCode != 200 {
 		return fmt.Errorf(
-			"Got non-200 status code from request to generate token: %s\n%s",
+			"got non-200 status code from request to generate token: %s\n%s",
 			resp.Status,
 			string(body),
 		)
 	}
 
-	tokenResponse := AccessTokenResponse{}
+	tokenResponse := tokens{}
 	err = json.Unmarshal(body, &tokenResponse)
 	if err != nil {
 		return fmt.Errorf(
-			"Failed to unmarshal access token response from request to generate token: %s",
+			"failed to unmarshal access token response from request to generate token: %s",
 			err,
 		)
 	}
 
 	//If the tokenResponse is not valid it should not update local tokens
 	if tokenResponse.Error == "invalid_code" {
-		return ErrTokenInvalidCode
+		return errors.New("invalid_code")
 	}
 
 	//If the tokenResponse is not obtained from proper client secret it should not update local tokens
 	if tokenResponse.Error == "invalid_client_secret" {
-		return ErrClientSecretInvalidCode
+		return errors.New("invalid_client_secret")
 	}
-
-	z.Oauth.ClientID = clientID
-	z.Oauth.ClientSecret = clientSecret
-	z.Oauth.RedirectURI = redirectURI
 	z.Oauth.Token = tokenResponse
-
-	err = z.SaveTokens(z.Oauth.Token)
-	if err != nil {
-		return fmt.Errorf("Failed to save access tokens: %s", err)
-	}
-
 	return nil
 }
 
-func (z *Zoho) AuthorizationCodeURL(scopes, clientID, redirectURI string, consent bool) string {
+func (z *Zoho) AuthorizationCodeURL() string {
 	q := url.Values{}
-	q.Set("scope", scopes)
-	q.Set("client_id", clientID)
-	q.Set("redirect_uri", redirectURI)
+	q.Set("scope", strings.Join(z.Oauth.Scopes, " "))
+	q.Set("client_id", z.Oauth.ClientID)
+	q.Set("redirect_uri", z.Oauth.RedirectURI)
 	q.Set("response_type", "code")
 	q.Set("access_type", "offline")
-
-	if consent {
-		q.Set("prompt", "consent")
-	}
 
 	return fmt.Sprintf("%s%s?%s", z.Oauth.BaseURL, oauthAuthorizationRequestSlug, q.Encode())
 }
@@ -219,63 +210,47 @@ func (z *Zoho) AuthorizationCodeURL(scopes, clientID, redirectURI string, consen
 // domain, the function will start a server that will get the code from the URL when the browser redirects.
 // If the domain is not a localhost, you will be prompted to paste the code from the URL back into the terminal window,
 // eg. https://domain.Com/redirect-url?code=xxxxxxxxxx
-func (z *Zoho) AuthorizationCodeRequest(
-	clientID, clientSecret string,
-	scopes []ScopeString,
-	redirectURI string,
-) (err error) {
+func (z *Zoho) AuthorizationCodeRequest() (errs error) {
 	// check for existing tokens
-	err = z.CheckForSavedTokens()
-	if err == nil {
-		z.Oauth.ClientID = clientID
-		z.Oauth.ClientSecret = clientSecret
-		z.Oauth.RedirectURI = redirectURI
-		z.Oauth.Scopes = scopes
-		return nil
-	}
-
-	// user may be able to issue a refresh if they have a refresh token, but maybe they are trying to get a new token.
-	// a breaking change could be to provide a bool: consent - where the user forces the consent screen otherwise we will try to refresh
-	requiresConsentPrompt := false
-	if err == ErrTokenExpired {
-		// currently we will simply check if the token is expired and if it is we will "prompt=consent"
-		requiresConsentPrompt = true
+	if z.Oauth.Token.ExpiresAt.Before(time.Now()) {
+		err := z.RefreshTokenRequest()
+		if err != nil {
+			return fmt.Errorf("failed to refresh the access token: %s: %s")
+		}
 	}
 
 	scopeStr := ""
-	for i, a := range scopes {
+	for i, a := range z.Oauth.Scopes {
 		scopeStr += string(a)
-		if i < len(scopes)-1 {
+		if i < len(z.Oauth.Scopes)-1 {
 			scopeStr += ","
 		}
 	}
 
-	z.Oauth.Scopes = scopes
-
-	// q := url.Values{}
-	// q.Set("scope", scopeStr)
-	// q.Set("client_id", clientID)
-	// q.Set("redirect_uri", redirectURI)
-	// q.Set("response_type", "code")
-	// q.Set("access_type", "offline")
+	q := url.Values{}
+	q.Set("scope", scopeStr)
+	q.Set("client_id", z.Oauth.ClientID)
+	q.Set("redirect_uri", z.Oauth.RedirectURI)
+	q.Set("response_type", "code")
+	q.Set("access_type", "offline")
 
 	// authURL := fmt.Sprintf("%s%s?%s", z.Oauth.baseURL, oauthAuthorizationRequestSlug, q.Encode())
-	authURL := z.AuthorizationCodeURL(scopeStr, clientID, redirectURI, requiresConsentPrompt)
+	authURL := z.AuthorizationCodeURL()
 
 	srvChan := make(chan int)
 	codeChan := make(chan string)
 	var srv *http.Server
 
-	localRedirect := strings.Contains(redirectURI, "localhost")
+	localRedirect := strings.Contains(z.Oauth.RedirectURI, "localhost")
 	if localRedirect {
 		// start a localhost server that will handle the redirect url
-		u, err := url.Parse(redirectURI)
+		u, err := url.Parse(z.Oauth.RedirectURI)
 		if err != nil {
-			return fmt.Errorf("Failed to parse redirect URI: %s", err)
+			return fmt.Errorf("failed to parse redirect URI: %s", err)
 		}
 		_, port, err := net.SplitHostPort(u.Host)
 		if err != nil {
-			return fmt.Errorf("Failed to split redirect URI into host and port segments: %s", err)
+			return fmt.Errorf("failed to split redirect URI into host and port segments: %s", err)
 		}
 		srv = &http.Server{Addr: ":" + port}
 
@@ -314,17 +289,17 @@ func (z *Zoho) AuthorizationCodeRequest(
 		fmt.Printf("Paste code and press enter:\n")
 		_, err := fmt.Scan(&code)
 		if err != nil {
-			return fmt.Errorf("Failed to read code from input: %s", err)
+			return fmt.Errorf("failed to read code from input: %s", err)
 		}
 	}
 
 	if code == "" {
-		return fmt.Errorf("No code was recieved from oAuth2 flow")
+		return fmt.Errorf("no code was recieved from oAuth2 flow")
 	}
 
-	err = z.GenerateTokenRequest(clientID, clientSecret, code, redirectURI)
+	err := z.GenerateTokenRequest(code)
 	if err != nil {
-		return fmt.Errorf("Failed to retrieve oAuth2 token: %s", err)
+		return fmt.Errorf("failed to retrieve oAuth2 token: %s", err)
 	}
 
 	return nil
@@ -346,11 +321,8 @@ const (
 	oauthRevokeTokenRequestSlug   = "revoke"
 )
 
-// ScopeString is a type for defining scopes for oAuth2 flow
-type ScopeString string
-
 // BuildScope is used to generate a scope string for oAuth2 flow
-func BuildScope(service Service, scope Scope, method Method, operation Operation) ScopeString {
+func BuildScope(service Service, scope Scope, method Method, operation Operation) string {
 	built := fmt.Sprintf("%s.%s", service, scope)
 	if method != "" {
 		built += fmt.Sprintf(".%s", method)
@@ -358,7 +330,7 @@ func BuildScope(service Service, scope Scope, method Method, operation Operation
 	if operation != "" {
 		built += fmt.Sprintf(".%s", operation)
 	}
-	return ScopeString(built)
+	return built
 }
 
 // Service is a type for building scopes

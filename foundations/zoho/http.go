@@ -1,4 +1,4 @@
-package auth
+package zoho
 
 import (
 	"bytes"
@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/schmorrison/go-querystring/query"
 )
@@ -44,15 +45,14 @@ const (
 // HTTPRequest is the function which actually performs the request to a Zoho endpoint as specified by the provided endpoint
 func (z *Zoho) HTTPRequest(endpoint *Endpoint) (err error) {
 	if reflect.TypeOf(endpoint.ResponseData).Kind() != reflect.Ptr {
-		return fmt.Errorf("Failed, you must pass a pointer in the ResponseData field of endpoint")
+		return fmt.Errorf("failed, you must pass a pointer in the ResponseData field of endpoint")
 	}
 
 	// Load and renew access token if expired
-	err = z.CheckForSavedTokens()
-	if err == ErrTokenExpired {
-		err := z.RefreshTokenRequest()
+	if z.Oauth.Token.ExpiresAt.Before(time.Now()) {
+		err = z.RefreshTokenRequest()
 		if err != nil {
-			return fmt.Errorf("Failed to refresh the access token: %s: %s", endpoint.Name, err)
+			return fmt.Errorf("failed to refresh the access token: %s: %s", endpoint.Name, err)
 		}
 	}
 
@@ -77,7 +77,7 @@ func (z *Zoho) HTTPRequest(endpoint *Endpoint) (err error) {
 			// JSON Marshal the body
 			marshalledBody, err := json.Marshal(endpoint.RequestBody)
 			if err != nil {
-				return fmt.Errorf("Failed to create json from request body: %s", err)
+				return fmt.Errorf("failed to create json from request body: %s", err)
 			}
 
 			reqBody = bytes.NewReader(marshalledBody)
@@ -148,7 +148,7 @@ func (z *Zoho) HTTPRequest(endpoint *Endpoint) (err error) {
 
 	req, err = http.NewRequest(string(endpoint.Method), fmt.Sprintf("%s?%s", endpointURL, q.Encode()), reqBody)
 	if err != nil {
-		return fmt.Errorf("Failed to create a request for %s: %s", endpoint.Name, err)
+		return fmt.Errorf("failed to create a request for %s: %s", endpoint.Name, err)
 	}
 
 	req.Header.Set("Content-Type", contentType)
@@ -165,14 +165,14 @@ func (z *Zoho) HTTPRequest(endpoint *Endpoint) (err error) {
 	if err != nil || resp.StatusCode > 300 {
 		body, err := ioutil.ReadAll(resp.Body)
 		defer resp.Body.Close()
-		return fmt.Errorf("Failed to perform request for reason: %s, %s: %s", endpoint.Name, err, string(body))
+		return fmt.Errorf("failed to perform request for reason: %s, %s: %s", endpoint.Name, err, string(body))
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("Failed to read body of response for %s: got status %s: %s", endpoint.Name, resolveStatus(resp), err)
+		return fmt.Errorf("failed to read body of response for %s: got status %s: %s", endpoint.Name, resolveStatus(resp), err)
 	}
 
 	dataType := reflect.TypeOf(endpoint.ResponseData).Elem()
@@ -181,7 +181,7 @@ func (z *Zoho) HTTPRequest(endpoint *Endpoint) (err error) {
 	if len(body) > 0 { // Avoid failed to unmarshal if there is no result
 		err = json.Unmarshal(body, data)
 		if err != nil {
-			return fmt.Errorf("Failed to unmarshal data from response for %s: got status %s: %s", endpoint.Name, resolveStatus(resp), err)
+			return fmt.Errorf("failed to unmarshal data from response for %s: got status %s: %s", endpoint.Name, resolveStatus(resp), err)
 		}
 
 		// Search for hidden errors (appears on success response)
@@ -225,21 +225,6 @@ func resolveStatus(r *http.Response) string {
 
 // HTTPHeader is a type for defining possible HTTPHeaders that zoho request could return
 type HTTPHeader string
-
-const (
-	rateLimit          HTTPHeader = "X-RATELIMIT-LIMIT"
-	rateLimitRemaining HTTPHeader = "X-RATELIMIT-REMAINING"
-	rateLimitReset     HTTPHeader = "X-RATELIMIT-RESET"
-)
-
-func checkHeaders(r http.Response, header HTTPHeader) string {
-	value := r.Header.Get(string(header))
-
-	if value != "" {
-		return value
-	}
-	return ""
-}
 
 // HTTPMethod is a type for defining the possible HTTP request methods that can be used
 type HTTPMethod string

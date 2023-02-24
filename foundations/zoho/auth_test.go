@@ -1,4 +1,4 @@
-package auth
+package zoho
 
 import (
 	"fmt"
@@ -9,7 +9,10 @@ import (
 
 func TestAuth(t *testing.T) {
 	conf := configs.GetConfig()
-	res := New(conf)
+	res, err := New(conf)
+	if err != nil {
+		t.Error(err)
+	}
 	fmt.Println(res)
 
 }

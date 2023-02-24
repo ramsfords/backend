@@ -9,18 +9,28 @@ type Config struct {
 	Logger           Logger           `json:"logger"`
 	SendInBlue       SendInBlue       `json:"sendInBlue"`
 	Zipkin           Zipkin           `json:"zipkin"`
-	Scylladb         Scylladb         `json:"scylladb"`
 	PdfRenderer      PdfRenderer      `json:"pdfRender"`
 	Initiated        bool             `json:"initiated"`
 	Zoho             Zoho             `json:"zoho"`
 	CloudFlareConfig CloudFlareConfig `json:"cloudinaryConfig,omitempty"`
 	FirstKey         string           `json:"-"`
+	Adobe            Adobe            `json:"adobe"`
 }
 type Zoho struct {
 	ZohoCode         string `json:"code"`
 	ZohoOrgId        string `json:"orgId"`
 	ZohoClientSecret string `json:"zohoSecret"`
 	ZohoClientId     string `json:"zohoClientId"`
+}
+type Adobe struct {
+	ProjectName    string `json:"projectName"`
+	ClientId       string `json:"clientId"`
+	ClientSecret   string `json:"clientSecret"`
+	OrganizationId string `json:"organizationId"`
+	TechnicalId    string `json:"technicalId"`
+	TechnicalEmail string `json:"technicalEmail"`
+	PrivateKey     string `json:"privateKey"`
+	JwtToken       string `json:"jwtToken"`
 }
 type Menuloom struct {
 	Dev              SiteSetting      `json:"dev"`
@@ -126,14 +136,7 @@ type Zipkin struct {
 	ServiceName string  `json:"serviceName,omitempty"`
 	Probability float64 `json:"probability,omitempty"`
 }
-type Scylladb struct {
-	Name     string
-	Public   []string
-	Username string
-	Password string
-	Region   string
-	Keyspace string
-}
+
 type PdfRenderer struct {
 	ApiKey   string
 	Url      string

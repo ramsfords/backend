@@ -14,14 +14,15 @@ type Cloudinery struct {
 	*cloudinary.Cloudinary
 }
 
-func New(conf configs.CloudinaryConfig) *Cloudinery {
+func New(conf configs.CloudinaryConfig) (Cloudinery, error) {
 	cld, err := cloudinary.NewFromParams(conf.CloudName, conf.ApiKey, conf.ApiSecret)
 	if err != nil {
 		log.Fatal("could not create cloudinary instance")
+		return Cloudinery{}, err
 	}
 	cld.Config.URL.Secure = true
 
-	return &Cloudinery{cld}
+	return Cloudinery{cld}, nil
 
 }
 func (cloudinery Cloudinery) UploadImageFromUrl(file interface{}, itemName string, folderName string) (*uploader.UploadResult, error) {
