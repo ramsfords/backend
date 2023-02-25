@@ -23,7 +23,6 @@ type Quote struct {
 func New(services *services.Services, echo *echo.Echo) {
 	qt := Quote{
 		services: services,
-		Mutex:    &sync.Mutex{},
 	}
 	// quote api
 	protectedQuoteGroup := echo.Group("/quote", mid.Protected(services))

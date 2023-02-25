@@ -53,7 +53,7 @@ func (qt Quote) GetNewQuote(ctxx context.Context, qtReq *v1.QuoteRequest) (*mode
 		// just log the error not Need to return error
 		logger.Error(err, "GetNewQuote : error in saving quote from rapid")
 	}
-	bidRes := rapid.MakeBid(qtReq, res.DayDeliveries, qt.Mutex)
+	bidRes := rapid.MakeBid(qtReq, res.DayDeliveries, qt.services.Conf)
 	if bidRes == nil {
 		return nil, errs.ErrInternal
 	}

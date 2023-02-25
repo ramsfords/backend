@@ -15,6 +15,7 @@ type Config struct {
 	CloudFlareConfig CloudFlareConfig `json:"cloudinaryConfig,omitempty"`
 	FirstKey         string           `json:"-"`
 	Adobe            Adobe            `json:"adobe"`
+	Margin           int              `json:"margin"`
 }
 type Zoho struct {
 	ZohoCode         string `json:"code"`

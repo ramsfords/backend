@@ -6,10 +6,12 @@ import (
 	"sync"
 
 	"github.com/ramsfords/backend/business/rapid/models"
+	"github.com/ramsfords/backend/configs"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-func MakeBid(quoteRequest *v1.QuoteRequest, bidsData []models.DayDelivery, mu *sync.Mutex) []*v1.Bid {
+func MakeBid(quoteRequest *v1.QuoteRequest, bidsData []models.DayDelivery, conf *configs.Config) []*v1.Bid {
+	mu := sync.Mutex{}
 	mu.Lock()
 	defer mu.Unlock()
 	if len(bidsData) == 0 {
@@ -62,7 +64,7 @@ func MakeBid(quoteRequest *v1.QuoteRequest, bidsData []models.DayDelivery, mu *s
 				CarrierQuoteId: capacityProviderQuoteNumber,
 				OpportunityId:  int64(k.OpportunityID),
 				Amount: &v1.Amount{
-					FullAmount: k.Total + 15,
+					FullAmount: k.Total + float64(conf.Margin),
 					NetAmount:  k.Total + 15,
 				},
 			}
