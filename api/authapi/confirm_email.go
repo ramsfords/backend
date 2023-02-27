@@ -20,13 +20,6 @@ type RedirectLoginData struct {
 	OrganizationId string `json:"organizationId"`
 	Password       string `json:"password"`
 }
-type LoginData struct {
-	Token          string `json:"token"`
-	UserId         string `json:"userId"`
-	Email          string `json:"email"`
-	ValidUntil     string `json:"validUntil"`
-	OrganizationId string `json:"organizationId"`
-}
 
 func (auth AuthApi) ConfirmEmail(ctx echo.Context) error {
 	token := ctx.QueryParam("token")

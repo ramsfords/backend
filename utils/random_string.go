@@ -14,6 +14,6 @@ func GenerateString(lenght int) string {
 	for i := 0; i < lenght; i++ {
 		b.WriteRune(chars[rand.Intn(len(chars))])
 	}
-	str := b.String()
+	str := b.String() // E.g. "ExcbsVQs"
 	return str
 }

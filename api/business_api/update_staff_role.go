@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/foundations/errs"
 	"github.com/ramsfords/backend/foundations/logger"
+	"github.com/ramsfords/backend/utils"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -22,7 +22,7 @@ func (business Business) EchoUpdateStaffRole(ctx echo.Context) error {
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	res, err := business.UpdateStaffRole(ctx.Request().Context(), updateReq, authContext.OrganizationId)
+	res, err := business.UpdateStaffRole(ctx.Request().Context(), updateReq, authContext.UserMetadata.OrganizationId)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

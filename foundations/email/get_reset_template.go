@@ -10,7 +10,7 @@ import (
 //		return template
 //	}
 func GetResetPasswordTemplate(receiverName string, redirectLink string) string {
-	template := strings.ReplaceAll("passwordResetEmailTemplate", "{user_name}", receiverName)
-	template = strings.ReplaceAll(template, "{redirect_link}", redirectLink)
+	template := strings.ReplaceAll(passwordResetEmailTemplate, "{USERNAME}", receiverName)
+	template = strings.ReplaceAll(template, "{REDIRECTLINK}", redirectLink)
 	return template
 }

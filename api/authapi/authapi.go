@@ -18,4 +18,7 @@ func New(services *services.Services, echo *echo.Echo) {
 	authApiGroup.POST("/logout", auth.EchoLogout)
 	authApiGroup.POST("/signup", auth.EchoSignUp)
 	authApiGroup.POST("/confirm-email", auth.ConfirmEmail)
+	authApiGroup.POST("/request-password-reset/:email", auth.EchoRequestResetPassword)
+	authApiGroup.POST("/reset-password", auth.EchoResetPassword)
+	authApiGroup.POST("/business", auth.EchoCreateBusiness)
 }

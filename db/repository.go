@@ -131,7 +131,7 @@ func New(configs *configs.Config) (DB, error) {
 	}
 	qtCount, err := db.Client.GetItem(context.Background(), getCountInput)
 	if err != nil {
-		log.Println("Error getting quote count", err)
+		log.Println("Error getting quote count", err.Error())
 		return nil, err
 	}
 	countValue := qtCount.Item["quoteCount"].(*types.AttributeValueMemberN).Value

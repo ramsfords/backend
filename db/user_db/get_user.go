@@ -28,7 +28,9 @@ func (userdb UserDb) Getuser(ctx context.Context, email string) (*v1.User, error
 	if err != nil {
 		return nil, err
 	}
-
+	if len(res.Items) == 0 {
+		return nil, errors.New("no data found")
+	}
 	userData := &v1.User{}
 	data, ok := res.Items[0]["users"]
 	if !ok {

@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/api/authapi"
+	"github.com/ramsfords/backend/business/core/model"
 	"github.com/ramsfords/backend/foundations/logger"
 	"github.com/ramsfords/backend/services"
 )
@@ -17,56 +17,51 @@ func Protected(services *services.Services) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			var err error
-			loginData := authapi.LoginData{}
+			session := &model.Session{}
 			// get cookie named firtAuth
-			cookie, err := ctx.Cookie("firstAuth")
-			if err == nil && len(cookie.Value) > 50 {
-				// decrypt cookie
-				decrypted, errs := services.Crypto.Decrypt(cookie.Value)
+			// cookie, err := ctx.Cookie("firstAuth")
+			// if err == nil && len(cookie.Value) > 50 {
+			// 	// decrypt cookie
+			// 	decrypted, errs := services.Crypto.Decrypt(cookie.Value)
+			// 	if errs != nil {
+			// 		err = errs
+			// 	}
+			// 	// unmarshal decrypted cookie
+			// 	errs = json.Unmarshal(decrypted, &loginData)
+			// 	if errs != nil {
+			// 		err = errs
+			// 	}
+			// 	validUntil, errs := time.Parse(time.RFC3339, loginData.ValidUntil)
+			// 	if err != nil {
+			// 		err = errs
+			// 	}
+			// 	if time.Now().After(validUntil) {
+			// 		errs = exchageRefreshTokenForAccesssToken(ctx, loginData, services)
+			// 		if errs != nil {
+			// 			err = errs
+			// 		}
+			// 		authapi.WriteCookie(ctx, loginData, services)
+			// 	}
+			// } else {
+			authorizationHeader := ctx.Request().Header.Get("authorization")
+			if len(authorizationHeader) > 50 {
+				// remove cokie not found error
+				// err = nil
+				// decrypted, errs := services.Crypto.Decrypt(authorizationHeader)
+				// if errs != nil {
+				// 	err = errs
+				// }
+				// unmarshal decrypted authorizationHeader
+				errs := json.Unmarshal([]byte(authorizationHeader), session)
 				if errs != nil {
 					err = errs
 				}
-				// unmarshal decrypted cookie
-				errs = json.Unmarshal(decrypted, &loginData)
+				validUntil := time.Unix(session.ExpiresAt, 0)
 				if errs != nil {
-					err = errs
-				}
-				validUntil, errs := time.Parse(time.RFC3339, loginData.ValidUntil)
-				if err != nil {
 					err = errs
 				}
 				if time.Now().After(validUntil) {
-					errs = exchageRefreshTokenForAccesssToken(ctx, loginData, services)
-					if errs != nil {
-						err = errs
-					}
-					authapi.WriteCookie(ctx, loginData, services)
-				}
-			} else {
-				authorizationHeader := ctx.Request().Header.Get("authorization")
-				if len(authorizationHeader) > 50 {
-					// remove cokie not found error
-					err = nil
-					decrypted, errs := services.Crypto.Decrypt(authorizationHeader)
-					if errs != nil {
-						err = errs
-					}
-					// unmarshal decrypted authorizationHeader
-					errs = json.Unmarshal(decrypted, &loginData)
-					if errs != nil {
-						err = errs
-					}
-					validUntil, errs := time.Parse(time.RFC3339, loginData.ValidUntil)
-					if errs != nil {
-						err = errs
-					}
-					if time.Now().After(validUntil) {
-						errs = exchageRefreshTokenForAccesssToken(ctx, loginData, services)
-						if err != nil {
-							err = errs
-						}
-						authapi.WriteCookie(ctx, loginData, services)
-					}
+					return ctx.NoContent(http.StatusUnauthorized)
 				}
 			}
 			if err != nil {
@@ -74,13 +69,13 @@ func Protected(services *services.Services) echo.MiddlewareFunc {
 				logger.Logger.Error("error in protected middleware", map[string]interface{}{"erorr": errors.Unwrap(newErr)})
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
-			ctx.Set("authContext", loginData)
+			ctx.Set("authContext", session)
 			return next(ctx)
+
 		}
 	}
-
 }
-func exchageRefreshTokenForAccesssToken(ctx echo.Context, data authapi.LoginData, services *services.Services) error {
+func exchageRefreshTokenForAccesssToken(ctx echo.Context, data model.LoginData, services *services.Services) error {
 	token, err := services.Db.GetRefreshToken(ctx.Request().Context(), data.UserId)
 	if err != nil {
 		return err

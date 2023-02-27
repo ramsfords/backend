@@ -4,37 +4,34 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/foundations/logger"
-	v1 "github.com/ramsfords/types_gen/v1"
+	"github.com/ramsfords/backend/utils"
 )
 
-func (business Business) AddBusinessAddress(ctx echo.Context) error {
+type AddBusinessName struct {
+	BusinessName string `json:"businessName"`
+}
+
+func (business Business) UpdateBusinessName(ctx echo.Context) error {
 	authContext, err := utils.GetAuthContext(ctx)
 	if err != nil {
 		return ctx.NoContent(http.StatusUnauthorized)
 	}
-	address := &v1.Address{}
-	err = ctx.Bind(address)
+	businessName := &AddBusinessName{}
+	err = ctx.Bind(businessName)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	if authContext.OrganizationId == "" {
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-	address.BusinessId = authContext.OrganizationId
-	err = address.Validate()
-	if err != nil {
-		logger.Error(err, "req data validation failed")
+	if businessName.BusinessName == "" || len(businessName.BusinessName) < 3 {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	newContext := ctx.Request().Context()
-	address, err = business.services.Db.AddLocationAddress(newContext, address.BusinessId, address)
+	err = business.services.Db.UpdateBusinessName(newContext, authContext.UserMetadata.OrganizationId, businessName.BusinessName)
 	if err != nil {
 		logger.Error(err, "adding address to database failded")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
-	return ctx.JSON(http.StatusCreated, address)
+	return ctx.NoContent(http.StatusCreated)
 }
 
 // func (business Business) AddAddress(ctx context.Context, address *v1.Address) (*v1.Ok, error) {

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/business/core/model"
 	"github.com/ramsfords/backend/foundations/logger"
 	"github.com/ramsfords/backend/services"
 	v1 "github.com/ramsfords/types_gen/v1"
@@ -54,7 +55,7 @@ func (auth AuthApi) EchoLogin(ctx echo.Context) error {
 		logger.Error(err, "RedirectLogin SaveRefreshToken : error in inserting refresh token into the database")
 	}
 
-	loginData := LoginData{
+	loginData := model.LoginData{
 		Email:          loginReq.Email,
 		OrganizationId: cognitoUserData.OrganizationId,
 		UserId:         cognitoUserData.Sub,
@@ -76,7 +77,7 @@ func (auth AuthApi) EchoLogin(ctx echo.Context) error {
 
 }
 
-func WriteCookie(ctx echo.Context, loginData LoginData, services *services.Services) error {
+func WriteCookie(ctx echo.Context, loginData model.LoginData, services *services.Services) error {
 	validUntil := time.Now().Add(1 * time.Hour).Format(time.RFC3339)
 	loginData.ValidUntil = validUntil
 	token, err := services.Crypto.Encrypt(loginData)

@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/business/core/model"
 	rapid "github.com/ramsfords/backend/business/rapid/rapid_utils/quote"
 	"github.com/ramsfords/backend/foundations/errs"
 	"github.com/ramsfords/backend/foundations/logger"
+	"github.com/ramsfords/backend/utils"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 

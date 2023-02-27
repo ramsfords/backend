@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/business/core/model"
 	"github.com/ramsfords/backend/foundations/errs"
+	"github.com/ramsfords/backend/utils"
 )
 
 func (qt Quote) EchoGetQuotesByBusinessId(ctx echo.Context) error {
@@ -15,7 +15,7 @@ func (qt Quote) EchoGetQuotesByBusinessId(ctx echo.Context) error {
 	if err != nil {
 		return ctx.NoContent(http.StatusUnauthorized)
 	}
-	res, err := qt.GetQuotesByBusinessId(ctx.Request().Context(), authContext.OrganizationId)
+	res, err := qt.GetQuotesByBusinessId(ctx.Request().Context(), authContext.UserMetadata.OrganizationId)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

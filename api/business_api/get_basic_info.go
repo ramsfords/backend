@@ -6,9 +6,9 @@ import (
 
 	"github.com/labstack/echo/v5"
 
-	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/business/core/model"
 	"github.com/ramsfords/backend/foundations/logger"
+	"github.com/ramsfords/backend/utils"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -22,11 +22,11 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 	if err != nil {
 		return ctx.NoContent(http.StatusUnauthorized)
 	}
-	data, err := business.services.Db.GetAllDataByBusinessId(ctx.Request().Context(), authContext.OrganizationId)
+	data, err := business.services.Db.GetAllDataByBusinessId(ctx.Request().Context(), authContext.UserMetadata.OrganizationId)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	shipments, err := business.services.Db.GetAllBookingsByBusinessId(ctx.Request().Context(), authContext.OrganizationId)
+	shipments, err := business.services.Db.GetAllBookingsByBusinessId(ctx.Request().Context(), authContext.UserMetadata.OrganizationId)
 	if err != nil {
 		logger.Error(err, "error getting shipments")
 	}

@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../protos"
+		},
+		{
+			"path": "../../firstshipper_web"
+		},
+		{
+			"path": "../../bolsender"
+		}
+	],
+	"settings": {}
+}

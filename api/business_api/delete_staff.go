@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/api/utils"
+	"github.com/ramsfords/backend/utils"
 )
 
 func (business Business) DeleteStaff(ctx echo.Context) error {
@@ -21,7 +21,7 @@ func (business Business) DeleteStaff(ctx echo.Context) error {
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	err = business.services.Db.DeleteStaff(ctx.Request().Context(), authContext.OrganizationId, data.RemoveStaffEmail)
+	err = business.services.Db.DeleteStaff(ctx.Request().Context(), authContext.UserMetadata.OrganizationId, data.RemoveStaffEmail)
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

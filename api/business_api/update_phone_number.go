@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/ramsfords/backend/api/utils"
 	"github.com/ramsfords/backend/foundations/logger"
+	"github.com/ramsfords/backend/utils"
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
@@ -25,7 +25,7 @@ func (business Business) UpdateBusinessPhoneNumber(ctx echo.Context) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 	newContext := ctx.Request().Context()
-	phoneNumber, err = business.services.Db.AddPhoneNumber(newContext, authContext.OrganizationId, phoneNumber)
+	phoneNumber, err = business.services.Db.AddPhoneNumber(newContext, authContext.UserMetadata.OrganizationId, phoneNumber)
 	if err != nil {
 		logger.Error(err, "adding address to database failded")
 		return ctx.NoContent(http.StatusInternalServerError)
