@@ -30,7 +30,6 @@ func (business Business) GetBasicInfo(ctx echo.Context) error {
 	if err != nil {
 		logger.Error(err, "error getting shipments")
 	}
-	removeSaltedPassword(data.Users)
 	resdata := model.FrontEndBusinessData{
 		Business:      data.Business,
 		Users:         sanitizeUserToFrontEnd(data.Users),

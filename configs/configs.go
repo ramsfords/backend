@@ -125,3 +125,9 @@ func (config *Config) GetAwsConfig() AwsConfig {
 	}
 	return config.AWS.Prod
 }
+func (config *Config) GetSupaConfig() SupaConfig {
+	if config.Env == "dev" {
+		return config.Supabaseconfig.Dev
+	}
+	return config.Supabaseconfig.Prod
+}

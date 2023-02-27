@@ -9,12 +9,12 @@ import (
 	"github.com/ramsfords/backend/db"
 	"github.com/ramsfords/backend/foundations/S3"
 	"github.com/ramsfords/backend/foundations/adobe"
-	"github.com/ramsfords/backend/foundations/zoho"
-
 	"github.com/ramsfords/backend/foundations/cloudinery"
 	"github.com/ramsfords/backend/foundations/cognito"
 	"github.com/ramsfords/backend/foundations/email"
 	"github.com/ramsfords/backend/foundations/logger"
+	"github.com/ramsfords/backend/foundations/zoho"
+	supa "github.com/surendrakandel/supa-go"
 )
 
 type Services struct {
@@ -29,6 +29,7 @@ type Services struct {
 	Logger        *logger.AppLogger
 	AdobeCli      *adobe.Adobe
 	Crypto        *model.Crypto
+	SupaClient    *supa.Client
 }
 
 func New(conf *configs.Config) *Services {
@@ -43,6 +44,8 @@ func New(conf *configs.Config) *Services {
 		Zoho:   &zoho.Zoho{},
 		Logger: logger,
 	}
+	supaClient := supa.CreateClient(conf.GetSupaConfig().Url, conf.GetSupaConfig().AnonKey)
+	newService.SupaClient = supaClient
 	S3Client, err := S3.New(conf)
 	if err != nil {
 		fmt.Println("could not start s3 client", err)

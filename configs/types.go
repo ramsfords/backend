@@ -16,6 +16,7 @@ type Config struct {
 	FirstKey         string           `json:"-"`
 	Adobe            Adobe            `json:"adobe"`
 	Margin           int              `json:"margin"`
+	Supabaseconfig   SupabaseConfig   `json:"supabaseconfig"`
 }
 type Zoho struct {
 	ZohoCode         string `json:"code"`
@@ -168,4 +169,16 @@ type CloudFlareConfig struct {
 	AccountId   string `json:"accountId,omitempty"`
 	NamespaceId string `json:"namespaceId,omitempty"`
 	ZoneId      string `json:"zoneId,omitempty"`
+}
+type SupaConfig struct {
+	Url         string `json:"url"`
+	AnonKey     string `json:"anonkey"`
+	ServiceRole string `json:"servicerole"`
+	DbUrl       string `json:"dburl"`
+	DbPassword  string `json:"dbpassword"`
+	JwtKey      string `json:"jwtkey"`
+}
+type SupabaseConfig struct {
+	Dev  SupaConfig `json:"dev"`
+	Prod SupaConfig `json:"prod"`
 }

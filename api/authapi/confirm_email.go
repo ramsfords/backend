@@ -58,7 +58,7 @@ func (auth AuthApi) ConfirmEmail(ctx echo.Context) error {
 	// }
 	createdAt := time.Now().Format(time.RFC3339)
 	business := &v1.Business{
-		BusinessId:                        user.OrgId,
+		BusinessId:                        user.OrganizationId,
 		AccountingEmail:                   user.Email,
 		BusinessEmail:                     user.Email,
 		CustomerServiceEmail:              user.Email,
@@ -73,11 +73,11 @@ func (auth AuthApi) ConfirmEmail(ctx echo.Context) error {
 		AdminUser:                         user,
 	}
 	go func() {
-		err = auth.services.Db.SaveBusiness(context.Background(), business, user.OrgId)
+		err = auth.services.Db.SaveBusiness(context.Background(), business, user.OrganizationId)
 		if err != nil {
 			logger.Error(err, "could not save business")
 		}
-		err = auth.services.Db.SaveUser(context.Background(), user, user.OrgId)
+		err = auth.services.Db.SaveUser(context.Background(), user, user.OrganizationId)
 		if err != nil {
 			logger.Error(err, "could not save user")
 		}
