@@ -32,31 +32,33 @@ func (businessDb BusinessDb) SaveDefaultPickup(ctx context.Context, businessId s
 		},
 		ConditionExpression: aws.String("attribute_exists(sk)"),
 	}
-	input2 := dynamodb.UpdateItemInput{
-		TableName: aws.String(businessDb.GetFirstShipperTableName()),
-		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: "business#" + businessId},
-			"sk": &types.AttributeValueMemberS{Value: "business#" + businessId},
-		},
-		UpdateExpression: aws.String("SET #business.#needs_default_pickup_address_update = :needs_default_pickup_address_update"),
-		ExpressionAttributeNames: map[string]string{
-			"#business":                            "business",
-			"#needs_default_pickup_address_update": "needs_default_pickup_address_update",
-		},
-		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":needs_default_pickup_address_update": &types.AttributeValueMemberBOOL{Value: false},
-		},
-		ConditionExpression: aws.String("attribute_exists(sk)"),
-	}
 	_, err = businessDb.Client.UpdateItem(ctx, &input1)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
 	}
-	_, err = businessDb.Client.UpdateItem(ctx, &input2)
+	qryInput := &dynamodb.UpdateItemInput{
+		TableName: aws.String(businessDb.GetFirstShipperTableName()),
+		Key: map[string]types.AttributeValue{
+			"pk": &types.AttributeValueMemberS{Value: "business#" + businessId},
+			"sk": &types.AttributeValueMemberS{Value: "business#" + businessId},
+		},
+		UpdateExpression: aws.String("SET #business.#needsDefaultPickupAddressUpdate = :needsDefaultPickupAddressUpdate"),
+		ExpressionAttributeNames: map[string]string{
+			"#business":                        "business",
+			"#needsDefaultPickupAddressUpdate": "needsDefaultPickupAddressUpdate",
+		},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":needsDefaultPickupAddressUpdate": &types.AttributeValueMemberBOOL{Value: false},
+		},
+		// items already not in the db by table sk which is same as "sk"
+		ConditionExpression: aws.String("attribute_exists(sk)"),
+		ReturnValues:        "ALL_NEW",
+	}
+	_, err = businessDb.Client.UpdateItem(ctx, qryInput)
 	if err != nil {
 		fmt.Println(err.Error())
-		return err
+		return nil
 	}
 	return nil
 }

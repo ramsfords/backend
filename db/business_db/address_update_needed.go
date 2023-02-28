@@ -16,13 +16,13 @@ func (businessDb BusinessDb) UpdateBusinessAddressUpdateNeeded(ctx context.Conte
 			"pk": &types.AttributeValueMemberS{Value: "business#" + businessId},
 			"sk": &types.AttributeValueMemberS{Value: "business#" + businessId},
 		},
-		UpdateExpression: aws.String("SET #business.#needs_address_update = :needs_address_update"),
+		UpdateExpression: aws.String("SET #business.#needsAddressUpdate = :needsAddressUpdate"),
 		ExpressionAttributeNames: map[string]string{
-			"#business":             "business",
-			"#needs_address_update": "needs_address_update",
+			"#business":           "business",
+			"#needsAddressUpdate": "needsAddressUpdate",
 		},
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":needs_address_update": &types.AttributeValueMemberBOOL{Value: false},
+			":needsAddressUpdate": &types.AttributeValueMemberBOOL{Value: false},
 		},
 		// items already not in the db by table sk which is same as "sk"
 		ConditionExpression: aws.String("attribute_exists(sk)"),

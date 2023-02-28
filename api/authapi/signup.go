@@ -35,6 +35,7 @@ func (auth AuthApi) EchoSignUp(ctx echo.Context) error {
 		Password: data.Password,
 		Data:     data,
 	})
+
 	// confirmEmailToken, err := auth.services.Crypto.Encrypt(data)
 	// if err != nil {
 	// 	return ctx.NoContent(http.StatusInternalServerError)

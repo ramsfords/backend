@@ -64,7 +64,7 @@ func MakeBid(quoteRequest *v1.QuoteRequest, bidsData []models.DayDelivery, conf 
 				CarrierQuoteId: capacityProviderQuoteNumber,
 				OpportunityId:  int64(k.OpportunityID),
 				Amount: &v1.Amount{
-					FullAmount: k.Total + float64(conf.Margin),
+					FullAmount: k.Total + k.Total*.20,
 					NetAmount:  k.Total + 15,
 				},
 			}
