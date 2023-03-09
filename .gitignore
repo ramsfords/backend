@@ -7,3 +7,4 @@ go.sum
 configs/*.yaml
 configs/*.yml 
 configs/*.json
+google_keys.*

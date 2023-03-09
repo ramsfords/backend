@@ -300,7 +300,7 @@ var (
 	}
 	ErrDataNotFound = ApiErr{
 		Cod: 404,
-		Msg: "commodity services are not valid",
+		Msg: "data not found",
 	}
 	InvalidBookingData = ApiErr{
 		Cod: 500,
