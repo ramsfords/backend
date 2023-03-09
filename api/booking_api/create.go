@@ -15,8 +15,13 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
+type BookReq struct {
+	QuoteRequest *v1.QuoteRequest `json:"quoteRequest"`
+	Bid          *v1.Bid          `json:"bid"`
+}
+
 func (bookApi BookingApi) EchoCreateBooking(ctx echo.Context) error {
-	quote := &v1.BookRequest{}
+	quote := &BookReq{}
 	err := ctx.Bind(quote)
 	if err != nil {
 		return ctx.NoContent(http.StatusBadRequest)
@@ -30,7 +35,7 @@ func (bookApi BookingApi) EchoCreateBooking(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, &res)
 }
 
-func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookRequest) (*v1.BookingResponse, error) {
+func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *BookReq) (*v1.BookingResponse, error) {
 	business, err := bookingApi.services.Db.GetBusiness(ctxx, bkReq.QuoteRequest.BusinessId)
 	if err != nil {
 		return nil, fmt.Errorf("business not found")
@@ -66,7 +71,7 @@ func (bookingApi BookingApi) CreateNewBook(ctxx context.Context, bkReq *v1.BookR
 		fmt.Println(contact)
 	}
 	// books.InsertProspects(oldQuote.QuoteRequest.Delivery, *bookingApi.books)
-	bid := getBidFormBids(oldQuote.Bids, bkReq.BidId)
+	bid := getBidFormBids(oldQuote.Bids, bkReq.Bid.BidId)
 	if bid.BidId == "" {
 		return nil, fmt.Errorf("bid not found")
 	}

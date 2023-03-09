@@ -12,10 +12,12 @@ import (
 func (quote Quote) EchoGetQuoteWithBidByBidId(ctx echo.Context) error {
 	bidId := ctx.PathParam("bidId")
 	if len(bidId) < 5 || bidId == "" {
-		return ctx.NoContent(http.StatusInternalServerError)
+		return ctx.NoContent(http.StatusBadRequest)
 	}
 	quoteId := strings.Split(bidId, "-")[0]
-
+	if len(quoteId) < 5 || quoteId == "" {
+		return ctx.NoContent(http.StatusBadRequest)
+	}
 	// admin, _ := ctx.Get(ContextAdminKey).(*models.Admin)
 	// record, _ := ctx.Get(ContextAuthRecordKey).(*models.Record)
 
@@ -33,10 +35,14 @@ func (quote Quote) EchoGetQuoteWithBidByBidId(ctx echo.Context) error {
 	if err != nil {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
-	quoteWithBids.Bid = BidByBidId(quoteWithBids.Bids, bidId)
-	quoteWithBids.Bids = nil
-	return ctx.JSON(http.StatusOK, quoteWithBids)
-
+	if quoteWithBids.QuoteRequest != nil && quoteWithBids.Bids != nil {
+		qtReqWBid := &QuoteWithBid{
+			Quote: quoteWithBids.QuoteRequest,
+			Bid:   BidByBidId(quoteWithBids.Bids, bidId),
+		}
+		return ctx.JSON(http.StatusOK, qtReqWBid)
+	}
+	return ctx.NoContent(http.StatusNotFound)
 }
 func BidByBidId(bids []*v1.Bid, bidId string) *v1.Bid {
 	for _, bid := range bids {
@@ -45,4 +51,9 @@ func BidByBidId(bids []*v1.Bid, bidId string) *v1.Bid {
 		}
 	}
 	return &v1.Bid{}
+}
+
+type QuoteWithBid struct {
+	Quote *v1.QuoteRequest `json:"quoteRequest"`
+	Bid   *v1.Bid          `json:"bid"`
 }
