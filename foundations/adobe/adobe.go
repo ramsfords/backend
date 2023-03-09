@@ -23,7 +23,7 @@ import (
 	v1 "github.com/ramsfords/types_gen/v1"
 )
 
-//go:embed refresh_token.txt
+//go:embed refresh_token.json
 var refreshToken string
 
 type TokenRes struct {
@@ -52,10 +52,12 @@ type Adobe struct {
 	Claims     jwt.MapClaims
 }
 type LocalToken struct {
-	RefreshToken     string `json:"refreshToken"`
-	RefreshExpiresAt string `json:"refreshExpiresAt"`
-	AccessToken      string `json:"accessToken"`
-	AccessExpiresAt  string `json:"accessExpiresAt"`
+	RefreshToken     string `json:"refresh_token"`
+	RefreshExpiresAt string `json:"refresh_expires_at"`
+	AccessToken      string `json:"access_token"`
+	AccessExpiresAt  string `json:"access_expires_at"`
+	ExpiresIn        int64  `json:"expires_in"`
+	TokenType        string `json:"token_type"`
 }
 
 func NewAdobe(s3Client S3.S3Client, conf *configs.Config) (*Adobe, error) {
@@ -69,7 +71,6 @@ func NewAdobe(s3Client S3.S3Client, conf *configs.Config) (*Adobe, error) {
 	accessExp, err := strconv.ParseInt(localToken.AccessExpiresAt, 10, 64)
 	if err != nil {
 		fmt.Println("Failed to get expiry time for access token", err)
-		return nil, err
 	}
 
 	adobe := &Adobe{
@@ -79,7 +80,7 @@ func NewAdobe(s3Client S3.S3Client, conf *configs.Config) (*Adobe, error) {
 	}
 	// parse unix time to time.Time
 	expirationTime := time.Unix(accessExp, 0)
-	if time.Now().After(expirationTime) {
+	if time.Now().After(expirationTime) || adobe.localToken.AccessToken == "" {
 		adobe.exchangeToken()
 	}
 	return adobe, nil
@@ -183,7 +184,7 @@ func (adobe *Adobe) UploadBOlTOS3(adobeResourceURl string, bookingResponse *v1.B
 		logger.Error(err, "Error in pull object from adobe")
 	}
 	reqs.Body.Close()
-	// TotalWeight string
+	//TotalWeight string
 	totalWeightStr := fmt.Sprintf("%f", bookingResponse.QuoteRequest.TotalWeight)
 	// TotalItems string
 	totalItemsStr := fmt.Sprintf("%d", bookingResponse.QuoteRequest.TotalItems)

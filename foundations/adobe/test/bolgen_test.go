@@ -22,7 +22,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	adobes, err := adobe.NewAdobe(seClient, conf)
+	adobes, err = adobe.NewAdobe(seClient, conf)
 	if err != nil {
 		panic(err)
 	}
@@ -70,4 +70,26 @@ type TokenRes struct {
 	TokenType   string `json:"token_type"`
 	ExpiresIn   int    `json:"expires_in"`
 	AccessToken string `json:"access_token"`
+}
+
+func TestURLTOPDFGen(t *testing.T) {
+	// conf := configs.GetConfig()
+	// s3, err := S3.New(conf)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// adobes, err := adobe.NewAdobe(s3, conf)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	outRes := &v1.BookingResponse{
+		QuoteRequest: &v1.QuoteRequest{},
+		BookingInfo:  &v1.BookingInfo{},
+		Bid: &v1.Bid{
+			BidId: "51124-0",
+		},
+		SvgData: "",
+	}
+	// adobe.UrlToPdf("30007-0")
+	adobes.UrlToPdf(outRes, "bol-51124-0")
 }
