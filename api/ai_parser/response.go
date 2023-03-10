@@ -1,5 +1,10 @@
 package ai_parser
 
+import (
+	"github.com/ramsfords/backend/business/core/model"
+	v1 "github.com/ramsfords/types_gen/v1"
+)
+
 type ParserResponse struct {
 	Amazon struct {
 		Status        string `json:"status"`
@@ -137,4 +142,15 @@ type ParserResponse struct {
 			} `json:"item_lines"`
 		} `json:"extracted_data"`
 	} `json:"eden-ai"`
+}
+type ParseRequest struct {
+	FileName           string             `json:"fileName"`
+	InvoiceData        string             `json:"invoiceData"`
+	BookingResponse    v1.BookingResponse `json:"bookingResponse"`
+	AuthContext        model.Session      `json:"authContext"`
+	AccountingPlatform string             `json:"accountingPlatform"`
+	CustomerID         string             `json:"customerId"`
+	PaymentTerm        string             `json:"paymentTerm"`
+	PaymentMethod      string             `json:"paymentMethod"`
+	IncludeShipping    bool               `json:"includeShipping"`
 }
