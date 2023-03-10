@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/labstack/echo/v5"
+	"github.com/ramsfords/backend/api/ai_parser"
 	"github.com/ramsfords/backend/api/authapi"
 	"github.com/ramsfords/backend/api/bol_api"
 	"github.com/ramsfords/backend/api/booking_api"
@@ -29,5 +30,6 @@ func SetUpAPi(engine *echo.Echo, services *services.Services) {
 	user_api.New(services, engine)
 	business_api.New(services, engine)
 	booking_api.New(services, engine)
+	ai_parser.New(services, engine)
 
 }

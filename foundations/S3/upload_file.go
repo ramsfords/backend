@@ -2,6 +2,7 @@ package S3
 
 import (
 	"context"
+	"io"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -12,6 +13,22 @@ import (
 func (S3 S3Client) UploadFile(webSiteUrl string, file *os.File, key string,
 	contentType ContentType) error {
 	bucketName := "/" + webSiteUrl
+	_, err := S3.Upload(context.Background(), &s3.PutObjectInput{
+		Bucket:      &bucketName,
+		Key:         &key,
+		ContentType: aws.String(string(contentType)),
+		Body:        file,
+		ACL:         types.ObjectCannedACL("public-read"),
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (S3 S3Client) UploadCustomerInvoices(file io.Reader, key string,
+	contentType ContentType) error {
+	bucketName := "customer-invoices-vault"
 	_, err := S3.Upload(context.Background(), &s3.PutObjectInput{
 		Bucket:      &bucketName,
 		Key:         &key,
