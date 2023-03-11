@@ -11,6 +11,12 @@
 		},
 		{
 			"path": "../../bolsender"
+		},
+		{
+			"path": "../../firstshipper_cloudflare"
+		},
+		{
+			"path": "../../firstshipper_pdfgen"
 		}
 	],
 	"settings": {}
